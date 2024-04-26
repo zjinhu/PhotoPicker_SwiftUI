@@ -1,0 +1,24 @@
+{
+  "originHash" : "9fdb6cb2789545f2704c1bf6eee39283004fdbb5c09bee56a6f9051e2053b220",
+  "pins" : [
+    {
+      "identity" : "brick",
+      "kind" : "remoteSourceControl",
+      "location" : "https://gitee.com/zjinhu/brick.git",
+      "state" : {
+        "revision" : "563539dd04f38afddb32883d439575ad0709cb78",
+        "version" : "0.3.0"
+      }
+    },
+    {
+      "identity" : "pagertabstripview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://gitee.com/zjinhu/pagertabstripview.git",
+      "state" : {
+        "revision" : "64cc93dc5dd5f6f04e724237f1a44ba4adeaa9e8",
+        "version" : "0.0.1"
+      }
+    }
+  ],
+  "version" : 3
+}
