@@ -12,7 +12,7 @@ private class TitleTheme: ObservableObject {
     @Published var textColor = Color.gray
 }
 
-struct PageTitleView: View {
+struct PageTitleView: View, PagerTabViewDelegate {
     let title: String
     @ObservedObject fileprivate var theme = TitleTheme()
     
@@ -28,9 +28,9 @@ struct PageTitleView: View {
     func setState(state: PagerTabViewState) {
         switch state {
         case .selected:
-            self.theme.textColor = .blue
+            self.theme.textColor = .black
         case .highlighted:
-            self.theme.textColor = .red
+            self.theme.textColor = .black
         default:
             self.theme.textColor = .gray
         }

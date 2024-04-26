@@ -22,10 +22,11 @@ public struct AlbumItem : Identifiable, Equatable {
     }
 }
 
-public struct Picture : Identifiable, Equatable{
+public struct Picture : Identifiable, Equatable, Hashable{
     public let id = UUID()
     public let asset: PHAsset
     public var selected = false
+    
     
     public func toImage(size: CGSize = PHImageManagerMaximumSize, 
                         mode: PHImageContentMode = .default) -> Image {

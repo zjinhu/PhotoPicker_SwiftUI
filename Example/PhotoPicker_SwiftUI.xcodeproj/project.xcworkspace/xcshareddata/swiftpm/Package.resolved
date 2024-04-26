@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://gitee.com/zjinhu/pagertabstripview.git",
       "state" : {
-        "revision" : "64cc93dc5dd5f6f04e724237f1a44ba4adeaa9e8",
-        "version" : "0.0.1"
+        "revision" : "d328c2e08fdf49d4f690e5629b47d41e220a8031",
+        "version" : "0.0.2"
       }
     }
   ],

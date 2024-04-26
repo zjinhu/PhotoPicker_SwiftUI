@@ -35,6 +35,7 @@ struct GalleryView: View {
                     }
                     
                 }
+                .padding(.horizontal , 5)
             }
             
         }

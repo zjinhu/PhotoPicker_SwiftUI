@@ -29,19 +29,62 @@ public struct GalleryPageView: View {
     
     public var body: some View {
         NavigationView {
-            PagerTabStripView(selection: $selection) {
-                
-                ForEach(viewModel.albums) { album in
-                    GalleryView(results: album.fetchResult)
-                        .pagerTabItem {
-                            PageTitleView(title: album.title ?? "")
-                        }
-                        .environmentObject(viewModel)
+            VStack{
+                PagerTabStripView(selection: $selection) {
+                    
+                    ForEach(viewModel.albums) { album in
+                        GalleryView(results: album.fetchResult)
+                            .pagerTabItem {
+                                PageTitleView(title: album.title ?? "")
+                            }
+                            .environmentObject(viewModel)
+                    }
+                    
                 }
+                .frame(alignment: .center)
+                .pagerTabStripViewStyle(.liner(indicatorBarHeight: 2,
+                                               indicatorPadding: 5,
+                                               indicatorBarColor: Color(light: .black, dark: .white),
+                                               padding: EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0),
+                                               tabItemSpacing: 30,
+                                               tabItemHeight: 24,
+                                               placedInToolbar: true))
                 
+                HStack{
+                    
+                    NavigationLink {
+                        QuickLookView()
+                            .environmentObject(viewModel)
+                    } label: {
+                        Text("预览")
+                            .font(.system(size: 15))
+                            .foregroundColor(.primary)
+                            .padding(.horizontal , 10)
+                            .padding(.vertical, 10)
+                    }
+                    .disabled(viewModel.selectedPictures.count == 0)
+                    
+                    Spacer()
+                    
+                    Button {
+                        selected = viewModel.selectedPictures
+                        dismiss()
+                    } label: {
+                        Text(downButtonTitle())
+                            .font(.system(size: 15))
+                            .foregroundColor(.white)
+                            .padding(.horizontal , 10)
+                            .padding(.vertical, 10)
+                            .background(viewModel.selectedPictures.count == 0 ? .gray : .black)
+                            .cornerRadius(8)
+                    }
+                    .disabled(viewModel.selectedPictures.count == 0)
+                }
+                .padding(.horizontal, 20)
+                .frame(height: 50)
+                .background(Color(light: .white, dark: .black))
+                .shadow(color: .gray.opacity(0.2), radius: 0.5, y: -0.8)
             }
-            .frame(alignment: .center)
-            .pagerTabStripViewStyle(.liner())
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -49,24 +92,13 @@ public struct GalleryPageView: View {
                     Button {
                         dismiss()
                     } label: {
-                        Image(systemName: "xmark")
-                            .foregroundColor(.white)
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        selected = viewModel.selectedPictures
-                        dismiss()
-                    } label: {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.white)
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(Color(light: .black, dark: .white))
                     }
                 }
             }
         }
         .navigationViewStyle(.stack)
-        .preferredColorScheme(.dark)
         .onAppear {
             viewModel.maxSelectionCount = maxSelectionCount
         }
@@ -78,6 +110,15 @@ public struct GalleryPageView: View {
             selected = viewModel.selectedPictures
             dismiss()
         }
+
+    }
+    
+    func downButtonTitle() -> String{
+        let title = "完成"
+        if viewModel.selectedPictures.count != 0{
+            return title + "(\(viewModel.selectedPictures.count))"
+        }
+        return title
     }
 }
 
