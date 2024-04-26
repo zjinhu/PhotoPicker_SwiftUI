@@ -27,14 +27,15 @@ public struct Picture : Identifiable, Equatable{
     public let asset: PHAsset
     public var selected = false
     
-    public func toImage(width: Int = 100, height: Int = 100, mode: PHImageContentMode = .aspectFit) -> Image {
+    public func toImage(size: CGSize = PHImageManagerMaximumSize, 
+                        mode: PHImageContentMode = .default) -> Image {
         let manager = PHImageManager.default()
         let option = PHImageRequestOptions()
         var image = UIImage()
         option.isSynchronous = true
-        manager.requestImage(for: asset, targetSize: CGSize(width: width, height: height), contentMode: mode, options: option, resultHandler: {(result, info)->Void in
+        manager.requestImage(for: asset, targetSize: size, contentMode: mode, options: option) { result, info in
             image = result!
-        })
+        }
         return Image(uiImage: image)
     }
 }
