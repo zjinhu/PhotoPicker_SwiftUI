@@ -10,9 +10,12 @@ import SwiftUI
 public extension View {
     @ViewBuilder
     func galleryPicker(isPresented: Binding<Bool>,
+                       maxSelectionCount: Int = 0,
                        selected: Binding<[Picture]>) -> some View {
         fullScreenCover(isPresented: isPresented) {
-            GalleryPageView(isPresented: isPresented, selected: selected)
+            GalleryPageView(isPresented: isPresented,
+                            maxSelectionCount: maxSelectionCount,
+                            selected: selected)
                 .ignoresSafeArea()
         }
     }

@@ -13,16 +13,18 @@ import BrickKit
 public struct GalleryPageView: View {
     @Environment(\.dismiss) private var dismiss
     @State var selection = 0
-    
+    let maxSelectionCount: Int
     @StateObject var viewModel = GalleryModel()
     
     @Binding var isPresented: Bool
     @Binding var selected: [Picture]
     
     public init(isPresented: Binding<Bool>,
+                maxSelectionCount: Int = 0,
                 selected: Binding<[Picture]>) {
         _isPresented = isPresented
         _selected = selected
+        self.maxSelectionCount = maxSelectionCount
     }
     
     public var body: some View {
@@ -65,8 +67,16 @@ public struct GalleryPageView: View {
         }
         .navigationViewStyle(.stack)
         .preferredColorScheme(.dark)
+        .onAppear {
+            viewModel.maxSelectionCount = maxSelectionCount
+        }
         .ss.task {
+            await PHPhotoLibrary.requestAuthorization(for: .readWrite)
             await viewModel.loadAllAlbums()
+        }
+        .onChange(of: viewModel.oneSelectedDone) { value in
+            selected = viewModel.selectedPictures
+            dismiss()
         }
     }
 }
