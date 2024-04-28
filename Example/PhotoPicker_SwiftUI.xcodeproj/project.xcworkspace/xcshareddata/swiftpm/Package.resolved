@@ -1,19 +1,28 @@
 {
-  "originHash" : "9fdb6cb2789545f2704c1bf6eee39283004fdbb5c09bee56a6f9051e2053b220",
+  "originHash" : "d2bbeb0d667777f58de742ab162eddf7499dd6cca6132cb25f49f5f1021cd04c",
   "pins" : [
     {
-      "identity" : "brick",
+      "identity" : "brick_swiftui",
       "kind" : "remoteSourceControl",
-      "location" : "https://gitee.com/zjinhu/brick.git",
+      "location" : "https://github.com/zjinhu/Brick_SwiftUI.git",
       "state" : {
-        "revision" : "563539dd04f38afddb32883d439575ad0709cb78",
-        "version" : "0.3.0"
+        "revision" : "0d227b9bef9c959e780f4849c31f54c8954cb3b3",
+        "version" : "0.3.1"
+      }
+    },
+    {
+      "identity" : "mantis",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/guoyingtao/Mantis.git",
+      "state" : {
+        "revision" : "ccc498ea429774d948a0a8aacacde207f7ffff48",
+        "version" : "2.21.0"
       }
     },
     {
       "identity" : "pagertabstripview",
       "kind" : "remoteSourceControl",
-      "location" : "https://gitee.com/zjinhu/pagertabstripview.git",
+      "location" : "https://github.com/zjinhu/PagerTabStripView.git",
       "state" : {
         "revision" : "d328c2e08fdf49d4f690e5629b47d41e220a8031",
         "version" : "0.0.2"

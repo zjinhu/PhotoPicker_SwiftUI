@@ -1,6 +1,6 @@
 //
 //  SwiftUIView.swift
-//  
+//
 //
 //  Created by FunWidget on 2024/4/24.
 //
@@ -23,12 +23,12 @@ public struct AlbumItem : Identifiable, Equatable {
 }
 
 public struct Picture : Identifiable, Equatable, Hashable{
+
     public let id = UUID()
+    
     public let asset: PHAsset
-    public var selected = false
-    
-    
-    public func toImage(size: CGSize = PHImageManagerMaximumSize, 
+
+    public func toImageView(size: CGSize = PHImageManagerMaximumSize,
                         mode: PHImageContentMode = .default) -> Image {
         let manager = PHImageManager.default()
         let option = PHImageRequestOptions()
@@ -38,5 +38,17 @@ public struct Picture : Identifiable, Equatable, Hashable{
             image = result!
         }
         return Image(uiImage: image)
+    }
+    
+    public func loadImage(size: CGSize = PHImageManagerMaximumSize,
+                          mode: PHImageContentMode = .default) -> UIImage {
+        let manager = PHImageManager.default()
+        let option = PHImageRequestOptions()
+        var image = UIImage()
+        option.isSynchronous = true
+        manager.requestImage(for: asset, targetSize: size, contentMode: mode, options: option) { result, info in
+            image = result!
+        }
+        return image
     }
 }

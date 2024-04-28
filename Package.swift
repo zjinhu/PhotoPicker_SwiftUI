@@ -12,8 +12,9 @@ let package = Package(
             targets: ["PhotoPicker_SwiftUI"]),
     ],
     dependencies: [
-        .package(url: "https://gitee.com/zjinhu/brick.git", .upToNextMajor(from: "0.3.0")),
-        .package(url: "https://gitee.com/zjinhu/pagertabstripview.git", .upToNextMajor(from: "0.0.1")),
+        .package(url: "https://github.com/zjinhu/Brick_SwiftUI.git", .upToNextMajor(from: "0.3.0")),
+        .package(url: "https://github.com/zjinhu/PagerTabStripView.git", .upToNextMajor(from: "0.0.1")),
+        .package(url: "https://github.com/guoyingtao/Mantis.git", .upToNextMajor(from: "2.21.0")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -21,8 +22,9 @@ let package = Package(
         .target(
             name: "PhotoPicker_SwiftUI",
             dependencies: [
-                .product(name: "BrickKit", package: "brick"), // 👈  Reference to a Local Package
-                .product(name: "PagerTabStripView", package: "pagertabstripview"),
+                .product(name: "BrickKit", package: "Brick_SwiftUI"), // 👈  Reference to a Local Package
+                .product(name: "PagerTabStripView", package: "PagerTabStripView"),
+                .product(name: "Mantis", package: "Mantis"),
              ]),
     ]
 )

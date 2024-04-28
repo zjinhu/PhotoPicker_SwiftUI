@@ -14,9 +14,11 @@ public class GalleryModel: ObservableObject {
     @Published var albums: [AlbumItem] = []
     var maxSelectionCount: Int = 0
     @Published var oneSelectedDone: Bool = false
+    @Published var closedGallery: Bool = false
     public init() {}
 
     @Published public var selectedPictures: [Picture] = []
+    @Published var selectImages: [UIImage] = []
 }
 
 extension GalleryModel {

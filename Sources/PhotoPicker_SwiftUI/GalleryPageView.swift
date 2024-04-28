@@ -15,14 +15,11 @@ public struct GalleryPageView: View {
     @State var selection = 0
     let maxSelectionCount: Int
     @StateObject var viewModel = GalleryModel()
+
+    @Binding var selected: [UIImage]
     
-    @Binding var isPresented: Bool
-    @Binding var selected: [Picture]
-    
-    public init(isPresented: Binding<Bool>,
-                maxSelectionCount: Int = 0,
-                selected: Binding<[Picture]>) {
-        _isPresented = isPresented
+    public init(maxSelectionCount: Int = 0,
+                selected: Binding<[UIImage]>) {
         _selected = selected
         self.maxSelectionCount = maxSelectionCount
     }
@@ -53,7 +50,7 @@ public struct GalleryPageView: View {
                 HStack{
                     
                     NavigationLink {
-                        QuickLookView()
+                        QuickLookView(selected: $selected)
                             .environmentObject(viewModel)
                     } label: {
                         Text("预览")
@@ -67,7 +64,9 @@ public struct GalleryPageView: View {
                     Spacer()
                     
                     Button {
-                        selected = viewModel.selectedPictures
+                        selected = viewModel.selectedPictures.map({ picture in
+                            picture.loadImage()
+                        })
                         dismiss()
                     } label: {
                         Text(downButtonTitle())
@@ -107,7 +106,12 @@ public struct GalleryPageView: View {
             await viewModel.loadAllAlbums()
         }
         .onChange(of: viewModel.oneSelectedDone) { value in
-            selected = viewModel.selectedPictures
+            selected = viewModel.selectedPictures.map({ picture in
+                picture.loadImage()
+            })
+            dismiss()
+        }
+        .onChange(of: viewModel.closedGallery) { value in
             dismiss()
         }
 
@@ -123,5 +127,5 @@ public struct GalleryPageView: View {
 }
 
 #Preview {
-    GalleryPageView(isPresented: .constant(true), selected: .constant([]))
+    GalleryPageView(selected: .constant([]))
 }

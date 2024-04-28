@@ -11,12 +11,20 @@ public extension View {
     @ViewBuilder
     func galleryPicker(isPresented: Binding<Bool>,
                        maxSelectionCount: Int = 0,
-                       selected: Binding<[Picture]>) -> some View {
+                       selected: Binding<[UIImage]>) -> some View {
         fullScreenCover(isPresented: isPresented) {
-            GalleryPageView(isPresented: isPresented,
-                            maxSelectionCount: maxSelectionCount,
+            GalleryPageView(maxSelectionCount: maxSelectionCount,
                             selected: selected)
                 .ignoresSafeArea()
+        }
+    }
+    
+    @ViewBuilder
+    func imageCrop(isPresented: Binding<Bool>,
+                   image: Binding<UIImage?>) -> some View {
+        fullScreenCover(isPresented: isPresented) {
+            ImageCropView(image: image)
+            .ignoresSafeArea()
         }
     }
 }
