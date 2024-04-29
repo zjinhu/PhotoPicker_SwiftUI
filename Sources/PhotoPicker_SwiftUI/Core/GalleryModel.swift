@@ -16,7 +16,7 @@ class GalleryModel: ObservableObject {
     @Published var oneSelectedDone: Bool = false
     @Published var closedGallery: Bool = false
     @Published var type: PHAssetMediaType?
-
+    
     @Published var selectedAssets: [SelectedAsset] = []
 }
 

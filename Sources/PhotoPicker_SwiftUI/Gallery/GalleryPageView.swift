@@ -13,6 +13,7 @@ import BrickKit
 struct GalleryPageView: View {
     @Environment(\.dismiss) private var dismiss
     @State var selection = 0
+    @State private var showToast = false
     let maxSelectionCount: Int
     @StateObject var viewModel = GalleryModel()
     @Binding var selected: [SelectedAsset]
@@ -32,6 +33,33 @@ struct GalleryPageView: View {
     var body: some View {
         NavigationView {
             VStack{
+//                if $viewModel.photoLibraryPermissionStatus == .restricted ||
+//                    $viewModel.photoLibraryPermissionStatus == .limited{
+                    HStack {
+                        Text("你已允许访问选择照片，可管理选择更多照片")
+                            .font(.system(size: 12))
+                            .foregroundColor(.gray)
+                        
+                        Spacer()
+                        
+                        Button {
+                            
+                        } label: {
+                            Text("管理")
+                                .font(.system(size: 12))
+                                .foregroundColor(.primary)
+                                .padding(.horizontal, 10)
+                        }
+                        .frame(height: 26)
+                        .ss.border(Color(light: .primary, dark: .white), cornerRadius: 13, lineWidth: 1)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 9)
+                    .background(.gray.opacity(0.2))
+                    .cornerRadius(10)
+                    .padding(.horizontal, 16)
+//                }
+
                 PagerTabStripView(selection: $selection) {
                     
                     ForEach(viewModel.albums) { album in
@@ -126,8 +154,20 @@ struct GalleryPageView: View {
             selected = viewModel.selectedAssets
             dismiss()
         }
+        .onChange(of: viewModel.selectedAssets) { value in
+            if value.count == viewModel.maxSelectionCount{
+                showToast.toggle()
+            }
+        }
         .onChange(of: viewModel.closedGallery) { value in
             dismiss()
+        }
+        .toast(isPresenting: $showToast){
+    
+            AlertToast(displayMode: .hud,
+                       type: .systemImage("exclamationmark.circle.fill", .orange),
+                       title: "最多可选\(viewModel.maxSelectionCount)张照片",
+                       style: .style(backgroundColor: .white, titleColor: .black, titleFont: Font.system(size: 14)))
         }
 
     }

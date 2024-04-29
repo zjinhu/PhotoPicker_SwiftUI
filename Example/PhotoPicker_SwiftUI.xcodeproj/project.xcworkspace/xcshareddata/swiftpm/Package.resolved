@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/zjinhu/Brick_SwiftUI.git",
       "state" : {
-        "revision" : "0d227b9bef9c959e780f4849c31f54c8954cb3b3",
-        "version" : "0.3.1"
+        "revision" : "bfed1d4d759064a1d31f62e81fbd09e6d44f2ae8",
+        "version" : "0.3.2"
       }
     },
     {

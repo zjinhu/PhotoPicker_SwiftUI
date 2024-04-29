@@ -14,7 +14,7 @@ struct ThumbnailView: View {
     @State var buttonDisable: Bool = false
     @State var time: Double = 0
     @EnvironmentObject var viewModel: GalleryModel
-
+    
     let asset: PHAsset
     
     init(asset: PHAsset) {

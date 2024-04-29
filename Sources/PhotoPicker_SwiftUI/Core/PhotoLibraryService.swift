@@ -68,7 +68,6 @@ extension PhotoLibraryService {
 
     func fetchAlbumsPhotos(collection: PHAssetCollection, type: PHAssetMediaType?) async -> [AlbumItem] {
 
-        
         await withCheckedContinuation { (continuation: CheckedContinuation<[AlbumItem], Never>) in
             
             var items : [AlbumItem] = []
@@ -124,18 +123,7 @@ extension PhotoLibraryService {
             title
         }
     }
-    
-    func fetchAllPhotos() async -> PHFetchResult<PHAsset> {
-        await withCheckedContinuation { (continuation: CheckedContinuation<PHFetchResult<PHAsset>, Never>) in
-            imageCachingManager.allowsCachingHighQualityImages = false
-            let fetchOptions = PHFetchOptions()
-            fetchOptions.includeHiddenAssets = false
-            fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-            continuation.resume(returning: PHAsset.fetchAssets(with: .image, options: fetchOptions))
-        }
-    }
-    
-    
+ 
     func loadImage(for localId: String, targetSize: CGSize = PHImageManagerMaximumSize, contentMode: PHImageContentMode = .default) async throws -> UIImage? {
         let results = PHAsset.fetchAssets(withLocalIdentifiers: [localId], options: nil)
         guard let asset = results.firstObject else {
