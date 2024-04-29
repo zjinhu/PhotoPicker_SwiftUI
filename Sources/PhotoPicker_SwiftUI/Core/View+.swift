@@ -11,11 +11,11 @@ public extension View {
     @ViewBuilder
     func galleryPicker(isPresented: Binding<Bool>,
                        maxSelectionCount: Int = 0,
-                       type: PHAssetMediaType? = nil,
+                       onlyImage: Bool = false,
                        selected: Binding<[SelectedAsset]>) -> some View {
         fullScreenCover(isPresented: isPresented) {
             GalleryPageView(maxSelectionCount: maxSelectionCount,
-                            type: type,
+                            onlyImage: onlyImage,
                             selected: selected)
                 .ignoresSafeArea()
         }

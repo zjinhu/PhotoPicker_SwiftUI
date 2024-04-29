@@ -18,13 +18,19 @@ struct RadioButton: View {
             self.action(self.isChosen)
         }label: {
             HStack(alignment: .center, spacing: 10) {
-                Image(systemName: self.isChosen ? "largecircle.fill.circle" : "circle")
+                Image(systemName: self.isChosen ? "checkmark.circle.fill" : "circle")
                     .resizable()
                     .frame(width: 20, height: 20)
                 Text(label)
                     .foregroundColor(.primary)
             }
         }
-        .foregroundColor(self.isChosen ? .blue : .primary)
+        .foregroundColor(.primary)
+    }
+}
+
+#Preview {
+    RadioButton(label: "123") { bool in
+        
     }
 }

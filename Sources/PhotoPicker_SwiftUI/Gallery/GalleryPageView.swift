@@ -17,12 +17,16 @@ struct GalleryPageView: View {
     @StateObject var viewModel = GalleryModel()
     @Binding var selected: [SelectedAsset]
     var type: PHAssetMediaType?
+    let onlyImage: Bool
     init(maxSelectionCount: Int = 0,
-         type: PHAssetMediaType? = nil,
+         onlyImage: Bool = false,
          selected: Binding<[SelectedAsset]>) {
         _selected = selected
         self.maxSelectionCount = maxSelectionCount
-        self.type = type
+        self.onlyImage = onlyImage
+        if onlyImage{
+            self.type = .image
+        }
     }
     
     var body: some View {
@@ -64,15 +68,15 @@ struct GalleryPageView: View {
                         .disabled(viewModel.selectedAssets.count == 0)
                         
                         Spacer()
-
-                        RadioButton(label: "实况照片") { bool in
-                            if bool{
-                                self.viewModel.type = nil
-                            }else{
-                                self.viewModel.type = .image
+                        if !onlyImage{
+                            RadioButton(label: "动态效果") { bool in
+                                if bool{
+                                    self.viewModel.type = nil
+                                }else{
+                                    self.viewModel.type = .image
+                                }
                             }
                         }
-                        
                         Spacer()
                         
                         Button {
