@@ -14,10 +14,8 @@ struct QuickLookView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = 0
     
-    @State private var image: UIImage?
-    
-    @Binding var selected: [UIImage]
-    init(selected: Binding<[UIImage]>) {
+    @Binding var selected: [SelectedAsset]
+    init(selected: Binding<[SelectedAsset]>) {
         _selected = selected
     }
     
@@ -27,29 +25,51 @@ struct QuickLookView: View {
             VStack{
                 
                 TabView(selection: $selectedTab) {
-                    ForEach(Array(viewModel.selectImages.enumerated()), id: \.element) {index, image in
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: proxy.size.width)
-                            .clipped()
-                            .tag(index)
-         
+                    ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, asset in
+                        
+                        if viewModel.type == .image{
+                            asset.toImageView()
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: proxy.size.width)
+                                .clipped()
+                                .tag(index)
+                        }else{
+                            switch asset.fetchPHAssetType(){
+                            case .image:
+                                ImageView(asset: asset)
+                                    .frame(width: proxy.size.width)
+                                    .clipped()
+                                    .tag(index)
+                            case .livePhoto:
+                                LivePhotoView(asset: asset)
+                                    .frame(width: proxy.size.width)
+                                    .clipped()
+                                    .tag(index)
+                            case .video:
+                                VideoView(asset: asset)
+                                    .frame(width: proxy.size.width)
+                                    .clipped()
+                                    .tag(index)
+                            case .unknown, .audio:
+                                EmptyView()
+                                    .tag(index)
+                            }
+                            
+                        }
+
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
                 
                 ScrollViewReader { value in
-
+                    
                     HScrollStack(spacing: 10) {
-                        ForEach(Array(viewModel.selectedPictures.enumerated()), id: \.element) {index, picture in
-                            picture.toImageView(size: CGSize(width: 90, height: 90), mode: .aspectFill)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 90, height: 90)
-                                .clipShape(Rectangle())
-                                .cornerRadius(5)
+                        ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, picture in
+                            
+                            QLThumbnailView(asset: picture)
+                                .environmentObject(viewModel)
                                 .ss.border(selectedTab == index ? .blue : .clear, cornerRadius: 5, lineWidth: 2)
                                 .id(index)
                                 .onTapGesture {
@@ -71,7 +91,6 @@ struct QuickLookView: View {
                 HStack{
                     
                     Button {
-                        image = viewModel.selectImages[selectedTab]
                         isPresentedEdit.toggle()
                     } label: {
                         Text("编辑")
@@ -80,15 +99,11 @@ struct QuickLookView: View {
                             .padding(.horizontal , 10)
                             .padding(.vertical, 10)
                     }
-                    .imageCrop(isPresented: $isPresentedEdit, image: $image)
-                    .onChange(of: image ?? UIImage()) { newValue in
-                        viewModel.selectImages.replaceSubrange(selectedTab...selectedTab, with: [newValue])
-                    }
                     
                     Spacer()
                     
                     Button {
-                        selected = viewModel.selectImages
+                        selected = viewModel.selectedAssets
                         viewModel.closedGallery.toggle()
                     } label: {
                         Text("完成")
@@ -103,13 +118,13 @@ struct QuickLookView: View {
                 .padding(.horizontal, 20)
                 .frame(height: 50)
             }
- 
+            
         }
         .navigationBarBackButtonHidden()
         .toolbar {
             
             ToolbarItem(placement: .principal) {
-                Text("\(selectedTab + 1)/\(viewModel.selectedPictures.count)")
+                Text("\(selectedTab + 1)/\(viewModel.selectedAssets.count)")
                     .font(.system(size: 14)) // 自定义字体和大小
                     .foregroundColor(.gray) // 修改字体颜色
             }
@@ -134,12 +149,9 @@ struct QuickLookView: View {
                     .clipShape(Circle())
             }
         }
-        .onAppear{
-            viewModel.selectImages = viewModel.selectedPictures.map({ picture in
-                picture.loadImage()
-            })
+        .fullScreenCover(isPresented: $isPresentedEdit) {
+            
         }
-        
     }
 }
- 
+

@@ -8,13 +8,13 @@
 import SwiftUI
 import Photos
  
-public class PhotoLibraryService: NSObject {
+class PhotoLibraryService: NSObject {
     let photoLibrary: PHPhotoLibrary
     let imageCachingManager = PHCachingImageManager()
     
     @Published var photoLibraryChange : PHChange?
     
-    public override init() {
+    override init() {
         
         self.photoLibrary = .shared()
         super.init()
@@ -31,12 +31,11 @@ public class PhotoLibraryService: NSObject {
         @unknown default:
             break
         }
-        
     }
 }
 
 extension PhotoLibraryService {
-    func fetchAllAlbums() async -> [AlbumItem] {
+    func fetchAllAlbums(type: PHAssetMediaType?) async -> [AlbumItem] {
         if photoLibraryPermissionStatus != .authorized {
             return []
         }
@@ -53,12 +52,12 @@ extension PhotoLibraryService {
         
         for i in 0..<smartAlbums.count{
             let assetCollection = smartAlbums.object(at: i)
-            await albums.append(contentsOf: fetchAlbumsPhotos(collection: assetCollection))
+            await albums.append(contentsOf: fetchAlbumsPhotos(collection: assetCollection, type: type))
         }
    
         for i in 0..<userCollections.count{
             let assetCollection = userCollections.object(at: i)
-            await albums.append(contentsOf: fetchAlbumsPhotos(collection: assetCollection))
+            await albums.append(contentsOf: fetchAlbumsPhotos(collection: assetCollection, type: type))
         }
         
         albums.sort { (item1, item2) -> Bool in
@@ -67,7 +66,7 @@ extension PhotoLibraryService {
         return albums
     }
 
-    func fetchAlbumsPhotos(collection: PHAssetCollection) async -> [AlbumItem] {
+    func fetchAlbumsPhotos(collection: PHAssetCollection, type: PHAssetMediaType?) async -> [AlbumItem] {
 
         
         await withCheckedContinuation { (continuation: CheckedContinuation<[AlbumItem], Never>) in
@@ -79,6 +78,11 @@ extension PhotoLibraryService {
                 imageCachingManager.allowsCachingHighQualityImages = false
                 let fetchOptions = PHFetchOptions()
                 fetchOptions.includeHiddenAssets = false
+                
+                if let type {
+                    fetchOptions.predicate = NSPredicate(format: "mediaType == %d", type.rawValue)
+                }
+                
                 fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
                 let assetsFetchResult = PHAsset.fetchAssets(in: collection , options: fetchOptions)
                 if assetsFetchResult.count > 0{
@@ -89,6 +93,7 @@ extension PhotoLibraryService {
             }
         }
     }
+
     
     //由于系统返回的相册集名称为英文，我们需要转换为中文
     private func titleOfAlbumForChinse(title: String?) -> String? {
@@ -157,7 +162,7 @@ extension PhotoLibraryService {
     }
 }
 
-public extension PhotoLibraryService {
+extension PhotoLibraryService {
     func savePhoto(for photoData: Data, withLivePhotoURL url: URL? = nil) async throws {
         guard photoLibraryPermissionStatus == .authorized else {
             throw PhotoLibraryError.photoLibraryDenied
@@ -179,7 +184,7 @@ public extension PhotoLibraryService {
     }
 }
 
-public extension PhotoLibraryService {
+extension PhotoLibraryService {
     var photoLibraryPermissionStatus: PHAuthorizationStatus {
         PHPhotoLibrary.authorizationStatus(for: .readWrite)
     }
@@ -195,7 +200,7 @@ extension PhotoLibraryService: PHPhotoLibraryChangeObserver {
     }
 }
 
-public enum PhotoLibraryError: LocalizedError {
+enum PhotoLibraryError: LocalizedError {
     case photoNotFound
     case photoSavingFailed
     case photoLibraryDenied
@@ -203,7 +208,7 @@ public enum PhotoLibraryError: LocalizedError {
     case unknownError
 }
 
-public extension PhotoLibraryError {
+extension PhotoLibraryError {
     var errorDescription: String? {
         switch self {
         case .photoNotFound:

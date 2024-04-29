@@ -10,21 +10,22 @@ import PagerTabStripView
 import Photos
 import BrickKit
 
-public struct GalleryPageView: View {
+struct GalleryPageView: View {
     @Environment(\.dismiss) private var dismiss
     @State var selection = 0
     let maxSelectionCount: Int
     @StateObject var viewModel = GalleryModel()
-
-    @Binding var selected: [UIImage]
-    
-    public init(maxSelectionCount: Int = 0,
-                selected: Binding<[UIImage]>) {
+    @Binding var selected: [SelectedAsset]
+    var type: PHAssetMediaType?
+    init(maxSelectionCount: Int = 0,
+         type: PHAssetMediaType? = nil,
+         selected: Binding<[SelectedAsset]>) {
         _selected = selected
         self.maxSelectionCount = maxSelectionCount
+        self.type = type
     }
     
-    public var body: some View {
+    var body: some View {
         NavigationView {
             VStack{
                 PagerTabStripView(selection: $selection) {
@@ -44,45 +45,56 @@ public struct GalleryPageView: View {
                                                indicatorBarColor: Color(light: .black, dark: .white),
                                                padding: EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0),
                                                tabItemSpacing: 30,
-                                               tabItemHeight: 24,
+                                               tabItemHeight: 30,
                                                placedInToolbar: true))
                 
-                HStack{
-                    
-                    NavigationLink {
-                        QuickLookView(selected: $selected)
-                            .environmentObject(viewModel)
-                    } label: {
-                        Text("预览")
-                            .font(.system(size: 15))
-                            .foregroundColor(.primary)
-                            .padding(.horizontal , 10)
-                            .padding(.vertical, 10)
+                if maxSelectionCount != 1{
+                    HStack{
+                        
+                        NavigationLink {
+                            QuickLookView(selected: $selected)
+                                .environmentObject(viewModel)
+                        } label: {
+                            Text("预览")
+                                .font(.system(size: 15))
+                                .foregroundColor(.primary)
+                                .padding(.horizontal , 10)
+                                .padding(.vertical, 10)
+                        }
+                        .disabled(viewModel.selectedAssets.count == 0)
+                        
+                        Spacer()
+
+                        RadioButton(label: "实况照片") { bool in
+                            if bool{
+                                self.viewModel.type = nil
+                            }else{
+                                self.viewModel.type = .image
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        Button {
+                            selected = viewModel.selectedAssets
+                            dismiss()
+                        } label: {
+                            Text(downButtonTitle())
+                                .font(.system(size: 15))
+                                .foregroundColor(.white)
+                                .padding(.horizontal , 10)
+                                .padding(.vertical, 10)
+                                .background(viewModel.selectedAssets.count == 0 ? .gray : .black)
+                                .cornerRadius(8)
+                        }
+                        .disabled(viewModel.selectedAssets.count == 0)
                     }
-                    .disabled(viewModel.selectedPictures.count == 0)
-                    
-                    Spacer()
-                    
-                    Button {
-                        selected = viewModel.selectedPictures.map({ picture in
-                            picture.loadImage()
-                        })
-                        dismiss()
-                    } label: {
-                        Text(downButtonTitle())
-                            .font(.system(size: 15))
-                            .foregroundColor(.white)
-                            .padding(.horizontal , 10)
-                            .padding(.vertical, 10)
-                            .background(viewModel.selectedPictures.count == 0 ? .gray : .black)
-                            .cornerRadius(8)
-                    }
-                    .disabled(viewModel.selectedPictures.count == 0)
+                    .padding(.horizontal, 20)
+                    .frame(height: 50)
+                    .background(Color(light: .white, dark: .black))
+                    .shadow(color: .gray.opacity(0.2), radius: 0.5, y: -0.8)
                 }
-                .padding(.horizontal, 20)
-                .frame(height: 50)
-                .background(Color(light: .white, dark: .black))
-                .shadow(color: .gray.opacity(0.2), radius: 0.5, y: -0.8)
+
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
@@ -100,15 +112,14 @@ public struct GalleryPageView: View {
         .navigationViewStyle(.stack)
         .onAppear {
             viewModel.maxSelectionCount = maxSelectionCount
+            viewModel.type = type
         }
         .ss.task {
             await PHPhotoLibrary.requestAuthorization(for: .readWrite)
             await viewModel.loadAllAlbums()
         }
         .onChange(of: viewModel.oneSelectedDone) { value in
-            selected = viewModel.selectedPictures.map({ picture in
-                picture.loadImage()
-            })
+            selected = viewModel.selectedAssets
             dismiss()
         }
         .onChange(of: viewModel.closedGallery) { value in
@@ -119,8 +130,8 @@ public struct GalleryPageView: View {
     
     func downButtonTitle() -> String{
         let title = "完成"
-        if viewModel.selectedPictures.count != 0{
-            return title + "(\(viewModel.selectedPictures.count))"
+        if viewModel.selectedAssets.count != 0{
+            return title + "(\(viewModel.selectedAssets.count))"
         }
         return title
     }

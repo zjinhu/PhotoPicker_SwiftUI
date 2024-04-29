@@ -12,7 +12,7 @@ struct ThumbnailView: View {
     @State var image: UIImage?
     @State var number: Int = 0
     @State var buttonDisable: Bool = false
-    
+    @State var time: Double = 0
     @EnvironmentObject var viewModel: GalleryModel
 
     let asset: PHAsset
@@ -35,6 +35,37 @@ struct ThumbnailView: View {
                 } else {
                     Color.gray
                         .opacity(0.3)
+                }
+                
+                if asset.mediaSubtypes.contains(.photoLive), viewModel.type != .image{
+                    HStack{
+                        Spacer()
+                        Image(systemName: "livephoto")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.white)
+                            .frame(width: 20, height: 20)
+                            .padding(5)
+                    }
+                }
+                
+                if time != 0{
+                    VStack{
+                        Spacer()
+                        
+                        HStack{
+                            Image(systemName: "video")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 14, height: 14)
+                            
+                            Text(time.formatDuration())
+                                .font(.system(size: 12))
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
                 }
                 
                 if viewModel.maxSelectionCount != 1{
@@ -75,6 +106,9 @@ struct ThumbnailView: View {
 
             }
             .ss.task {
+                if asset.mediaType == .video{
+                    await loadAsset()
+                }
                 let image = try? await viewModel.photoLibrary.loadImage(for: asset.localIdentifier, targetSize: proxy.size)
                 await MainActor.run {
                     self.image = image
@@ -83,42 +117,50 @@ struct ThumbnailView: View {
             .onDisappear {
                 self.image = nil
             }
-            .onChange(of: viewModel.selectedPictures) { value in
+            .onChange(of: viewModel.selectedAssets) { value in
                 getPhotoStatus()
             }
         }
     }
     
+    private func loadAsset() async {
+        do {
+            time = try await asset.loadVideoTime()
+        } catch {
+            print("Error loading video: \(error)")
+        }
+    }
+    
     func onTap(){
         if viewModel.maxSelectionCount == 1{
-            let picture = Picture(asset: asset)
-            viewModel.selectedPictures.append(picture)
+            let picture = SelectedAsset(asset: asset)
+            viewModel.selectedAssets.append(picture)
             viewModel.oneSelectedDone.toggle()
             return
         }
 
-        if viewModel.selectedPictures.contains(where: { pic in pic.asset == asset }),
-           let index = viewModel.selectedPictures.firstIndex(where: { picture in picture.asset == asset}){
+        if viewModel.selectedAssets.contains(where: { pic in pic.asset == asset }),
+           let index = viewModel.selectedAssets.firstIndex(where: { picture in picture.asset == asset}){
             
-            viewModel.selectedPictures.remove(at: index)
+            viewModel.selectedAssets.remove(at: index)
             
         } else{
-            let picture = Picture(asset: asset)
-            viewModel.selectedPictures.append(picture)
+            let picture = SelectedAsset(asset: asset)
+            viewModel.selectedAssets.append(picture)
         }
     }
     
     func getPhotoStatus(){
         
-        if viewModel.selectedPictures.contains(where: { picture in picture.asset == asset }){
-            let index = viewModel.selectedPictures.firstIndex(where: { picture in picture.asset == asset}) ?? -1
+        if viewModel.selectedAssets.contains(where: { picture in picture.asset == asset }){
+            let index = viewModel.selectedAssets.firstIndex(where: { picture in picture.asset == asset}) ?? -1
             
             number = index + 1
             
         }else{
             number = 0
             
-            if viewModel.selectedPictures.count == viewModel.maxSelectionCount{
+            if viewModel.selectedAssets.count == viewModel.maxSelectionCount{
                 buttonDisable = true
             }else{
                 buttonDisable = false

@@ -10,7 +10,7 @@ import PhotoPicker_SwiftUI
 import Photos
 struct ContentView: View {
     @State var isPresentedGallery = false
-    @State var pictures: [UIImage] = []
+    @State var pictures: [SelectedAsset] = []
     @State private var image: UIImage? = UIImage(named: "sunflower")!
     @State var isPresentedCrop = false
     var body: some View {
@@ -26,7 +26,7 @@ struct ContentView: View {
                         .frame(height: 50)
                 }
                 .galleryPicker(isPresented: $isPresentedGallery,
-                               maxSelectionCount: 5,
+                               maxSelectionCount: 6,
                                selected: $pictures)
                 
                 Button {
@@ -43,7 +43,7 @@ struct ContentView: View {
                         .resizable()
                         .scaledToFit()
                     ForEach(pictures, id: \.self) { picture in
-                        Image(uiImage: picture)
+                        picture.toImageView()
                             .resizable()
                             .scaledToFill()
                             .frame(width: 100, height: 100)

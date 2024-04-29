@@ -9,16 +9,15 @@ import Foundation
 import Photos
 import SwiftUI
 
-public class GalleryModel: ObservableObject {
+class GalleryModel: ObservableObject {
     let photoLibrary = PhotoLibraryService()
     @Published var albums: [AlbumItem] = []
     var maxSelectionCount: Int = 0
     @Published var oneSelectedDone: Bool = false
     @Published var closedGallery: Bool = false
-    public init() {}
+    @Published var type: PHAssetMediaType?
 
-    @Published public var selectedPictures: [Picture] = []
-    @Published var selectImages: [UIImage] = []
+    @Published var selectedAssets: [SelectedAsset] = []
 }
 
 extension GalleryModel {
@@ -27,7 +26,7 @@ extension GalleryModel {
     }
 
     public func loadAllAlbums() async {
-        let albums = await photoLibrary.fetchAllAlbums()
+        let albums = await photoLibrary.fetchAllAlbums(type: type)
         await MainActor.run {
             withAnimation {
                 self.albums = albums
