@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8C9421822BE0A9DA00913509 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8C9421802BE0A9DA00913509 /* Localizable.strings */; };
 		8CB00E782BD61E4900E82C71 /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB00E772BD61E4900E82C71 /* ExampleApp.swift */; };
 		8CB00E7A2BD61E4900E82C71 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB00E792BD61E4900E82C71 /* ContentView.swift */; };
 		8CB00E7C2BD61E4A00E82C71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CB00E7B2BD61E4A00E82C71 /* Assets.xcassets */; };
@@ -15,6 +16,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8C9421812BE0A9DA00913509 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		8C9421832BE0A9E300913509 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		8C9421842BE0AB2100913509 /* Example-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Example-Info.plist"; sourceTree = "<group>"; };
 		8CB00E742BD61E4900E82C71 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CB00E772BD61E4900E82C71 /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
 		8CB00E792BD61E4900E82C71 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -39,6 +43,7 @@
 		8CB00E6B2BD61E4900E82C71 = {
 			isa = PBXGroup;
 			children = (
+				8C9421842BE0AB2100913509 /* Example-Info.plist */,
 				8CDA47432BDA443600F24633 /* PhotoPicker */,
 				8CB00E762BD61E4900E82C71 /* PhotoPicker_SwiftUI */,
 				8CB00E752BD61E4900E82C71 /* Products */,
@@ -61,6 +66,7 @@
 				8CB00E792BD61E4900E82C71 /* ContentView.swift */,
 				8CB00E7B2BD61E4A00E82C71 /* Assets.xcassets */,
 				8CB00E7D2BD61E4A00E82C71 /* PhotoPicker_SwiftUI.entitlements */,
+				8C9421802BE0A9DA00913509 /* Localizable.strings */,
 				8CB00E7E2BD61E4A00E82C71 /* Preview Content */,
 			);
 			path = PhotoPicker_SwiftUI;
@@ -126,6 +132,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 8CB00E6B2BD61E4900E82C71;
 			productRefGroup = 8CB00E752BD61E4900E82C71 /* Products */;
@@ -143,6 +150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8CB00E802BD61E4A00E82C71 /* Preview Assets.xcassets in Resources */,
+				8C9421822BE0A9DA00913509 /* Localizable.strings in Resources */,
 				8CB00E7C2BD61E4A00E82C71 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -160,6 +168,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		8C9421802BE0A9DA00913509 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8C9421812BE0A9DA00913509 /* en */,
+				8C9421832BE0A9E300913509 /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		8CB00E812BD61E4A00E82C71 /* Debug */ = {
@@ -293,6 +313,8 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Example-Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = CFBundleAllowMixedLocalizations;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = xxxxx;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -335,6 +357,8 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Example-Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = CFBundleAllowMixedLocalizations;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = xxxxx;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

@@ -19,27 +19,12 @@ class PhotoLibraryService: NSObject {
         self.photoLibrary = .shared()
         super.init()
         self.photoLibrary.register(self)
-        
-        switch photoLibraryPermissionStatus {
-
-        case .denied, .notDetermined, .restricted, .limited:
-            Task{
-                await requestPhotoLibraryPermission()
-            }
-        case .authorized:
-            break
-        @unknown default:
-            break
-        }
     }
 }
 
 extension PhotoLibraryService {
     func fetchAllAlbums(type: PHAssetMediaType?) async -> [AlbumItem] {
-        if photoLibraryPermissionStatus != .authorized {
-            return []
-        }
-        
+
         var albums : [AlbumItem] = []
         // 列出所有系统的智能相册
         let smartOptions = PHFetchOptions()
@@ -84,43 +69,11 @@ extension PhotoLibraryService {
                 
                 fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
                 let assetsFetchResult = PHAsset.fetchAssets(in: collection , options: fetchOptions)
-                if assetsFetchResult.count > 0{
-                    let title = titleOfAlbumForChinse(title: collection.localizedTitle)
-                    items.append(AlbumItem(title: title, fetchResult: assetsFetchResult))
+                if assetsFetchResult.count > 0{ 
+                    items.append(AlbumItem(title: collection.localizedTitle, fetchResult: assetsFetchResult))
                 }
                 continuation.resume(returning: items)
             }
-        }
-    }
-
-    
-    //由于系统返回的相册集名称为英文，我们需要转换为中文
-    private func titleOfAlbumForChinse(title: String?) -> String? {
-        switch title {
-        case "Slo-mo":
-            "慢动作"
-        case "Recents":
-            "最近项目"
-        case "Recently Added":
-            "最近添加"
-        case "Favorites":
-            "个人收藏"
-        case "Recently Deleted":
-            "最近删除"
-        case "Live Photos":
-            "实况照片"
-        case "Videos":
-            "视频"
-        case "All Photos":
-            "所有照片"
-        case "Selfies":
-            "自拍"
-        case "Screenshots":
-            "屏幕快照"
-        case "Camera Roll":
-            "相机胶卷"
-        default:
-            title
         }
     }
  

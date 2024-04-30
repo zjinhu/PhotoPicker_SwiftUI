@@ -70,7 +70,7 @@ struct QuickLookView: View {
                             
                             QLThumbnailView(asset: picture)
                                 .environmentObject(viewModel)
-                                .ss.border(selectedTab == index ? .blue : .clear, cornerRadius: 5, lineWidth: 2)
+                                .ss.border(selectedTab == index ? .mainBlue : .clear, cornerRadius: 5, lineWidth: 2)
                                 .id(index)
                                 .onTapGesture {
                                     selectedTab = index
@@ -79,7 +79,7 @@ struct QuickLookView: View {
                     }
                     .padding(.horizontal, 10)
                     .maxHeight(110)
-                    .background(.white)
+                    .background(.backColor)
                     .shadow(color: .gray.opacity(0.2), radius: 0.5, y: -0.8)
                     .onChange(of: selectedTab) { new in
                         withAnimation {
@@ -93,9 +93,9 @@ struct QuickLookView: View {
                     Button {
                         isPresentedEdit.toggle()
                     } label: {
-                        Text("编辑")
-                            .font(.system(size: 15))
-                            .foregroundColor(.primary)
+                        Text("编辑".localString)
+                            .font(.f16)
+                            .foregroundColor(.textColor)
                             .padding(.horizontal , 10)
                             .padding(.vertical, 10)
                     }
@@ -106,12 +106,12 @@ struct QuickLookView: View {
                         selected = viewModel.selectedAssets
                         viewModel.closedGallery.toggle()
                     } label: {
-                        Text("完成")
-                            .font(.system(size: 15))
+                        Text("完成".localString)
+                            .font(.f15)
                             .foregroundColor(.white)
                             .padding(.horizontal , 10)
                             .padding(.vertical, 10)
-                            .background(.black)
+                            .background(.mainBlack)
                             .cornerRadius(8)
                     }
                 }
@@ -125,26 +125,29 @@ struct QuickLookView: View {
             
             ToolbarItem(placement: .principal) {
                 Text("\(selectedTab + 1)/\(viewModel.selectedAssets.count)")
-                    .font(.system(size: 14)) // 自定义字体和大小
-                    .foregroundColor(.gray) // 修改字体颜色
+                    .font(.system(size: 18)) // 自定义字体和大小
+                    .foregroundColor(.textColor) // 修改字体颜色
             }
             
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
                     dismiss()
                 } label: {
-                    Text("取消")
-                        .foregroundColor(.primary)
+                    Image(systemName: "chevron.left")
+                        .resizable()
+                        .scaledToFit()
+                        .maxHeight(12)
+                        .foregroundColor(Color.textColor)
                 }
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Text("\(selectedTab + 1)")
-                    .font(Font.system(size: 12))
+                    .font(Font.f15)
                     .foregroundColor(.white)
-                    .frame(width: 20, height: 20)
+                    .frame(width: 28, height: 28)
                     .ss.background{
-                        Color.blue
+                        Color.mainBlue
                     }
                     .clipShape(Circle())
             }

@@ -16,8 +16,29 @@ class GalleryModel: ObservableObject {
     @Published var oneSelectedDone: Bool = false
     @Published var closedGallery: Bool = false
     @Published var type: PHAssetMediaType?
-    
+    @Published var permission: PhotoLibraryPermission = .denied
     @Published var selectedAssets: [SelectedAsset] = []
+    
+    init() {
+ 
+        switch photoLibrary.photoLibraryPermissionStatus {
+        case .restricted, .limited:
+            permission = .limited
+        case .authorized:
+            permission = .authorized
+        default:
+            permission = .denied
+            Task{
+                await photoLibrary.requestPhotoLibraryPermission()
+            }
+        }
+    }
+    
+    enum PhotoLibraryPermission {
+        case denied
+        case limited
+        case authorized
+    }
 }
 
 extension GalleryModel {

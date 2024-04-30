@@ -53,16 +53,16 @@ struct VideoView: View {
         }
     }
 }
- 
+
 struct PlayerView: UIViewRepresentable {
     var player: AVPlayer
-
+    
     func makeUIView(context: Context) -> PlayerUIView {
         let playerUIView = PlayerUIView()
         playerUIView.configure(with: player)
         return playerUIView
     }
-
+    
     func updateUIView(_ uiView: PlayerUIView, context: Context) {
         // 确保player layer的frame更新
         uiView.configure(with: player)
@@ -71,7 +71,7 @@ struct PlayerView: UIViewRepresentable {
 
 class PlayerUIView: UIView {
     private var playerLayer: AVPlayerLayer?
-
+    
     // 初始化并设置AVPlayer
     func configure(with player: AVPlayer) {
         if playerLayer == nil {
@@ -83,7 +83,7 @@ class PlayerUIView: UIView {
         playerLayer?.frame = bounds
         playerLayer?.videoGravity = .resizeAspect
     }
-
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer?.frame = bounds

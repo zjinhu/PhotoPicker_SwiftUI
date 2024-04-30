@@ -25,28 +25,27 @@ struct ThumbnailView: View {
         GeometryReader { proxy in
             ZStack(alignment: .topLeading) {
                 if let image {
- 
+                    
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFill()
                         .frame(width: proxy.size.width, height: proxy.size.height)
                         .clipped()
-
+                    
                 } else {
                     Color.gray
                         .opacity(0.3)
                 }
                 
                 if asset.mediaSubtypes.contains(.photoLive), viewModel.type != .image{
-                    HStack{
-                        Spacer()
-                        Image(systemName: "livephoto")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.white)
-                            .frame(width: 20, height: 20)
-                            .padding(5)
-                    }
+                    
+                    Image(systemName: "livephoto")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.white)
+                        .frame(width: 22, height: 22)
+                        .padding(5)
+                    
                 }
                 
                 if time != 0{
@@ -69,26 +68,28 @@ struct ThumbnailView: View {
                 }
                 
                 if viewModel.maxSelectionCount != 1{
-            
+                    
                     if number > 0{
                         Color.black
                             .opacity(0.5)
                     }
-                    
-                    Text(number > 0 ? "\(number)" : "")
-                        .font(Font.system(size: 12))
-                        .foregroundColor(.white)
-                        .frame(width: 20, height: 20)
-                        .ss.background{
-                            if number > 0{
-                                Color.blue
-                            }else{
-                                Color.black.opacity(0.3)
-                                    .ss.border(.white, cornerRadius: 10, lineWidth: 2)
+                    HStack{
+                        Spacer()
+                        Text(number > 0 ? "\(number)" : "")
+                            .font(Font.f12)
+                            .foregroundColor(.white)
+                            .frame(width: 22, height: 22)
+                            .ss.background{
+                                if number > 0{
+                                    Color.mainBlue
+                                }else{
+                                    Color.black.opacity(0.2)
+                                }
                             }
-                        }
-                        .clipShape(Circle())
-                        .padding(5)
+                            .clipShape(Circle())
+                            .ss.border(.white, cornerRadius: 10, lineWidth: 2)
+                            .padding(5)
+                    }
                 }
                 
                 Button {
@@ -103,7 +104,7 @@ struct ThumbnailView: View {
                     }
                 }
                 .disabled(buttonDisable)
-
+                
             }
             .ss.task {
                 if asset.mediaType == .video{
@@ -138,7 +139,7 @@ struct ThumbnailView: View {
             viewModel.oneSelectedDone.toggle()
             return
         }
-
+        
         if viewModel.selectedAssets.contains(where: { pic in pic.asset == asset }),
            let index = viewModel.selectedAssets.firstIndex(where: { picture in picture.asset == asset}){
             

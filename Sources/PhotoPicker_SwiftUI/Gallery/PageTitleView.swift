@@ -9,7 +9,7 @@ import SwiftUI
 import PagerTabStripView
 
 private class TitleTheme: ObservableObject {
-    @Published var textColor = Color.gray
+    @Published var textColor = Color.secondGray
 }
 
 struct PageTitleView: View, PagerTabViewDelegate {
@@ -18,9 +18,9 @@ struct PageTitleView: View, PagerTabViewDelegate {
     
     var body: some View {
         VStack {
-            Text(title)
+            Text(title.localString)
                 .foregroundColor(theme.textColor)
-                .font(.subheadline)
+                .font(.f15)
         }
         .background(Color.clear)
     }
@@ -28,11 +28,11 @@ struct PageTitleView: View, PagerTabViewDelegate {
     func setState(state: PagerTabViewState) {
         switch state {
         case .selected:
-            self.theme.textColor = .black
+            self.theme.textColor = .textColor
         case .highlighted:
-            self.theme.textColor = .black
+            self.theme.textColor = .textColor
         default:
-            self.theme.textColor = .gray
+            self.theme.textColor = .secondGray
         }
     }
 }

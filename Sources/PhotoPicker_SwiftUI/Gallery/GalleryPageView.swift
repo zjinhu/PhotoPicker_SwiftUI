@@ -19,6 +19,7 @@ struct GalleryPageView: View {
     @Binding var selected: [SelectedAsset]
     var type: PHAssetMediaType?
     let onlyImage: Bool
+    
     init(maxSelectionCount: Int = 0,
          onlyImage: Bool = false,
          selected: Binding<[SelectedAsset]>) {
@@ -33,32 +34,38 @@ struct GalleryPageView: View {
     var body: some View {
         NavigationView {
             VStack{
-//                if $viewModel.photoLibraryPermissionStatus == .restricted ||
-//                    $viewModel.photoLibraryPermissionStatus == .limited{
+                
+                if viewModel.permission == .limited {
                     HStack {
-                        Text("你已允许访问选择照片，可管理选择更多照片")
-                            .font(.system(size: 12))
-                            .foregroundColor(.gray)
+                        Text("你已允许访问选择照片，可管理选择更多照片".localString)
+                            .font(.f12)
+                            .foregroundColor(.secondGray)
                         
                         Spacer()
                         
                         Button {
+                            guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                                return
+                            }
                             
+                            if UIApplication.shared.canOpenURL(settingsUrl) {
+                                UIApplication.shared.open(settingsUrl)
+                            }
                         } label: {
-                            Text("管理")
-                                .font(.system(size: 12))
-                                .foregroundColor(.primary)
+                            Text("管理".localString)
+                                .font(.f12)
+                                .foregroundColor(.textColor)
                                 .padding(.horizontal, 10)
                         }
                         .frame(height: 26)
-                        .ss.border(Color(light: .primary, dark: .white), cornerRadius: 13, lineWidth: 1)
+                        .ss.border(Color.textColor, cornerRadius: 13, lineWidth: 1)
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 9)
                     .background(.gray.opacity(0.2))
                     .cornerRadius(10)
                     .padding(.horizontal, 16)
-//                }
+                }
 
                 PagerTabStripView(selection: $selection) {
                     
@@ -74,7 +81,7 @@ struct GalleryPageView: View {
                 .frame(alignment: .center)
                 .pagerTabStripViewStyle(.liner(indicatorBarHeight: 2,
                                                indicatorPadding: 5,
-                                               indicatorBarColor: Color(light: .black, dark: .white),
+                                               indicatorBarColor: Color.textColor,
                                                padding: EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0),
                                                tabItemSpacing: 30,
                                                tabItemHeight: 30,
@@ -87,9 +94,9 @@ struct GalleryPageView: View {
                             QuickLookView(selected: $selected)
                                 .environmentObject(viewModel)
                         } label: {
-                            Text("预览")
-                                .font(.system(size: 15))
-                                .foregroundColor(.primary)
+                            Text("预览".localString)
+                                .font(.f16)
+                                .foregroundColor(.textColor)
                                 .padding(.horizontal , 10)
                                 .padding(.vertical, 10)
                         }
@@ -97,7 +104,7 @@ struct GalleryPageView: View {
                         
                         Spacer()
                         if !onlyImage{
-                            RadioButton(label: "动态效果") { bool in
+                            RadioButton(label: "动态效果".localString) { bool in
                                 if bool{
                                     self.viewModel.type = nil
                                 }else{
@@ -111,8 +118,8 @@ struct GalleryPageView: View {
                             selected = viewModel.selectedAssets
                             dismiss()
                         } label: {
-                            Text(downButtonTitle())
-                                .font(.system(size: 15))
+                            Text(doneButtonTitle())
+                                .font(.f15)
                                 .foregroundColor(.white)
                                 .padding(.horizontal , 10)
                                 .padding(.vertical, 10)
@@ -123,7 +130,7 @@ struct GalleryPageView: View {
                     }
                     .padding(.horizontal, 20)
                     .frame(height: 50)
-                    .background(Color(light: .white, dark: .black))
+                    .background(Color.backColor)
                     .shadow(color: .gray.opacity(0.2), radius: 0.5, y: -0.8)
                 }
 
@@ -136,7 +143,10 @@ struct GalleryPageView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(Color(light: .black, dark: .white))
+                            .resizable()
+                            .scaledToFit()
+                            .maxHeight(12)
+                            .foregroundColor(Color.textColor)
                     }
                 }
             }
@@ -165,15 +175,15 @@ struct GalleryPageView: View {
         .toast(isPresenting: $showToast){
     
             AlertToast(displayMode: .hud,
-                       type: .systemImage("exclamationmark.circle.fill", .orange),
-                       title: "最多可选\(viewModel.maxSelectionCount)张照片",
-                       style: .style(backgroundColor: .white, titleColor: .black, titleFont: Font.system(size: 14)))
+                       type: .systemImage("exclamationmark.circle.fill", .alertOrange),
+                       title: "最多可选\(viewModel.maxSelectionCount)张照片".localString,
+                       style: .style(backgroundColor: .backColor, titleColor: .textColor, titleFont: .f14))
         }
 
     }
     
-    func downButtonTitle() -> String{
-        let title = "完成"
+    func doneButtonTitle() -> String{
+        let title = "完成".localString
         if viewModel.selectedAssets.count != 0{
             return title + "(\(viewModel.selectedAssets.count))"
         }

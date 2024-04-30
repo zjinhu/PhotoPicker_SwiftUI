@@ -1,0 +1,27 @@
+/* 
+  Localizable.strings
+  PhotoPicker_SwiftUI
+
+  Created by FunWidget on 2024/4/30.
+  
+*/
+"你已允许访问选择照片，可管理选择更多照片" = "You have been given access to select photos and can manage to select more photos";
+"管理" = "Go";
+"预览" = "Preview";
+"完成" = "Done";
+"还原" = "Reset";
+"编辑" = "Edit";
+"最多可选%i张照片" = "Up to selectable %i";
+"动态效果" = "Live";
+
+"Slo-mo" = "Slo-mo";
+"Recents" = "Recents";
+"Recently Added" = "Recently Added";
+"Favorites" = "Favorites";
+"Recently Deleted" = "Recently Deleted";
+"Live Photos" = "Live Photos";
+"Videos" = "Videos";
+"All Photos" = "All Photos";
+"Selfies" = "Selfies";
+"Screenshots" = "Screenshots";
+"Camera Roll" = "Camera Roll";

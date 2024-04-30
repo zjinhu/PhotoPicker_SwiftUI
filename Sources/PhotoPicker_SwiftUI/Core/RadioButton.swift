@@ -8,24 +8,24 @@
 import SwiftUI
 
 struct RadioButton: View {
-    @State var isChosen: Bool = true
+    @State var isSelected: Bool = true
     let label: String
     let action: (Bool) -> Void
 
     var body: some View {
         Button{ 
-            self.isChosen.toggle()
-            self.action(self.isChosen)
+            self.isSelected.toggle()
+            self.action(self.isSelected)
         }label: {
-            HStack(alignment: .center, spacing: 10) {
-                Image(systemName: self.isChosen ? "checkmark.circle.fill" : "circle")
+            HStack(alignment: .center, spacing: 5) {
+                Image(systemName: self.isSelected ? "checkmark.circle.fill" : "circle")
                     .resizable()
-                    .frame(width: 20, height: 20)
+                    .frame(width: 14, height: 14)
                 Text(label)
-                    .foregroundColor(.primary)
+                    .font(.f15)
             }
         }
-        .foregroundColor(.primary)
+        .foregroundColor(self.isSelected ? .textColor : .buttonunSelectedColor)
     }
 }
 

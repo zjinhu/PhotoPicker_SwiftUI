@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "PhotoPicker_SwiftUI",
+    defaultLocalization: "en",
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
@@ -25,7 +26,8 @@ let package = Package(
                 .product(name: "BrickKit", package: "Brick_SwiftUI"), // 👈  Reference to a Local Package
                 .product(name: "PagerTabStripView", package: "PagerTabStripView"),
                 .product(name: "Mantis", package: "Mantis"),
-             ]),
+             ],
+            resources: [.process("Resources")]),
     ]
 )
 package.platforms = [
