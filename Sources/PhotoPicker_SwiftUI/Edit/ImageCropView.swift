@@ -9,7 +9,13 @@ import SwiftUI
 import Mantis
 import BrickKit
 struct ImageCropView: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
+    var asset: SelectedAsset
+    let done : (SelectedAsset) -> Void
+    init(asset: SelectedAsset, done: @escaping (SelectedAsset) -> Void) {
+        self.asset = asset
+        self.done = done
+    }
+    
     @Environment(\.dismiss) private var dismiss
 
     class Coordinator: CropViewControllerDelegate {
@@ -20,7 +26,8 @@ struct ImageCropView: UIViewControllerRepresentable {
         }
         
         func cropViewControllerDidCrop(_ cropViewController: Mantis.CropViewController, cropped: UIImage, transformation: Transformation, cropInfo: CropInfo) {
-            parent.image = cropped
+            parent.asset.cropImage = cropped
+            parent.done(parent.asset)
             parent.dismiss()
         }
         
@@ -48,7 +55,7 @@ extension ImageCropView {
         config.cropViewConfig.showAttachedRotationControlView = false
         config.cropToolbarConfig = CropToolbarConfig()
         let cropToolbar = CustomizedCropToolbar(frame: .zero)
-        let cropViewController = Mantis.cropViewController(image: image!,
+        let cropViewController = Mantis.cropViewController(image: asset.toImage(),
                                                            config: config,
                                                            cropToolbar: cropToolbar)
         cropViewController.delegate = context.coordinator
@@ -87,7 +94,8 @@ class CustomizedCropToolbar: UIView, CropToolbarProtocol {
     
     private lazy var resetButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "arrow.2.circlepath"), for: .normal)
+        button.setTitle("还原".localString, for: .normal)
+//        button.setImage(UIImage(systemName: "arrow.2.circlepath"), for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(reset), for: .touchUpInside)
         button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)

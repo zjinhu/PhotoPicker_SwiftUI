@@ -28,6 +28,8 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
     
     public let asset: PHAsset
     
+    public var cropImage: UIImage?
+    
     public func toImageView(size: CGSize = PHImageManagerMaximumSize,
                             mode: PHImageContentMode = .default) -> Image {
         let manager = PHImageManager.default()
@@ -38,6 +40,18 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
             image = result!
         }
         return Image(uiImage: image)
+    }
+    
+    public func toImage(size: CGSize = PHImageManagerMaximumSize,
+                        mode: PHImageContentMode = .default) -> UIImage {
+        let manager = PHImageManager.default()
+        let option = PHImageRequestOptions()
+        var image = UIImage()
+        option.isSynchronous = true
+        manager.requestImage(for: asset, targetSize: size, contentMode: mode, options: option) { result, info in
+            image = result!
+        }
+        return image
     }
     
     public enum SelectedAssetType{

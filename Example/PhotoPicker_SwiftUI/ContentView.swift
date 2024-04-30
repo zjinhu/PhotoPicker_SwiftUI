@@ -12,8 +12,10 @@ import PhotosUI
 struct ContentView: View {
     @State var isPresentedGallery = false
     @State var pictures: [SelectedAsset] = []
-    @State private var image: UIImage? = UIImage(named: "sunflower")!
+    
     @State var isPresentedCrop = false
+    @State private var selectedIndex = 0
+    @State var selectedAsset: SelectedAsset?
     
     @State private var showPicker: Bool = false
     @State private var selectedItems: [PHPickerResult] = []
@@ -35,16 +37,7 @@ struct ContentView: View {
                                maxSelectionCount: 6,
                                onlyImage: false,
                                selected: $pictures)
-                
-                Button {
-                    isPresentedCrop.toggle()
-                } label: {
-                    Text("编辑图片")
-                        .foregroundColor(Color.red)
-                        .frame(height: 50)
-                }
-                .imageCrop(isPresented: $isPresentedCrop, image: $image)
-                
+ 
                 Button {
                     showPicker.toggle()
                 } label: {
@@ -80,22 +73,29 @@ struct ContentView: View {
                         }
                     }
                     
-                    ForEach(pictures, id: \.self) { picture in
-                        picture.toImageView()
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .clipped()
+                    ForEach(Array(pictures.enumerated()), id: \.element) { index, picture in
+                        
+                        Button {
+                            selectedIndex = index
+                            selectedAsset = picture
+                            isPresentedCrop.toggle()
+                        } label: {
+                            Image(uiImage: picture.cropImage ?? picture.toImage())
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipped()
+                        }
+
                     }
-                    
-                    Image(uiImage: image!)
-                        .resizable()
-                        .scaledToFit()
-                    
+ 
                 }
+                .id(UUID())
             }
         }
-        
+        .imageCrop(isPresented: $isPresentedCrop, asset: selectedAsset) { asset in
+            pictures.replaceSubrange(selectedIndex...selectedIndex, with: [asset])
+        }
     }
 }
 

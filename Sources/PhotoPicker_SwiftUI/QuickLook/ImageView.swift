@@ -23,6 +23,12 @@ struct ImageView: View {
     }
     
     private func loadAsset() async {
+        
+        if let ima = asset.cropImage{
+            image = ima
+            return
+        }
+        
         do {
             image = try await asset.asset.loadImage()
         } catch {

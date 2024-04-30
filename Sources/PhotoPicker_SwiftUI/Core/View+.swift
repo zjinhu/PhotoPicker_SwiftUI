@@ -17,16 +17,22 @@ public extension View {
             GalleryPageView(maxSelectionCount: maxSelectionCount,
                             onlyImage: onlyImage,
                             selected: selected)
-                .ignoresSafeArea()
+            .ignoresSafeArea()
         }
     }
     
     @ViewBuilder
     func imageCrop(isPresented: Binding<Bool>,
-                   image: Binding<UIImage?>) -> some View {
+                   asset: SelectedAsset?,
+                   returnAsset:@escaping (SelectedAsset) -> Void) -> some View {
+       
         fullScreenCover(isPresented: isPresented) {
-            ImageCropView(image: image)
-            .ignoresSafeArea()
+            if let asset{
+                ImageCropView(asset: asset, done: returnAsset)
+                    .ignoresSafeArea()
+            }else{
+                EmptyView()
+            }
         }
     }
 }

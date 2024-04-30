@@ -28,9 +28,7 @@ struct QuickLookView: View {
                     ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, asset in
                         
                         if viewModel.type == .image{
-                            asset.toImageView()
-                                .resizable()
-                                .scaledToFill()
+                            ImageView(asset: asset)
                                 .frame(width: proxy.size.width)
                                 .clipped()
                                 .tag(index)
@@ -62,6 +60,7 @@ struct QuickLookView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
+                .id(UUID())
                 
                 ScrollViewReader { value in
                     
@@ -77,6 +76,7 @@ struct QuickLookView: View {
                                 }
                         }
                     }
+                    .id(UUID())
                     .padding(.horizontal, 10)
                     .maxHeight(110)
                     .background(.backColor)
@@ -153,7 +153,30 @@ struct QuickLookView: View {
             }
         }
         .fullScreenCover(isPresented: $isPresentedEdit) {
+            let asset = viewModel.selectedAssets[selectedTab]
             
+            if viewModel.type == .image{
+                
+                ImageCropView(asset: asset){ replace in
+                    viewModel.selectedAssets.replaceSubrange(selectedTab...selectedTab, with: [replace])
+                }
+                    .ignoresSafeArea()
+            }else{
+                switch asset.fetchPHAssetType(){
+                case .image:
+                    ImageCropView(asset: asset){ replace in
+                        viewModel.selectedAssets.replaceSubrange(selectedTab...selectedTab, with: [replace])
+                    }
+                        .ignoresSafeArea()
+                case .livePhoto:
+                    EmptyView()
+                case .video:
+                    EmptyView()
+                case .unknown, .audio:
+                    EmptyView()
+                }
+              ///视频截取
+            }
         }
     }
 }
