@@ -24,7 +24,7 @@ public extension View {
     @ViewBuilder
     func imageCrop(isPresented: Binding<Bool>,
                    asset: SelectedAsset?,
-                   returnAsset:@escaping (SelectedAsset) -> Void) -> some View {
+                   returnAsset: @escaping (SelectedAsset) -> Void) -> some View {
        
         fullScreenCover(isPresented: isPresented) {
             if let asset{

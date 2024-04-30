@@ -60,7 +60,7 @@ struct QuickLookView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
-                .id(UUID())
+//                .id(UUID())
                 
                 ScrollViewReader { value in
                     
@@ -76,7 +76,6 @@ struct QuickLookView: View {
                                 }
                         }
                     }
-                    .id(UUID())
                     .padding(.horizontal, 10)
                     .maxHeight(110)
                     .background(.backColor)
@@ -86,6 +85,7 @@ struct QuickLookView: View {
                             value.scrollTo(new, anchor: .center)
                         }
                     }
+//                    .id(UUID())
                 }
                 
                 HStack{

@@ -35,7 +35,7 @@ struct ContentView: View {
                 }
                 .galleryPicker(isPresented: $isPresentedGallery,
                                maxSelectionCount: 6,
-                               onlyImage: false,
+                               onlyImage: true,
                                selected: $pictures)
  
                 Button {
