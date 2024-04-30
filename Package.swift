@@ -27,7 +27,8 @@ let package = Package(
                 .product(name: "PagerTabStripView", package: "PagerTabStripView"),
                 .product(name: "Mantis", package: "Mantis"),
              ],
-            resources: [.process("Resources")]),
+            resources: [.process("Resources")]
+        ),
     ]
 )
 package.platforms = [

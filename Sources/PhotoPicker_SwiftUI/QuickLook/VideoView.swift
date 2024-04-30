@@ -8,6 +8,7 @@
 import SwiftUI
 import AVKit
 import Photos
+import BrickKit
 struct VideoView: View {
     let asset: SelectedAsset
     @State private var player = AVPlayer()
