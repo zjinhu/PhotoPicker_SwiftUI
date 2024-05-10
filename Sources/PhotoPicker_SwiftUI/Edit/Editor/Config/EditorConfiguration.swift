@@ -80,7 +80,7 @@ public struct EditorConfiguration: IndicatorTypeConfig, PhotoHUDConfig {
     /// video configuration
     /// 视频配置
     public var video: Video = .init()
-     
+    
     /// brush configuration
     /// 画笔
     /// iOS 13.0 以上此属性无效，绘制功能更换为 PKCanvasView
@@ -115,9 +115,9 @@ public struct EditorConfiguration: IndicatorTypeConfig, PhotoHUDConfig {
     public var toolsView: ToolsView = .default
     
     public init() {
-
-            modalPresentationStyle = .automatic
-
+        
+        modalPresentationStyle = .automatic
+        
         if UIDevice.isPad {
             buttonType = .top
         }else {
@@ -350,7 +350,7 @@ public extension EditorConfiguration {
     }
     
     struct Text {
-
+        
         /// array of text colors
         /// 文本颜色数组
         public var colors: [String] = PhotoTools.defaultColors()
@@ -380,7 +380,7 @@ public extension EditorConfiguration {
         public var modalPresentationStyle: UIModalPresentationStyle
         
         public init() {
-                self.modalPresentationStyle = .automatic
+            self.modalPresentationStyle = .automatic
         }
     }
     
@@ -475,17 +475,17 @@ public extension EditorConfiguration {
         public var listHandler: ((Int, @escaping EditorChartletListResponse) -> Void)?
         
         public init() {
-                modalPresentationStyle = .automatic
+            modalPresentationStyle = .automatic
         }
     }
-
+    
     struct ToolsView {
         /// 工具栏item选项
         public var toolOptions: [Options]
         
         /// 工具栏选项选中颜色
         public var toolSelectedColor: UIColor = "#FDCC00".hx.color
-
+        
         public init(toolOptions: [Options] = []) {
             self.toolOptions = toolOptions
         }
@@ -527,7 +527,7 @@ public extension EditorConfiguration {
                 
                 /// 滤镜
                 case filter
-
+                
                 /// 尺寸裁剪
                 case cropSize
             }
@@ -554,7 +554,7 @@ public extension EditorConfiguration {
                 imageType: .imageResource.editor.tools.cropSize,
                 type: .cropSize
             )
-
+            
             let mosaic = Options(
                 imageType: .imageResource.editor.tools.mosaic,
                 type: .mosaic
