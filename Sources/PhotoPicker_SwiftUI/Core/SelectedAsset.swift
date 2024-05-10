@@ -22,13 +22,47 @@ struct AlbumItem : Identifiable, Equatable {
     }
 }
 
-public struct SelectedAsset : Identifiable, Equatable, Hashable{
+public class SelectedAsset : Hashable{
+    public static func == (lhs: SelectedAsset, rhs: SelectedAsset) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+         hasher.combine(id)
+    }
     
     public let id = UUID()
     
     public let asset: PHAsset
     
+    init(asset: PHAsset) {
+        self.asset = asset
+        if assetType == .video{
+            Task{ @MainActor in
+                videoUrl = try? await getVideoUrl()
+            }
+        }
+    }
+    
+    public var videoUrl: URL?
+    
     public var cropImage: UIImage?
+    
+    public var assetType: SelectedAssetType{
+        switch asset.mediaType {
+        case .image:
+            if asset.mediaSubtypes.contains(.photoLive) {
+                return .livePhoto
+            }
+            return .image
+        case .video:
+            return .video
+        case .audio:
+            return .audio
+        default:
+            return .unknown
+        }
+    }
     
     public func toImageView(size: CGSize = PHImageManagerMaximumSize,
                             mode: PHImageContentMode = .default) -> Image {
@@ -52,6 +86,36 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
             image = result!
         }
         return image
+    }
+ 
+    func getVideoUrl() async throws -> URL? {
+ 
+        let options = PHVideoRequestOptions()
+        options.version = .original
+        options.deliveryMode = .highQualityFormat
+        options.isNetworkAccessAllowed = true
+
+        return try await withCheckedThrowingContinuation { continuation in
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { avAsset, _, _ in
+                if let urlAsset = avAsset as? AVURLAsset {
+                    continuation.resume(returning: urlAsset.url)
+                } else {
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+    }
+ 
+    func getLivePhotoVideoUrl() -> URL? {
+        guard asset.mediaSubtypes.contains(.photoLive) else { return nil }
+
+        let resources = PHAssetResource.assetResources(for: asset)
+        guard let pairedVideoResource = resources.first(where: { $0.type == .pairedVideo }) else {
+            return nil
+        }
+
+        let videoURL = pairedVideoResource.value(forKey: "privateFileURL") as? URL
+        return videoURL
     }
     
     public enum SelectedAssetType{

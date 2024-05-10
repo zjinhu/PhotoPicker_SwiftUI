@@ -92,18 +92,37 @@ struct ThumbnailView: View {
                     }
                 }
                 
-                Button {
-                    onTap()
-                } label: {
-                    if buttonDisable{
-                        Color.white.opacity(0.5)
-                            .frame(width: proxy.size.width, height: proxy.size.height)
-                    }else{
+                if viewModel.autoCrop, viewModel.maxSelectionCount == 1{
+                    NavigationLink {
+//                        ImageCropView(asset: SelectedAsset(asset: asset),
+//                                      cropRatio: viewModel.cropRatio){ replace in
+//                            viewModel.selectedAssets.append(replace)
+//                            viewModel.oneSelectedDone.toggle()
+//                        }
+//                        .navigationBarHidden(true)
+//                        .ignoresSafeArea()
+                    } label: {
                         Color.clear
                             .frame(width: proxy.size.width, height: proxy.size.height)
                     }
+
+                }else{
+                    Button {
+                        if buttonDisable{
+                            viewModel.showToast.toggle()
+                        }else{
+                            onTap()
+                        }
+                    } label: {
+                        if buttonDisable{
+                            Color.white.opacity(0.5)
+                                .frame(width: proxy.size.width, height: proxy.size.height)
+                        }else{
+                            Color.clear
+                                .frame(width: proxy.size.width, height: proxy.size.height)
+                        }
+                    } 
                 }
-                .disabled(buttonDisable)
                 
             }
             .ss.task {

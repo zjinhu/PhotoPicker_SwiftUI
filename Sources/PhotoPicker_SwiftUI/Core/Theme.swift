@@ -13,6 +13,8 @@ extension Color {
     static let mainBlack = Color(hex: "222222")
     static let mainBlue = Color(hex: "1588F4")
     static let secondBlack = Color(hex: "333333")
+    static let thirdBlack = Color(hex: "3d3d3d")
+    static let fourthBlack = Color(hex: "181818")
     static let secondGray = Color(hex: "999999")
     static let alertBackColor = Color(hex: "F7F9FA")
     static let alertOrange = Color(hex: "FF7B00")

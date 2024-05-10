@@ -13,7 +13,7 @@ struct QuickLookView: View {
     @EnvironmentObject var viewModel: GalleryModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = 0
-    
+    @StateObject var previewModel = QuickLookModel()
     @Binding var selected: [SelectedAsset]
     init(selected: Binding<[SelectedAsset]>) {
         _selected = selected
@@ -28,24 +28,28 @@ struct QuickLookView: View {
                     ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, asset in
                         
                         if viewModel.type == .image{
-                            ImageView(asset: asset)
+                            QLImageView(asset: asset)
+                                .environmentObject(previewModel)
                                 .frame(width: proxy.size.width)
                                 .clipped()
                                 .tag(index)
                         }else{
                             switch asset.fetchPHAssetType(){
                             case .image:
-                                ImageView(asset: asset)
+                                QLImageView(asset: asset)
+                                    .environmentObject(previewModel)
                                     .frame(width: proxy.size.width)
                                     .clipped()
                                     .tag(index)
                             case .livePhoto:
-                                LivePhotoView(asset: asset)
+                                QLivePhotoView(asset: asset)
+                                    .environmentObject(previewModel)
                                     .frame(width: proxy.size.width)
                                     .clipped()
                                     .tag(index)
                             case .video:
-                                VideoView(asset: asset)
+                                QLVideoView(asset: asset)
+                                    .environmentObject(previewModel)
                                     .frame(width: proxy.size.width)
                                     .clipped()
                                     .tag(index)
@@ -55,12 +59,12 @@ struct QuickLookView: View {
                             }
                             
                         }
-
+                        
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
-//                .id(UUID())
+                //                .id(UUID())
                 
                 ScrollViewReader { value in
                     
@@ -85,7 +89,7 @@ struct QuickLookView: View {
                             value.scrollTo(new, anchor: .center)
                         }
                     }
-//                    .id(UUID())
+                    //                    .id(UUID())
                 }
                 
                 HStack{
@@ -153,30 +157,13 @@ struct QuickLookView: View {
             }
         }
         .fullScreenCover(isPresented: $isPresentedEdit) {
-            let asset = viewModel.selectedAssets[selectedTab]
-            
-            if viewModel.type == .image{
-                
-                ImageCropView(asset: asset){ replace in
-                    viewModel.selectedAssets.replaceSubrange(selectedTab...selectedTab, with: [replace])
-                }
-                    .ignoresSafeArea()
-            }else{
-                switch asset.fetchPHAssetType(){
-                case .image:
-                    ImageCropView(asset: asset){ replace in
-                        viewModel.selectedAssets.replaceSubrange(selectedTab...selectedTab, with: [replace])
-                    }
-                        .ignoresSafeArea()
-                case .livePhoto:
-                    EmptyView()
-                case .video:
-                    EmptyView()
-                case .unknown, .audio:
-                    EmptyView()
-                }
-              ///视频截取
+ 
+            EditView(asset: viewModel.selectedAssets[selectedTab],
+                     cropRatio: viewModel.cropRatio){ replace in
+                viewModel.selectedAssets.replaceSubrange(selectedTab...selectedTab, with: [replace])
             }
+                     .ignoresSafeArea()
+            
         }
     }
 }

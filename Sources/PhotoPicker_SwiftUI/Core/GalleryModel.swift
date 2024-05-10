@@ -14,10 +14,13 @@ class GalleryModel: ObservableObject {
     @Published var albums: [AlbumItem] = []
     var maxSelectionCount: Int = 0
     @Published var oneSelectedDone: Bool = false
+    @Published var autoCrop: Bool = false
     @Published var closedGallery: Bool = false
     @Published var type: PHAssetMediaType?
     @Published var permission: PhotoLibraryPermission = .denied
     @Published var selectedAssets: [SelectedAsset] = []
+    @Published var showToast: Bool = false
+    @Published var cropRatio: CGFloat = 0
     
     init() {
  

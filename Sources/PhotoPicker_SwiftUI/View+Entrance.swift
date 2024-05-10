@@ -10,30 +10,51 @@ import Photos
 import PhotosUI
 public extension View {
     
-    //Customize the album to select photos
-    @ViewBuilder
-    func galleryPicker(isPresented: Binding<Bool>,
-                       maxSelectionCount: Int = 0,
-                       onlyImage: Bool = false,
-                       selected: Binding<[SelectedAsset]>) -> some View {
+    
+    /// Customize the album to select photos
+    /// - Parameters:
+    ///   - isPresented: view state
+    ///   - maxSelectionCount: Maximum number of selections
+    ///   - autoCrop: maxSelectionCount == 1, Auto jump to crop photo
+    ///   - cropRatio: Crop ratio, width divided by height
+    ///   - onlyImage: Select photos only
+    ///   - selected: Bind return result
+    /// - Returns: description
+    @ViewBuilder func galleryPicker(isPresented: Binding<Bool>,
+                                    maxSelectionCount: Int = 0,
+                                    autoCrop: Bool = false,
+                                    cropRatio: CGFloat = 0,
+                                    onlyImage: Bool = false,
+                                    selected: Binding<[SelectedAsset]>) -> some View {
         fullScreenCover(isPresented: isPresented) {
             GalleryPageView(maxSelectionCount: maxSelectionCount,
+                            autoCrop: autoCrop,
+                            cropRatio: cropRatio,
                             onlyImage: onlyImage,
                             selected: selected)
             .ignoresSafeArea()
         }
     }
     
-    //Customize albums to take screenshots after selecting photos
-    @ViewBuilder
-    func imageCrop(isPresented: Binding<Bool>,
-                   asset: SelectedAsset?,
-                   returnAsset: @escaping (SelectedAsset) -> Void) -> some View {
+    /// Customize albums to take screenshots after selecting photos
+    /// - Parameters:
+    ///   - isPresented: view state
+    ///   - cropRatio: Crop ratio, width divided by height
+    ///   - asset: SelectedAsset
+    ///   - returnAsset: Return the cropped result
+    /// - Returns: description
+    @ViewBuilder func imageCrop(isPresented: Binding<Bool>,
+                                cropRatio: CGFloat = 0,
+                                asset: SelectedAsset?,
+                                returnAsset: @escaping (SelectedAsset) -> Void) -> some View {
         
         fullScreenCover(isPresented: isPresented) {
             if let asset{
-                ImageCropView(asset: asset, done: returnAsset)
-                    .ignoresSafeArea()
+//                ImageCropView(asset: asset,
+//                              cropRatio: cropRatio,
+//                              done: returnAsset)
+//                .ignoresSafeArea()
+                EmptyView()
             }else{
                 EmptyView()
             }

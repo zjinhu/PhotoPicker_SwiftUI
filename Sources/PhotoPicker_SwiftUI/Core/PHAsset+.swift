@@ -70,6 +70,27 @@ public extension PHAsset{
         }
     }
     
+    func loadAVAsset() async throws -> AVAsset {
+        
+        let options = PHVideoRequestOptions()
+        options.version = .current
+        options.deliveryMode = .highQualityFormat
+        options.isNetworkAccessAllowed = true
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            PHImageManager.default().requestAVAsset(forVideo: self, options: options) { (avAsset, audioMix, info) in
+                
+                if let avAsset {
+                    continuation.resume(returning: avAsset)
+                } else if let error = info?[PHImageErrorKey] as? Error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(throwing: NSError(domain: "error", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error occurred"]))
+                }
+            }
+        }
+    }
+    
     func loadVideoTime() async throws -> Double {
         
         let options = PHVideoRequestOptions()

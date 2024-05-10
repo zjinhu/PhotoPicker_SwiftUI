@@ -13,19 +13,24 @@ import BrickKit
 struct GalleryPageView: View {
     @Environment(\.dismiss) private var dismiss
     @State var selection = 0
-    @State private var showToast = false
     let maxSelectionCount: Int
     @StateObject var viewModel = GalleryModel()
     @Binding var selected: [SelectedAsset]
     var type: PHAssetMediaType?
     let onlyImage: Bool
+    let autoCrop: Bool
+    let cropRatio: CGFloat
     
     init(maxSelectionCount: Int = 0,
+         autoCrop: Bool = false,
+         cropRatio: CGFloat = 0,
          onlyImage: Bool = false,
          selected: Binding<[SelectedAsset]>) {
         _selected = selected
         self.maxSelectionCount = maxSelectionCount
+        self.autoCrop = autoCrop
         self.onlyImage = onlyImage
+        self.cropRatio = cropRatio
         if onlyImage{
             self.type = .image
         }
@@ -155,6 +160,8 @@ struct GalleryPageView: View {
         .onAppear {
             viewModel.maxSelectionCount = maxSelectionCount
             viewModel.type = type
+            viewModel.autoCrop = autoCrop
+            viewModel.cropRatio = cropRatio
         }
         .ss.task {
             await PHPhotoLibrary.requestAuthorization(for: .readWrite)
@@ -164,15 +171,10 @@ struct GalleryPageView: View {
             selected = viewModel.selectedAssets
             dismiss()
         }
-        .onChange(of: viewModel.selectedAssets) { value in
-            if value.count == viewModel.maxSelectionCount{
-                showToast.toggle()
-            }
-        }
         .onChange(of: viewModel.closedGallery) { value in
             dismiss()
         }
-        .toast(isPresenting: $showToast){
+        .toast(isPresenting: $viewModel.showToast){
     
             AlertToast(displayMode: .hud,
                        type: .systemImage("exclamationmark.circle.fill", .alertOrange),
