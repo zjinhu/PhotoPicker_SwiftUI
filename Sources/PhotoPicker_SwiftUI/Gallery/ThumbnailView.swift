@@ -37,7 +37,7 @@ struct ThumbnailView: View {
                         .opacity(0.3)
                 }
                 
-                if asset.mediaSubtypes.contains(.photoLive), viewModel.type != .image{
+                if asset.mediaSubtypes.contains(.photoLive), !viewModel.isStatic{
                     
                     Image(systemName: "livephoto")
                         .resizable()
@@ -145,7 +145,7 @@ struct ThumbnailView: View {
     
     private func loadAsset() async {
         do {
-            time = try await asset.loadVideoTime()
+            time = try await asset.getVideoTime()
         } catch {
             print("Error loading video: \(error)")
         }

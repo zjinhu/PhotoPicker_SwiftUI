@@ -16,7 +16,7 @@ struct GalleryPageView: View {
     let maxSelectionCount: Int
     @StateObject var viewModel = GalleryModel()
     @Binding var selected: [SelectedAsset]
-    var type: PHAssetMediaType?
+
     let onlyImage: Bool
     let autoCrop: Bool
     let cropRatio: CGFloat
@@ -31,9 +31,7 @@ struct GalleryPageView: View {
         self.autoCrop = autoCrop
         self.onlyImage = onlyImage
         self.cropRatio = cropRatio
-        if onlyImage{
-            self.type = .image
-        }
+
     }
     
     var body: some View {
@@ -96,7 +94,7 @@ struct GalleryPageView: View {
                     HStack{
                         
                         NavigationLink {
-                            QuickLookView(selected: $selected)
+                            QuickLookView()
                                 .environmentObject(viewModel)
                         } label: {
                             Text("预览".localString)
@@ -111,9 +109,9 @@ struct GalleryPageView: View {
                         if !onlyImage{
                             RadioButton(label: "动态效果".localString) { bool in
                                 if bool{
-                                    self.viewModel.type = nil
+                                    self.viewModel.isStatic = false
                                 }else{
-                                    self.viewModel.type = .image
+                                    self.viewModel.isStatic = true
                                 }
                             }
                         }
@@ -159,7 +157,7 @@ struct GalleryPageView: View {
         .navigationViewStyle(.stack)
         .onAppear {
             viewModel.maxSelectionCount = maxSelectionCount
-            viewModel.type = type
+            viewModel.isStatic = onlyImage
             viewModel.autoCrop = autoCrop
             viewModel.cropRatio = cropRatio
         }

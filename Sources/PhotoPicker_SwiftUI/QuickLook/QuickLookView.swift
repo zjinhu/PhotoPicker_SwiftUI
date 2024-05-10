@@ -13,12 +13,7 @@ struct QuickLookView: View {
     @EnvironmentObject var viewModel: GalleryModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = 0
-    @StateObject var previewModel = QuickLookModel()
-    @Binding var selected: [SelectedAsset]
-    init(selected: Binding<[SelectedAsset]>) {
-        _selected = selected
-    }
-    
+
     var body: some View {
         GeometryReader { proxy in
             
@@ -27,9 +22,8 @@ struct QuickLookView: View {
                 TabView(selection: $selectedTab) {
                     ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, asset in
                         
-                        if viewModel.type == .image{
+                        if viewModel.isStatic{
                             QLImageView(asset: asset)
-                                .environmentObject(previewModel)
                                 .frame(width: proxy.size.width)
                                 .clipped()
                                 .tag(index)
@@ -37,19 +31,16 @@ struct QuickLookView: View {
                             switch asset.fetchPHAssetType(){
                             case .image:
                                 QLImageView(asset: asset)
-                                    .environmentObject(previewModel)
                                     .frame(width: proxy.size.width)
                                     .clipped()
                                     .tag(index)
                             case .livePhoto:
                                 QLivePhotoView(asset: asset)
-                                    .environmentObject(previewModel)
                                     .frame(width: proxy.size.width)
                                     .clipped()
                                     .tag(index)
                             case .video:
                                 QLVideoView(asset: asset)
-                                    .environmentObject(previewModel)
                                     .frame(width: proxy.size.width)
                                     .clipped()
                                     .tag(index)
@@ -64,15 +55,14 @@ struct QuickLookView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
-                //                .id(UUID())
+                .id(UUID())
                 
                 ScrollViewReader { value in
                     
                     HScrollStack(spacing: 10) {
                         ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, picture in
                             
-                            QLThumbnailView(asset: picture)
-                                .environmentObject(viewModel)
+                            QLThumbnailView(asset: picture, isStatic: viewModel.isStatic)
                                 .ss.border(selectedTab == index ? .mainBlue : .clear, cornerRadius: 5, lineWidth: 2)
                                 .id(index)
                                 .onTapGesture {
@@ -95,7 +85,27 @@ struct QuickLookView: View {
                 HStack{
                     
                     Button {
-                        isPresentedEdit.toggle()
+                        let sset = viewModel.selectedAssets[selectedTab]
+                        switch sset.fetchPHAssetType(){
+                        case .image:
+                            if let image = sset.asset.getImage(){
+                                viewModel.selectedAsset = sset
+                                viewModel.selectedAsset?.image = image
+                                isPresentedEdit.toggle()
+                            }
+                        case .livePhoto, .video:
+                            Task{
+                                if let url = await sset.asset.getVideoUrl(){
+                                    await MainActor.run{
+                                        viewModel.selectedAsset = sset
+                                        viewModel.selectedAsset?.videoUrl = url
+                                        isPresentedEdit.toggle()
+                                    }
+                                }
+                            }
+                        default: break
+                        }
+                        
                     } label: {
                         Text("编辑".localString)
                             .font(.f16)
@@ -107,7 +117,6 @@ struct QuickLookView: View {
                     Spacer()
                     
                     Button {
-                        selected = viewModel.selectedAssets
                         viewModel.closedGallery.toggle()
                     } label: {
                         Text("完成".localString)
@@ -157,12 +166,14 @@ struct QuickLookView: View {
             }
         }
         .fullScreenCover(isPresented: $isPresentedEdit) {
- 
-            EditView(asset: viewModel.selectedAssets[selectedTab],
-                     cropRatio: viewModel.cropRatio){ replace in
-                viewModel.selectedAssets.replaceSubrange(selectedTab...selectedTab, with: [replace])
+            
+            if let asset = viewModel.selectedAsset{
+                EditView(asset: asset,
+                         cropRatio: viewModel.cropRatio){ replace in
+                    viewModel.selectedAssets.replaceSubrange(selectedTab...selectedTab, with: [replace])
+                }
+                         .ignoresSafeArea()
             }
-                     .ignoresSafeArea()
             
         }
     }

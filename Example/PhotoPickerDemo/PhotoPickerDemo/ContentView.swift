@@ -9,17 +9,22 @@ import SwiftUI
 import PhotoPicker_SwiftUI
 import Photos
 import PhotosUI
+
+class SelectItem: ObservableObject{
+    @Published var pictures: [SelectedAsset] = []
+    @Published var selectedIndex = 0
+    @Published var selectedAsset: SelectedAsset?
+}
+
 struct ContentView: View {
     @State var isPresentedGallery = false
-    @State var pictures: [SelectedAsset] = []
-    
     @State var isPresentedCrop = false
-    @State private var selectedIndex = 0
-    @State var selectedAsset: SelectedAsset?
-    
+
     @State private var showPicker: Bool = false
     @State private var selectedItems: [PHPickerResult] = []
     @State private var selectedImages: [UIImage]?
+    
+    @StateObject var selectItem = SelectItem()
     
     var body: some View {
         NavigationView{
@@ -37,7 +42,7 @@ struct ContentView: View {
                                maxSelectionCount: 6,
                                cropRatio: 2,
                                onlyImage: false,
-                               selected: $pictures)
+                               selected: $selectItem.pictures)
  
                 Button {
                     showPicker.toggle()
@@ -72,20 +77,38 @@ struct ContentView: View {
                                 .frame(width: 250, height: 250)
                         }
                     }
-                    
-                    ForEach(Array(pictures.enumerated()), id: \.element) { index, picture in
+ 
+                    ForEach(Array(selectItem.pictures.enumerated()), id: \.element) { index, picture in
+                        
                         
                         Button {
-                            selectedIndex = index
-                            selectedAsset = picture
-                            isPresentedCrop.toggle()
+
+                            selectItem.selectedIndex = index
+                            
+                            switch picture.fetchPHAssetType(){
+                            case .image:
+                                if let image = picture.asset.getImage(){
+                                    selectItem.selectedAsset = picture
+                                    selectItem.selectedAsset?.image = image
+                                    isPresentedCrop.toggle()
+                                }
+                            case .livePhoto, .video:
+                                Task{
+                                    if let url = await picture.asset.getVideoUrl(){
+                                        await MainActor.run{
+                                            selectItem.selectedAsset = picture
+                                            selectItem.selectedAsset?.videoUrl = url
+                                            isPresentedCrop.toggle()
+                                        }
+                                    }
+                                }
+                            default: break
+                            }
+                            
                         } label: {
-                            Image(uiImage: picture.cropImage ?? picture.toImage())
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 100)
-                                .clipped()
+                            QLImageView(asset: picture)
                         }
+                        .tag(index)
 
                     }
  
@@ -93,10 +116,10 @@ struct ContentView: View {
                 .id(UUID())
             }
         }
-        .imageCrop(isPresented: $isPresentedCrop,
+        .editPicker(isPresented: $isPresentedCrop,
                    cropRatio: 0.5,
-                   asset: selectedAsset) { asset in
-            pictures.replaceSubrange(selectedIndex...selectedIndex, with: [asset])
+                    asset: selectItem.selectedAsset) { asset in
+            selectItem.pictures.replaceSubrange(selectItem.selectedIndex...selectItem.selectedIndex, with: [asset])
         }
     }
 }

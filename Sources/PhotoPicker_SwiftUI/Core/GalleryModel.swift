@@ -16,12 +16,12 @@ class GalleryModel: ObservableObject {
     @Published var oneSelectedDone: Bool = false
     @Published var autoCrop: Bool = false
     @Published var closedGallery: Bool = false
-    @Published var type: PHAssetMediaType?
+    @Published var isStatic: Bool = false
     @Published var permission: PhotoLibraryPermission = .denied
     @Published var selectedAssets: [SelectedAsset] = []
     @Published var showToast: Bool = false
     @Published var cropRatio: CGFloat = 0
-    
+    @Published var selectedAsset: SelectedAsset?
     init() {
  
         switch photoLibrary.photoLibraryPermissionStatus {
@@ -50,7 +50,7 @@ extension GalleryModel {
     }
 
     public func loadAllAlbums() async {
-        let albums = await photoLibrary.fetchAllAlbums(type: type)
+        let albums = await photoLibrary.fetchAllAlbums(type: isStatic ? .image : nil)
         await MainActor.run {
             withAnimation {
                 self.albums = albums

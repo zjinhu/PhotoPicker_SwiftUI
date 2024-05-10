@@ -103,6 +103,7 @@ class EditorVideoControlView: UIView {
         playButton = UIButton(type: .custom)
         playButton.setImage(.imageResource.editor.video.play.image, for: .normal)
         playButton.setImage(.imageResource.editor.video.pause.image, for: .selected)
+        playButton.tintColor = .white
         playButton.addTarget(self, action: #selector(didPlayButtonClick), for: .touchUpInside)
         playView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         playView.contentView.addSubview(playButton)

@@ -8,35 +8,35 @@
 import SwiftUI
 import Photos
 import BrickKit
-struct QLImageView: View {
-    @EnvironmentObject var previewModel: QuickLookModel
+public struct QLImageView: View {
     let asset: SelectedAsset
     @State var image: UIImage?
-    var body: some View {
+    
+    public init(asset: SelectedAsset) {
+        self.asset = asset
+    }
+    
+    public var body: some View {
         Image(uiImage: image ?? UIImage())
             .resizable()
             .scaledToFill()
-            .ss.task{
+            .onAppear {
+                
                 if let _ = image{}else{
-                    await loadAsset()
-                    previewModel.image = image
+                    loadAsset()
                 }
-                previewModel.selectedMode = .image
+
             }
     }
     
-    private func loadAsset() async {
+    private func loadAsset() {
         
-        if let ima = asset.cropImage{
+        if let ima = asset.image{
             image = ima
             return
         }
-        
-        do {
-            image = try await asset.asset.loadImage()
-        } catch {
-            print("Error loading video: \(error)")
-        }
+
+        image = asset.asset.getImage()
     }
 }
  

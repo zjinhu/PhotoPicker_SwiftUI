@@ -43,18 +43,17 @@ public extension View {
     ///   - asset: SelectedAsset
     ///   - returnAsset: Return the cropped result
     /// - Returns: description
-    @ViewBuilder func imageCrop(isPresented: Binding<Bool>,
+    @ViewBuilder func editPicker(isPresented: Binding<Bool>,
                                 cropRatio: CGFloat = 0,
                                 asset: SelectedAsset?,
                                 returnAsset: @escaping (SelectedAsset) -> Void) -> some View {
         
         fullScreenCover(isPresented: isPresented) {
-            if let asset{
-//                ImageCropView(asset: asset,
-//                              cropRatio: cropRatio,
-//                              done: returnAsset)
-//                .ignoresSafeArea()
-                EmptyView()
+            if let asset = asset{
+                EditView(asset: asset,
+                         cropRatio: cropRatio,
+                         done: returnAsset)
+                .ignoresSafeArea()
             }else{
                 EmptyView()
             }

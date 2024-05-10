@@ -8,12 +8,18 @@
 import SwiftUI
 import Photos
 import BrickKit
-struct QLThumbnailView: View {
+public struct QLThumbnailView: View {
     let asset: SelectedAsset
-    @EnvironmentObject var viewModel: GalleryModel
+    let isStatic: Bool
     @State var time: Double = 0
     @State var image: UIImage?
-    var body: some View {
+    
+    public init(asset: SelectedAsset, isStatic: Bool = false) {
+        self.asset = asset
+        self.isStatic = isStatic
+    }
+    
+    public var body: some View {
         ZStack(alignment: .bottomLeading){
 
             Image(uiImage: image ?? UIImage())
@@ -23,7 +29,7 @@ struct QLThumbnailView: View {
                 .clipShape(Rectangle())
                 .cornerRadius(5)
             
-            if asset.asset.mediaSubtypes.contains(.photoLive), viewModel.type != .image{
+            if asset.asset.mediaSubtypes.contains(.photoLive), !isStatic{
                 
                 Image(systemName: "livephoto")
                     .resizable()
@@ -33,7 +39,7 @@ struct QLThumbnailView: View {
                     .padding(5)
             }
             
-            if time != 0, viewModel.type != .image{
+            if time != 0, !isStatic{
                 HStack{
                     Image(systemName: "video")
                         .resizable()
@@ -48,40 +54,21 @@ struct QLThumbnailView: View {
                 .padding(.vertical, 5)
             }
         }
-        .onAppear{
-            if let ima = asset.cropImage{
-                image = ima
-            }
-        }
         .ss.task {
-            
-            if let _ = image{}else{
-                await loadImage()
-            }
-            
-            if asset.asset.mediaType == .video{
-                await loadAsset()
-            }
-
+            await loadAsset()
         }
     }
     
     private func loadAsset() async {
-        do {
-            time = try await asset.asset.loadVideoTime()
-        } catch {
-            print("Error loading video: \(error)")
+        
+        if asset.asset.mediaType == .video{
+            time = await asset.asset.getVideoTime()
         }
-    }
-    
-    private func loadImage() async {
-            
-        do {
-            image = try await asset.asset.loadImage()
-        } catch {
-            print("Error loading video: \(error)")
+
+        if let _ = image{}else{
+            image = asset.asset.getImage()
         }
+
     }
-    
 }
 

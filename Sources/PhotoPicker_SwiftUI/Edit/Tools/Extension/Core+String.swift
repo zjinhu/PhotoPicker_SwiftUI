@@ -12,9 +12,7 @@ import CoreServices
 import UniformTypeIdentifiers
 
 extension String: HXPickerCompatibleValue {
-    
-    var localized: String { Bundle.localizedString(for: self) }
-    
+ 
     var color: UIColor {
         if isEmpty {
             return .clear

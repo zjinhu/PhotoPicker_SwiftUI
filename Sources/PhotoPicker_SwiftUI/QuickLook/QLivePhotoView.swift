@@ -9,20 +9,21 @@ import SwiftUI
 import PhotosUI
 import Photos
 import BrickKit
-struct QLivePhotoView: View {
+public struct QLivePhotoView: View {
     let asset: SelectedAsset
-    @EnvironmentObject var previewModel: QuickLookModel
     @State var livePhoto: PHLivePhoto?
     
-    var body: some View {
+    public init(asset: SelectedAsset) {
+        self.asset = asset
+    }
+    
+    public var body: some View {
         ZStack(alignment: .topLeading) {
             LivePhoto(livePhoto: livePhoto)
                 .ss.task {
                     if let _ = livePhoto{}else{
                         await loadAsset()
-                        previewModel.livePhoto = livePhoto
                     }
-                    previewModel.selectedMode = .livePhoto
                 }
             
             HStack{
@@ -41,11 +42,9 @@ struct QLivePhotoView: View {
     }
     
     private func loadAsset() async {
-        do {
-            livePhoto = try await asset.asset.loadLivePhoto()
-        } catch {
-            print("Error loading video: \(error)")
-        }
+
+        livePhoto = await asset.asset.getLivePhoto()
+
     }
 }
  

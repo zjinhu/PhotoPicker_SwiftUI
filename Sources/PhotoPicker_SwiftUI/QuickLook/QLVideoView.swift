@@ -9,14 +9,17 @@ import SwiftUI
 import AVKit
 import Photos
 import BrickKit
-struct QLVideoView: View {
-    let asset: SelectedAsset
+public struct QLVideoView: View {
+    var asset: SelectedAsset
     @State private var player = AVPlayer()
     @State var isPlaying: Bool = false
     @State var playerItem: AVPlayerItem?
-    @EnvironmentObject var previewModel: QuickLookModel
     
-    var body: some View {
+    public init(asset: SelectedAsset) {
+        self.asset = asset
+    }
+    
+    public var body: some View {
         ZStack {
             PlayerView(player: player)
             
@@ -37,24 +40,24 @@ struct QLVideoView: View {
                 isPlaying = false
                 player.seek(to: .zero)
             }
-        }
-        .ss.task {
-            if let _ = playerItem{}else{
-                await loadAsset()
-                previewModel.playerItem = playerItem
+            Task{@MainActor in
+                if let _ = playerItem{}else{
+                    await loadAsset()
+ 
+                }
             }
-            previewModel.selectedMode = .video
-        }
+        } 
     }
     
     private func loadAsset() async {
-        do {
-            playerItem = try await asset.asset.loadPlayerItem()
-            self.player = AVPlayer(playerItem: playerItem)
-            
-        } catch {
-            print("Error loading video: \(error)")
+        if let url = asset.videoUrl{
+            playerItem = AVPlayerItem(url: url)
+            player.replaceCurrentItem(with: playerItem)
+            return
         }
+
+            playerItem = await asset.asset.getPlayerItem()
+            player = AVPlayer(playerItem: playerItem)
     }
 }
 

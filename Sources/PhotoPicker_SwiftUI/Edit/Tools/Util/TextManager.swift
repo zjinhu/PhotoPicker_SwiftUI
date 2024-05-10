@@ -32,7 +32,7 @@ public extension HX.TextManager {
         var text: String {
             switch self {
             case .localized(let text):
-                return text.localized
+                return text.localString
             case .custom(let text):
                 return text
             }
