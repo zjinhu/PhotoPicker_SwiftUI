@@ -16,19 +16,7 @@ public struct EditorConfiguration: IndicatorTypeConfig, PhotoHUDConfig {
     public var textManager: HX.TextManager { HX.TextManager.shared }
     
     public var modalPresentationStyle: UIModalPresentationStyle
-    
-    /// If the built-in language is not enough, you can add a custom language text
-    /// customLanguages - custom language array
-    /// 如果自带的语言不够，可以添加自定义的语言文字
-    /// customLanguages - 自定义语言数组
-    public var languageType: LanguageType = .system
-    
-    /// 自定义语言
-    public var customLanguages: [CustomLanguage] {
-        get { PhotoManager.shared.customLanguages }
-        set { PhotoManager.shared.customLanguages = newValue }
-    }
-    
+
     /// hide status bar
     /// 隐藏状态栏
     public var prefersStatusBarHidden: Bool = true

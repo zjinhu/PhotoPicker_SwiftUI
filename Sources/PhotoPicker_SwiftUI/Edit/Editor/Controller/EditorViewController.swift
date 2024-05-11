@@ -40,7 +40,6 @@ open class EditorViewController: HXBaseViewController {
         finish: FinishHandler? = nil,
         cancel: CancelHandler? = nil
     ) {
-        PhotoManager.shared.createLanguageBundle(languageType: config.languageType)
         self.assets = [asset]
         self.selectedAsset = asset
         self.config = config

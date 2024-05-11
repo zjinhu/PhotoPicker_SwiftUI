@@ -13,10 +13,7 @@ import PhotosUI
 public final class PhotoManager: NSObject {
     
     public static let shared = PhotoManager()
-    
-    /// 自定义语言
-    public var customLanguages: [CustomLanguage] = []
-    
+
     /// 当前是否处于暗黑模式
     public static var isDark: Bool {
         if shared.appearanceStyle == .normal {
@@ -34,16 +31,10 @@ public final class PhotoManager: NSObject {
     public static var HUDView: PhotoHUDProtocol.Type = ProgressHUD.self
     
     public var isDebugLogsEnabled: Bool = false
-    
-    /// 当前语言文件，每次创建PhotoPickerController判断是否需要重新创建
-    var languageBundle: Bundle?
-    /// 当前语言类型，每次创建PhotoPickerController时赋值
-    var languageType: LanguageType?
+
     /// 当前外观样式，每次创建PhotoPickerController时赋值
     var appearanceStyle: AppearanceStyle = .varied
-    
-    /// 自带的bundle文件
-    var bundle: Bundle?
+
     /// 加载指示器类型
     var indicatorType: IndicatorType = .system
     
@@ -62,31 +53,6 @@ public final class PhotoManager: NSObject {
 
         downloadSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
 
-        createBundle()
     }
-    
-    @discardableResult
-    func createBundle() -> Bundle? {
-        if self.bundle == nil {
 
-            let bundle = Bundle(for: HXPhotoPicker.self)
-            var path = bundle.path(forResource: "HXPhotoPicker", ofType: "bundle")
-            if path == nil {
-                let associateBundleURL = Bundle.main.url(forResource: "Frameworks", withExtension: nil)
-                if let url = associateBundleURL?
-                    .appendingPathComponent("HXPhotoPicker")
-                    .appendingPathExtension("framework") {
-                    let associateBunle = Bundle(url: url)
-                    path = associateBunle?.path(forResource: "HXPhotoPicker", ofType: "bundle")
-                }
-            }
-            if let path = path {
-                self.bundle = Bundle(path: path)
-            }else {
-                self.bundle = Bundle.main
-            }
-
-        }
-        return self.bundle
-    }
 }

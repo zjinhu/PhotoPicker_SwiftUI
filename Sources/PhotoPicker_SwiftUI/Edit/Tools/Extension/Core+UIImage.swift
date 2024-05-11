@@ -20,19 +20,7 @@ extension UIImage {
         if named == nil {
             return nil
         }
-        let bundle = PhotoManager.shared.bundle
-        var image: UIImage?
-        if bundle != nil {
-            var path = bundle?.path(forResource: "images", ofType: nil)
-            if path != nil {
-                path! += "/" + named!
-                image = self.init(named: path!)
-            }
-        }
-        if image == nil {
-            image = self.init(named: named!)
-        }
-        return image
+        return self.init(named: named!)
     }
     
     static var imageResource: HX.ImageResource {
