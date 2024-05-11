@@ -391,12 +391,7 @@ extension EditorViewController {
 extension EditorViewController {
     
     func backClick(_ isCancel: Bool = false) {
-        switch selectedAsset.type {
-        case .networkVideo(let url):
-            PhotoManager.shared.suspendTask(url)
-        default:
-            break
-        }
+
         PhotoManager.HUDView.dismiss(delay: 0, animated: true, for: view)
         removeVideo()
         if isCancel {

@@ -37,22 +37,7 @@ public final class PhotoManager: NSObject {
 
     /// 加载指示器类型
     var indicatorType: IndicatorType = .system
-    
-    var downloadSession: URLSession!
-    var downloadTasks: [String: URLSessionDownloadTask] = [:]
-    var downloadCompletions: [String: (URL?, Error?, Any?) -> Void] = [:]
-    var downloadProgresss: [String: (Double, URLSessionDownloadTask) -> Void] = [:]
-    var downloadFileURLs: [String: URL] = [:]
-    var downloadExts: [String: Any] = [:]
 
     let uuid: String = UUID().uuidString
     
-    private override init() {
-        super.init()
-        
-
-        downloadSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
-
-    }
-
 }

@@ -67,9 +67,6 @@ extension EditorViewController {
             editorView.loadVideo(isPlay: false)
             loadCompletion()
             loadLastEditedData()
-        case .networkVideo(let videoURL):
-            downloadNetworkVideo(videoURL)
-
         }
     }
     
@@ -361,79 +358,12 @@ extension EditorViewController {
             videoControlView.loadData(.init(url: videoURL))
             updateVideoTimeRange()
             isLoadVideoControl = true
-        case .networkVideo:
-            if let avAsset = editorView.avAsset {
-                videoControlView.layoutSubviews()
-                videoControlView.loadData(avAsset)
-                updateVideoTimeRange()
-                isLoadVideoControl = true
-            }
+
         default:
             break
         }
     }
-    
-    func downloadNetworkVideo(_ videoURL: URL) {
-        let key = videoURL.absoluteString
-        if PhotoTools.isCached(forVideo: key) {
-            let localURL = PhotoTools.getVideoCacheURL(for: key)
-            if !isTransitionCompletion {
-                loadAssetStatus = .succeed(.video(localURL))
-                return
-            }
-            let avAsset = AVAsset(url: localURL)
-            let image = avAsset.getImage(at: 0.1)
-            editorView.setAVAsset(avAsset, coverImage: image)
-            editorView.loadVideo(isPlay: false)
-            loadCompletion()
-            loadLastEditedData()
-            return
-        }
-        if isTransitionCompletion {
-            assetLoadingView = PhotoManager.HUDView.show(with: .textManager.editor.videoLoadTitle.text, delay: 0, animated: true, addedTo: view)
-            bringViews()
-        }else {
-            loadAssetStatus = .loadding(true)
-        }
-        PhotoManager.shared.downloadTask(
-            with: videoURL
-        ) { [weak self] (progress, _) in
-            if progress > 0 {
-                self?.assetLoadingView?.setProgress(.init(progress))
-            }
-        } completionHandler: { [weak self] (url, error, _) in
-            guard let self = self else {
-                return
-            }
-            if let url = url {
-                if !self.isTransitionCompletion {
-                    self.loadAssetStatus = .succeed(.video(url))
-                    return
-                }
 
-                self.assetLoadingView = nil
-                PhotoManager.HUDView.dismiss(delay: 0, animated: false, for: self.view)
-                let avAsset = AVAsset(url: url)
-                let image = avAsset.getImage(at: 0.1)
-                self.editorView.setAVAsset(avAsset, coverImage: image)
-                self.editorView.loadVideo(isPlay: false)
-                self.loadCompletion()
-                self.loadLastEditedData()
-            }else {
-                if let error = error as NSError?, error.code == NSURLErrorCancelled {
-                    return
-                }
-                if !self.isTransitionCompletion {
-                    self.loadAssetStatus = .failure
-                    return
-                }
-                self.assetLoadingView = nil
-                PhotoManager.HUDView.dismiss(delay: 0, animated: false, for: self.view)
-                self.loadFailure()
-            }
-        }
-    }
-    
     func bringViews() {
         view.bringSubviewToFront(cancelButton)
         view.bringSubviewToFront(finishButton)
