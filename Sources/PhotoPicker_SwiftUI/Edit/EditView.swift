@@ -36,17 +36,17 @@ struct EditView: UIViewControllerRepresentable {
     func makeCropper(context: Context) -> UIViewController {
         
         var config = EditorConfiguration()
-        config.isFixedCropSizeState = true
-        config.photo.defaultSelectedToolOption = .cropSize
-        config.video.defaultSelectedToolOption = .cropSize
-        if cropRatio != .zero{
-            config.cropSize.isFixedRatio = true
-            config.cropSize.aspectRatio = cropRatio
-            config.cropSize.aspectRatios = []
-        }else{
-            config.cropSize.isFixedRatio = false
-        }
-        
+//        config.isFixedCropSizeState = true
+//        config.photo.defaultSelectedToolOption = .cropSize
+//        config.video.defaultSelectedToolOption = .cropSize
+//        if cropRatio != .zero{
+//            config.cropSize.isFixedRatio = true
+//            config.cropSize.aspectRatio = cropRatio
+//            config.cropSize.aspectRatios = []
+//        }else{
+//            config.cropSize.isFixedRatio = false
+//        }
+//        
         if let image = selectedAsset.image,
            selectedAsset.assetType == .image{
             let vc = EditorViewController(.init(type: .image(image)), config: config)

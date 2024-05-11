@@ -234,10 +234,7 @@ class EditorContentView: UIView {
         get { mosaicView.mosaicLineWidth }
         set { mosaicView.mosaicLineWidth = newValue }
     }
-    var smearWidth: CGFloat {
-        get { mosaicView.imageWidth }
-        set { mosaicView.imageWidth = newValue }
-    }
+
     var mosaicType: EditorMosaicType {
         get { mosaicView.type }
         set { mosaicView.type = newValue }

@@ -62,10 +62,7 @@ extension EditorAdjusterView {
         get { contentView.mosaicWidth }
         set { contentView.mosaicWidth = newValue }
     }
-    var smearWidth: CGFloat {
-        get { contentView.smearWidth }
-        set { contentView.smearWidth = newValue }
-    }
+
     var mosaicType: EditorMosaicType {
         get { contentView.mosaicType }
         set { contentView.mosaicType = newValue }

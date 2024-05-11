@@ -448,7 +448,7 @@ open class EditorViewController: HXBaseViewController {
         }
         editorView.drawLineWidth = config.brush.lineWidth
         editorView.mosaicWidth = config.mosaic.mosaiclineWidth
-        editorView.smearWidth = config.mosaic.smearWidth
+
         editorView.editDelegate = self
         editorView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapClick)))
         

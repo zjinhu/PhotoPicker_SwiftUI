@@ -390,14 +390,7 @@ public extension EditorView {
         get { adjusterView.mosaicWidth }
         set { adjusterView.mosaicWidth = newValue }
     }
-    
-    /// Smudge width, default 30
-    /// 涂抹宽度， 默认 30
-    var smearWidth: CGFloat {
-        get { adjusterView.smearWidth }
-        set { adjusterView.smearWidth = newValue }
-    }
-    
+
     /// Mosaic smear type, default mosaic
     /// 马赛克涂抹类型，默认 马赛克
     var mosaicType: EditorMosaicType {

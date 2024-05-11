@@ -38,9 +38,7 @@ public enum EditorDarwType: Int, Codable {
 
 public enum EditorMosaicType: Int, Codable {
     /// 马赛克
-    case mosaic
-    /// 涂抹
-    case smear
+    case mosaic 
 }
 
 public class EditorStickersItemBaseView: UIView {

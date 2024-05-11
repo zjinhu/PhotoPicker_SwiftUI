@@ -382,10 +382,6 @@ public extension EditorConfiguration {
         /// 涂鸦时马赛克的线宽
         public var mosaiclineWidth: CGFloat = 25
         
-        /// width of smear
-        /// 涂抹的宽度
-        public var smearWidth: CGFloat = 30
-        
         /// 当滤镜发生改变时更改马赛克背景
         public var isFilterApply: Bool = true
         

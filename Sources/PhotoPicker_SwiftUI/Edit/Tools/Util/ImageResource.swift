@@ -186,12 +186,7 @@ public extension HX.ImageResource {
         public struct Mosaic {
             /// 撤销
             public var undo: ImageType = .system("arrow.uturn.backward")
-            /// 马赛克
-            public var mosaic: ImageType = .system("rectangle.checkered")
-            /// 涂抹
-            public var smear: ImageType = .system("eraser.line.dashed")
-            /// 每次涂抹的图片
-            public var smearMask: ImageType = .system("paintbrush")
+
         }
         
         public struct Video {
