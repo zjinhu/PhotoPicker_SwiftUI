@@ -62,9 +62,9 @@ public class EditorMaskListViewController: HXBaseViewController, EditorMaskListP
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsHorizontalScrollIndicator = false
-        if #available(iOS 11.0, *) {
+  
             collectionView.contentInsetAdjustmentBehavior = .never
-        }
+ 
         collectionView.register(EditorMaskListViewCell.self, forCellWithReuseIdentifier: "EditorMaskListViewCellID")
     }
     

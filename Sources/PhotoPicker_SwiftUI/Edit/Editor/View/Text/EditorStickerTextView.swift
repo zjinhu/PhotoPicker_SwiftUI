@@ -32,7 +32,7 @@ class EditorStickerTextView: UIView {
     
     var customColor: PhotoEditorBrushCustomColor
     var isShowCustomColor: Bool {
-        if #available(iOS 14.0, *), config.colors.count > 1 {
+        if config.colors.count > 1 {
             return true
         }
         return false
@@ -56,7 +56,7 @@ class EditorStickerTextView: UIView {
         stickerText: EditorStickerText?
     ) {
         self.config = config
-        if #available(iOS 14.0, *), config.colors.count > 1, let color = config.colors.last?.color {
+        if config.colors.count > 1, let color = config.colors.last?.color {
             self.customColor = .init(color: color)
         }else {
             self.customColor = .init(color: .clear)
@@ -102,9 +102,9 @@ class EditorStickerTextView: UIView {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-        if #available(iOS 11.0, *) {
+
             collectionView.contentInsetAdjustmentBehavior = .never
-        }
+        
         collectionView.register(
             EditorStickerTextViewCell.self,
             forCellWithReuseIdentifier: "EditorStickerTextViewCellID"

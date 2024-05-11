@@ -49,9 +49,9 @@ class EditorRatioToolView: UIView {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-        if #available(iOS 11.0, *) {
+
             collectionView.contentInsetAdjustmentBehavior = .never
-        }
+        
         collectionView.register(EditorRatioToolViewCell.self, forCellWithReuseIdentifier: "EditorRatioToolViewCellID")
         addSubview(collectionView)
     }

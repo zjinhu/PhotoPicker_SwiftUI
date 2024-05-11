@@ -150,9 +150,9 @@ class EditorAdjusterView: UIView {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.clipsToBounds = false
         scrollView.scrollsToTop = false
-        if #available(iOS 11.0, *) {
+
             scrollView.contentInsetAdjustmentBehavior = .never
-        }
+ 
         scrollView.addSubview(contentView)
         
         mirrorView = UIView()

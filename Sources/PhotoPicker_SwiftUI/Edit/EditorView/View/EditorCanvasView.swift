@@ -146,13 +146,11 @@ class EditorCanvasView: UIView {
         do {
             let draws = try data.historyDrawings(viewSize)
             isClear = true
-            if #available(iOS 14.0, *) {
+
                 if data.index < draws.count, data.index >= 0 {
                     canvasView.drawing = draws[data.index]
                 }
-            }else {
-                canvasView.drawing = try PKDrawing(data: data.data)
-            }
+
             drawingCurrentHistory = draws
             currentIndex = data.index
             isClear = false
@@ -207,15 +205,11 @@ class EditorCanvasView: UIView {
             let draws = try data.historyDrawings(viewSize)
             isClear = true
             if isDrawing {
-                if #available(iOS 14.0, *) {
+
                     if data.index < draws.count, data.index >= 0 {
                         canvasView.drawing = draws[data.index]
                     }
-                }else {
-                    if !data.data.isEmpty {
-                        canvasView.drawing = try PKDrawing(data: data.data)
-                    }
-                }
+ 
             }
             drawingCurrentHistory = draws
             currentIndex = data.index
@@ -233,15 +227,11 @@ class EditorCanvasView: UIView {
             let draws = try data.historyDrawings(viewSize)
             isClear = true
             if !isDrawing {
-                if #available(iOS 14.0, *) {
+
                     if data.index < draws.count, data.index >= 0 {
                         canvasView.drawing = draws[data.index]
                     }
-                }else {
-                    if !data.data.isEmpty {
-                        canvasView.drawing = try PKDrawing(data: data.data)
-                    }
-                }
+
             }
             drawingHistory = draws
             index = data.index
@@ -266,11 +256,9 @@ class EditorCanvasView: UIView {
             currentIndex += 1
             isClear = true
             let nextDrawing = drawingCurrentHistory[currentIndex]
-            if #available(iOS 14.0, *) {
+
                 canvasView.drawing = .init(strokes: nextDrawing.strokes)
-            } else {
-                canvasView.drawing = .init().appending(nextDrawing)
-            }
+
             isClear = false
             delegate?.canvasView(endDraw: self)
         }
@@ -282,11 +270,9 @@ class EditorCanvasView: UIView {
             isClear = true
             if currentIndex >= 0 {
                 let previousDrawing = drawingCurrentHistory[currentIndex]
-                if #available(iOS 14.0, *) {
+  
                     canvasView.drawing = .init(strokes: previousDrawing.strokes)
-                } else {
-                    canvasView.drawing = .init().appending(previousDrawing)
-                }
+
             }else {
                 canvasView.drawing = .init()
             }
@@ -299,11 +285,9 @@ class EditorCanvasView: UIView {
         currentIndex = drawingCurrentHistory.count - 1
         isClear = true
         if let drawing = drawingCurrentHistory.last {
-            if #available(iOS 14.0, *) {
+ 
                 canvasView.drawing = .init(strokes: drawing.strokes)
-            } else {
-                canvasView.drawing = .init().appending(drawing)
-            }
+
         }else {
             canvasView.drawing = .init()
         }
@@ -398,7 +382,7 @@ struct EditorCanvasData: Codable {
         var draws: [PKDrawing] = []
         for historyData in historyDatas {
             var drawing = try PKDrawing(data: historyData)
-            if #available(iOS 14.0, *) {
+
                 var newStrokes: [PKStroke] = []
                 for stroke in drawing.strokes {
                     let path = stroke.path
@@ -476,7 +460,7 @@ struct EditorCanvasData: Codable {
                     newStrokes.append(newStroke)
                 }
                 drawing = .init(strokes: newStrokes)
-            }
+            
             draws.append(drawing)
         }
         return draws

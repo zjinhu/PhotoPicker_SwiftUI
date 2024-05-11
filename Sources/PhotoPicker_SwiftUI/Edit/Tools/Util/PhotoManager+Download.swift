@@ -196,7 +196,7 @@ extension PhotoManager: URLSessionDownloadDelegate {
     }
     
     func getURLType(for url: URL) -> FileType {
-        if #available(iOS 14.0, *) {
+
             if let utType = UTType(
                 tag: url.pathExtension,
                 tagClass: .filenameExtension,
@@ -222,34 +222,7 @@ extension PhotoManager: URLSessionDownloadDelegate {
                     break
                 }
             }
-        } else {
-            let utType = UTTypeCreatePreferredIdentifierForTag(
-                kUTTagClassFilenameExtension,
-                url.pathExtension as CFString,
-                nil
-            )
-            if let utType = utType {
-                switch utType.takeRetainedValue() {
-                case kUTTypeMovie,
-                     kUTTypeVideo,
-                     kUTTypeQuickTimeMovie,
-                     kUTTypeMPEG,
-                     kUTTypeMPEG4:
-                    return .video
-                case kUTTypeImage,
-                     kUTTypeRawImage,
-                     kUTTypeDiskImage,
-                     kUTTypeLivePhoto,
-                     kUTTypeGIF,
-                     kUTTypePNG,
-                     kUTTypeJPEG,
-                     kUTTypeJPEG2000:
-                    return .image
-                default:
-                    break
-                }
-            }
-        }
+
         return .unknown
     }
 }

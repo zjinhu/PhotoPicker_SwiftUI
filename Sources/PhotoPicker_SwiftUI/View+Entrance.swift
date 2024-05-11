@@ -49,8 +49,8 @@ public extension View {
                                 returnAsset: @escaping (SelectedAsset) -> Void) -> some View {
         
         fullScreenCover(isPresented: isPresented) {
-            if let asset {
-                EditView(asset: asset,
+            if asset != nil {
+                EditView(asset: asset!,
                          cropRatio: cropRatio,
                          done: returnAsset)
                 .ignoresSafeArea()

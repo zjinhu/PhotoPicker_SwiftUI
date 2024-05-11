@@ -105,9 +105,9 @@ class EditorScaleView: UIView {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(EditorScaleViewCell.self, forCellWithReuseIdentifier: "EditorScaleViewCellId")
         collectionView.decelerationRate = .fast
-        if #available(iOS 11.0, *) {
+
             collectionView.contentInsetAdjustmentBehavior = .never
-        }
+
         shadeMaskLayer = CAGradientLayer()
         shadeMaskLayer.colors = [UIColor.clear.cgColor, UIColor.white.cgColor, UIColor.white.cgColor, UIColor.clear.cgColor]
         shadeMaskLayer.locations = [0.0, 0.05, 0.95, 1.0]

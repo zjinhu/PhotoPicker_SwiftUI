@@ -461,11 +461,9 @@ extension EditorMosaicView.MosaicData: Codable {
         type = try container.decode(EditorMosaicType.self, forKey: .type)
         points = try container.decode([CGPoint].self, forKey: .points)
         let colorDatas = try container.decode(Data.self, forKey: .colors)
-        if #available(iOS 11.0, *) {
+
             colors = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [UIColor.self], from: colorDatas) as! [UIColor]
-        }else {
-            colors = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(colorDatas) as! [UIColor]
-        }
+
         lineWidth = try container.decode(CGFloat.self, forKey: .lineWidth)
         angles = try container.decode([CGFloat].self, forKey: .angles)
     }
@@ -474,14 +472,10 @@ extension EditorMosaicView.MosaicData: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(type, forKey: .type)
         try container.encode(points, forKey: .points)
-        if #available(iOS 11.0, *) {
+ 
             let colorDatas = try NSKeyedArchiver.archivedData(withRootObject: colors, requiringSecureCoding: false)
             try container.encode(colorDatas, forKey: .colors)
-        } else {
-            // Fallback on earlier versions
-            let colorDatas = NSKeyedArchiver.archivedData(withRootObject: colors)
-            try container.encode(colorDatas, forKey: .colors)
-        }
+
         try container.encode(lineWidth, forKey: .lineWidth)
         try container.encode(angles, forKey: .angles)
     }

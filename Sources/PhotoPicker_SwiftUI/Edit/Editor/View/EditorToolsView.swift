@@ -65,9 +65,9 @@ class EditorToolsView: UIView {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-        if #available(iOS 11.0, *) {
+  
             collectionView.contentInsetAdjustmentBehavior = .never
-        }
+
         collectionView.register(EditorToolViewCell.self, forCellWithReuseIdentifier: "EditorToolViewCellID")
         shadeView.addSubview(collectionView)
         
@@ -315,9 +315,9 @@ class EditorToolViewCell: UICollectionViewCell {
         
         pointView = UIView()
         pointView.size = .init(width: 4, height: 4)
-        if #available(iOS 11.0, *) {
+
             pointView.cornersRound(radius: 2, corner: .allCorners)
-        }
+
         contentView.addSubview(pointView)
     }
     
@@ -339,9 +339,6 @@ class EditorToolViewCell: UICollectionViewCell {
         }
         pointView.y = button.frame.maxY - 10
         pointView.centerX = width * 0.5
-        guard #available(iOS 11.0, *) else {
-            pointView.cornersRound(radius: 2, corner: .allCorners)
-            return
-        }
+ 
     }
 }

@@ -549,7 +549,7 @@ open class EditorViewController: HXBaseViewController {
     public override func deviceOrientationWillChanged() {
         orientationDidChange = true
         if editorView.type == .video {
-            if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac, editorView.isVideoPlaying {
+            if ProcessInfo.processInfo.isiOSAppOnMac, editorView.isVideoPlaying {
                 stopPlayVideo()
                 editorView.pauseVideo()
             }
@@ -623,7 +623,7 @@ open class EditorViewController: HXBaseViewController {
         finishButton.width = finishWidth + 10
         
         let buttonMargin: CGFloat
-        if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
+        if ProcessInfo.processInfo.isiOSAppOnMac {
             buttonMargin = 12
         }else {
             buttonMargin = UIDevice.isPad ? 20 : 12
@@ -796,7 +796,7 @@ open class EditorViewController: HXBaseViewController {
                 height: toolsHeight + bottomMargin
             )
             let rotateBottom: CGFloat
-            if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
+            if ProcessInfo.processInfo.isiOSAppOnMac {
                 rotateBottom = bottomMargin + 5
             }else {
                 rotateBottom = UIDevice.isPad ? bottomMargin + 10 : bottomMargin
@@ -1019,7 +1019,7 @@ open class EditorViewController: HXBaseViewController {
         if let videoControlInfo = videoControlInfo {
             videoControlView.reloadVideo()
             videoControlView.layoutIfNeeded()
-            if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
+            if ProcessInfo.processInfo.isiOSAppOnMac {
                 videoControlView.setControlInfo(videoControlInfo)
                 videoControlView.resetLineViewFrsme(at: editorView.videoPlayTime)
                 updateVideoTimeRange()

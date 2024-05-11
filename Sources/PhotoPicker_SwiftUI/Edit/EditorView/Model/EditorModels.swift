@@ -174,33 +174,24 @@ extension EditorStickerText: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let imageData = try container.decode(Data.self, forKey: .image)
-        if #available(iOS 11.0, *) {
+
             image = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIImage.self, from: imageData)!
-        }else {
-            image = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(imageData) as! UIImage
-        }
+
         text = try container.decode(String.self, forKey: .text)
         let colorData = try container.decode(Data.self, forKey: .textColor)
-        if #available(iOS 11.0, *) {
+  
             textColor = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: colorData)!
-        }else {
-            textColor = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(colorData) as! UIColor
-        }
+
         showBackgroud = try container.decode(Bool.self, forKey: .showBackgroud)
     }
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if #available(iOS 11.0, *) {
+  
             let imageData = try NSKeyedArchiver.archivedData(withRootObject: image, requiringSecureCoding: false)
             try container.encode(imageData, forKey: .image)
             let colorData = try NSKeyedArchiver.archivedData(withRootObject: textColor, requiringSecureCoding: false)
             try container.encode(colorData, forKey: .textColor)
-        } else {
-            let imageData = NSKeyedArchiver.archivedData(withRootObject: image)
-            try container.encode(imageData, forKey: .image)
-            let colorData = NSKeyedArchiver.archivedData(withRootObject: textColor)
-            try container.encode(colorData, forKey: .textColor)
-        }
+
         try container.encode(text, forKey: .text)
         try container.encode(showBackgroud, forKey: .showBackgroud)
     }
@@ -218,13 +209,10 @@ extension EditorStickerItemType: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
         case .image(let image):
-            if #available(iOS 11.0, *) {
+         
                 let imageData = try NSKeyedArchiver.archivedData(withRootObject: image, requiringSecureCoding: false)
                 try container.encode(imageData, forKey: .image)
-            } else {
-                let imageData = NSKeyedArchiver.archivedData(withRootObject: image)
-                try container.encode(imageData, forKey: .image)
-            }
+
         case .imageData(let imageData):
             try container.encode(imageData, forKey: .imageData)
         case .text(let text):
@@ -237,11 +225,9 @@ extension EditorStickerItemType: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let imageData = try? container.decode(Data.self, forKey: .image) {
             let image: UIImage?
-            if #available(iOS 11.0, *) {
+     
                 image = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIImage.self, from: imageData)
-            }else {
-                image = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(imageData) as? UIImage
-            }
+
             if let image = image {
                 self = .image(image)
                 return
@@ -289,11 +275,9 @@ extension ImageEditedResult: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let imageData = try container.decode(Data.self, forKey: .image)
-        if #available(iOS 11.0, *) {
+  
             image = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIImage.self, from: imageData)!
-        }else {
-            image = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(imageData) as! UIImage
-        }
+
         urlConfig = try container.decode(EditorURLConfig.self, forKey: .urlConfig)
         imageType = try container.decode(ImageType.self, forKey: .imageType)
         data = try container.decode(EditAdjustmentData.self, forKey: .data)
@@ -301,13 +285,10 @@ extension ImageEditedResult: Codable {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if #available(iOS 11.0, *) {
+    
             let imageData = try NSKeyedArchiver.archivedData(withRootObject: image, requiringSecureCoding: false)
             try container.encode(imageData, forKey: .image)
-        } else {
-            let imageData = NSKeyedArchiver.archivedData(withRootObject: image)
-            try container.encode(imageData, forKey: .image)
-        }
+
         try container.encode(urlConfig, forKey: .urlConfig)
         try container.encode(imageType, forKey: .imageType)
         try container.encode(data, forKey: .data)
@@ -327,11 +308,9 @@ extension VideoEditedResult: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let imageData = try container.decode(Data.self, forKey: .coverImage)
-        if #available(iOS 11.0, *) {
+ 
             coverImage = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIImage.self, from: imageData)
-        }else {
-            coverImage = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(imageData) as? UIImage
-        }
+
         urlConfig = try container.decode(EditorURLConfig.self, forKey: .urlConfig)
         fileSize = try container.decode(Int.self, forKey: .fileSize)
         videoTime = try container.decode(String.self, forKey: .videoTime)
@@ -342,13 +321,10 @@ extension VideoEditedResult: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if let image = coverImage {
-            if #available(iOS 11.0, *) {
+     
                 let imageData = try NSKeyedArchiver.archivedData(withRootObject: image, requiringSecureCoding: false)
                 try container.encode(imageData, forKey: .coverImage)
-            } else {
-                let imageData = NSKeyedArchiver.archivedData(withRootObject: image)
-                try container.encode(imageData, forKey: .coverImage)
-            }
+ 
         }
         try container.encode(urlConfig, forKey: .urlConfig)
         try container.encode(fileSize, forKey: .fileSize)
@@ -405,11 +381,9 @@ extension EditAdjustmentData: Codable {
         content = try container.decode(Content.self, forKey: .content)
         let imageData = try? container.decode(Data.self, forKey: .maskImage)
         if let imageData = imageData {
-            if #available(iOS 11.0, *) {
+
                 maskImage = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIImage.self, from: imageData)
-            }else {
-                maskImage = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(imageData) as? UIImage
-            }
+
         }else {
             maskImage = nil
         }
@@ -423,13 +397,10 @@ extension EditAdjustmentData: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(content, forKey: .content)
         if let image = maskImage {
-            if #available(iOS 11.0, *) {
+ 
                 let imageData = try NSKeyedArchiver.archivedData(withRootObject: image, requiringSecureCoding: false)
                 try container.encode(imageData, forKey: .maskImage)
-            } else {
-                let imageData = NSKeyedArchiver.archivedData(withRootObject: image)
-                try container.encode(imageData, forKey: .maskImage)
-            }
+
         }
         try container.encode(canvasData, forKey: .canvasData)
         try container.encode(drawView, forKey: .drawView)
