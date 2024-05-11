@@ -19,7 +19,7 @@ class SelectItem: ObservableObject{
 struct ContentView: View {
     @State var isPresentedGallery = false
     @State var isPresentedCrop = false
-
+    
     @State private var showPicker: Bool = false
     @State private var selectedItems: [PHPickerResult] = []
     @State private var selectedImages: [UIImage]?
@@ -39,11 +39,12 @@ struct ContentView: View {
                         .frame(height: 50)
                 }
                 .galleryPicker(isPresented: $isPresentedGallery,
-                               maxSelectionCount: 6,
-                               cropRatio: 2,
+                               maxSelectionCount: 1,
+                               autoCrop: true,
+                               cropRatio: .init(width: 1, height: 1),
                                onlyImage: false,
                                selected: $selectItem.pictures)
- 
+                
                 Button {
                     showPicker.toggle()
                 } label: {
@@ -66,7 +67,7 @@ struct ContentView: View {
                         }
                     }
                 }
-
+                
                 List {
                     
                     if let selectedImages {
@@ -77,12 +78,12 @@ struct ContentView: View {
                                 .frame(width: 250, height: 250)
                         }
                     }
- 
+                    
                     ForEach(Array(selectItem.pictures.enumerated()), id: \.element) { index, picture in
                         
                         
                         Button {
-
+                            
                             selectItem.selectedIndex = index
                             
                             switch picture.fetchPHAssetType(){
@@ -109,15 +110,15 @@ struct ContentView: View {
                             QLImageView(asset: picture)
                         }
                         .tag(index)
-
+                        
                     }
- 
+                    
                 }
                 .id(UUID())
             }
         }
         .editPicker(isPresented: $isPresentedCrop,
-                   cropRatio: 0.5,
+                    cropRatio: .init(width: 10, height: 1),
                     asset: selectItem.selectedAsset) { asset in
             selectItem.pictures.replaceSubrange(selectItem.selectedIndex...selectItem.selectedIndex, with: [asset])
         }

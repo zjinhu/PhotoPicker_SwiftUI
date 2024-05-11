@@ -10,11 +10,11 @@ import BrickKit
 struct EditView: UIViewControllerRepresentable {
     
     @Environment(\.dismiss) private var dismiss
-    var cropRatio: CGFloat
+    var cropRatio: CGSize
     var selectedAsset: SelectedAsset
     var editDone: (SelectedAsset) -> Void
     init(asset: SelectedAsset,
-         cropRatio: Double,
+         cropRatio: CGSize = .zero,
          done: @escaping (SelectedAsset) -> Void) {
         self.selectedAsset = asset
         self.cropRatio = cropRatio
@@ -34,21 +34,33 @@ struct EditView: UIViewControllerRepresentable {
     }
     
     func makeCropper(context: Context) -> UIViewController {
-
-            if let image = selectedAsset.image,
-                selectedAsset.assetType == .image{
-                let vc = EditorViewController(.init(type: .image(image)), config: .init())
-                vc.delegate = context.coordinator
-                return vc
-            }
-
-            if let videoUrl = selectedAsset.videoUrl,
-                (selectedAsset.assetType == .video || selectedAsset.assetType == .livePhoto){
-                let vc = EditorViewController(.init(type: .video(videoUrl)), config: .init())
-                vc.delegate = context.coordinator
-                return vc
-            }
-
+        
+        var config = EditorConfiguration()
+        config.isFixedCropSizeState = true
+        config.photo.defaultSelectedToolOption = .cropSize
+        config.video.defaultSelectedToolOption = .cropSize
+        if cropRatio != .zero{
+            config.cropSize.isFixedRatio = true
+            config.cropSize.aspectRatio = cropRatio
+            config.cropSize.aspectRatios = []
+        }else{
+            config.cropSize.isFixedRatio = false
+        }
+        
+        if let image = selectedAsset.image,
+           selectedAsset.assetType == .image{
+            let vc = EditorViewController(.init(type: .image(image)), config: config)
+            vc.delegate = context.coordinator
+            return vc
+        }
+        
+        if let videoUrl = selectedAsset.videoUrl,
+           (selectedAsset.assetType == .video || selectedAsset.assetType == .livePhoto){
+            let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
+            vc.delegate = context.coordinator
+            return vc
+        }
+        
         return UIViewController()
     }
     

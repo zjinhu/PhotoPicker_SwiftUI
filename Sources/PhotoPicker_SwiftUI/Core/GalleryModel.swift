@@ -20,7 +20,7 @@ class GalleryModel: ObservableObject {
     @Published var permission: PhotoLibraryPermission = .denied
     @Published var selectedAssets: [SelectedAsset] = []
     @Published var showToast: Bool = false
-    @Published var cropRatio: CGFloat = 0
+    @Published var cropRatio: CGSize = .zero
     @Published var selectedAsset: SelectedAsset?
     init() {
  

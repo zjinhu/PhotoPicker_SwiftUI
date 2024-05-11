@@ -16,14 +16,14 @@ public extension View {
     ///   - isPresented: view state
     ///   - maxSelectionCount: Maximum number of selections
     ///   - autoCrop: maxSelectionCount == 1, Auto jump to crop photo
-    ///   - cropRatio: Crop ratio, width divided by height
+    ///   - cropRatio: Crop ratio, width height
     ///   - onlyImage: Select photos only
     ///   - selected: Bind return result
     /// - Returns: description
     @ViewBuilder func galleryPicker(isPresented: Binding<Bool>,
                                     maxSelectionCount: Int = 0,
                                     autoCrop: Bool = false,
-                                    cropRatio: CGFloat = 0,
+                                    cropRatio: CGSize = .zero,
                                     onlyImage: Bool = false,
                                     selected: Binding<[SelectedAsset]>) -> some View {
         fullScreenCover(isPresented: isPresented) {
@@ -44,12 +44,12 @@ public extension View {
     ///   - returnAsset: Return the cropped result
     /// - Returns: description
     @ViewBuilder func editPicker(isPresented: Binding<Bool>,
-                                cropRatio: CGFloat = 0,
+                                cropRatio: CGSize = .zero,
                                 asset: SelectedAsset?,
                                 returnAsset: @escaping (SelectedAsset) -> Void) -> some View {
         
         fullScreenCover(isPresented: isPresented) {
-            if let asset = asset{
+            if let asset {
                 EditView(asset: asset,
                          cropRatio: cropRatio,
                          done: returnAsset)

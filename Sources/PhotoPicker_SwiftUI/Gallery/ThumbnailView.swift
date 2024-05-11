@@ -14,7 +14,8 @@ struct ThumbnailView: View {
     @State var buttonDisable: Bool = false
     @State var time: Double = 0
     @EnvironmentObject var viewModel: GalleryModel
-    
+    @StateObject var selected = NowAsset()
+    @State private var isNavigationActive = false
     let asset: PHAsset
     
     init(asset: PHAsset) {
@@ -93,19 +94,45 @@ struct ThumbnailView: View {
                 }
                 
                 if viewModel.autoCrop, viewModel.maxSelectionCount == 1{
-                    NavigationLink {
-//                        ImageCropView(asset: SelectedAsset(asset: asset),
-//                                      cropRatio: viewModel.cropRatio){ replace in
-//                            viewModel.selectedAssets.append(replace)
-//                            viewModel.oneSelectedDone.toggle()
-//                        }
-//                        .navigationBarHidden(true)
-//                        .ignoresSafeArea()
+                    NavigationLink(isActive: $isNavigationActive) {
+                        if let selectedAsset = selected.selectedAsset{
+                            EditView(asset: selectedAsset,
+                                     cropRatio: viewModel.cropRatio){ replace in
+                                viewModel.selectedAssets.append(replace)
+                                viewModel.oneSelectedDone.toggle()
+                            }
+                                     .ignoresSafeArea()
+                        }
+                    } label: {
+                        EmptyView()
+                    }
+                    
+                    Button {
+                        let selectItem = SelectedAsset(asset: asset)
+                        
+                        if selectItem.fetchPHAssetType() == .image, let image = asset.getImage(){
+                            selected.selectedAsset = selectItem
+                            selected.selectedAsset?.image = image
+                            isNavigationActive = true
+                        }
+                        
+                        if selectItem.fetchPHAssetType() == .livePhoto || selectItem.fetchPHAssetType() == .video{
+                            Task{
+                                if let url = await asset.getVideoUrl(){
+                                    await MainActor.run{
+                                        selected.selectedAsset = selectItem
+                                        selected.selectedAsset?.videoUrl = url
+                                        isNavigationActive = true
+                                    }
+                                }
+                            }
+                        }
+                        
                     } label: {
                         Color.clear
                             .frame(width: proxy.size.width, height: proxy.size.height)
                     }
-
+                    
                 }else{
                     Button {
                         if buttonDisable{
@@ -121,7 +148,7 @@ struct ThumbnailView: View {
                             Color.clear
                                 .frame(width: proxy.size.width, height: proxy.size.height)
                         }
-                    } 
+                    }
                 }
                 
             }
@@ -144,11 +171,7 @@ struct ThumbnailView: View {
     }
     
     private func loadAsset() async {
-        do {
-            time = try await asset.getVideoTime()
-        } catch {
-            print("Error loading video: \(error)")
-        }
+        time = await asset.getVideoTime()
     }
     
     func onTap(){
@@ -187,4 +210,10 @@ struct ThumbnailView: View {
             }
         }
     }
+}
+
+
+class NowAsset: ObservableObject{
+    
+    @Published var selectedAsset: SelectedAsset?
 }

@@ -19,11 +19,11 @@ struct GalleryPageView: View {
 
     let onlyImage: Bool
     let autoCrop: Bool
-    let cropRatio: CGFloat
+    let cropRatio: CGSize
     
     init(maxSelectionCount: Int = 0,
          autoCrop: Bool = false,
-         cropRatio: CGFloat = 0,
+         cropRatio: CGSize = .zero,
          onlyImage: Bool = false,
          selected: Binding<[SelectedAsset]>) {
         _selected = selected
