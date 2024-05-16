@@ -8,41 +8,19 @@
 import SwiftUI
 import Photos
 
-//相簿列表项
-struct AlbumItem : Identifiable, Equatable {
-    let id = UUID()
-    //相簿名称
-    var title: String?
-    //相簿内的资源
-    var fetchResult: PHFetchResult<PHAsset>
-    
-    init(title: String?, fetchResult: PHFetchResult<PHAsset>){
-        self.title = title
-        self.fetchResult = fetchResult
-    }
-}
-
-public struct SelectedAsset : Hashable, Identifiable, Equatable {
-    public static func == (lhs: SelectedAsset, rhs: SelectedAsset) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-         hasher.combine(id)
-    }
+public struct SelectedAsset : Identifiable, Equatable, Hashable{
     
     public let id = UUID()
     
     public let asset: PHAsset
     
-    init(asset: PHAsset) {
-        self.asset = asset
-
-    }
-    
     public var videoUrl: URL?
     public var image: UIImage?
- 
+    
+    public init(asset: PHAsset) {
+        self.asset = asset
+    }
+    
     public var assetType: SelectedAssetType{
         switch asset.mediaType {
         case .image:
@@ -58,7 +36,7 @@ public struct SelectedAsset : Hashable, Identifiable, Equatable {
             return .unknown
         }
     }
- 
+    
     public enum SelectedAssetType{
         case image
         case livePhoto

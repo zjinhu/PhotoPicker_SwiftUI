@@ -21,6 +21,7 @@ struct PageTitleView: View, PagerTabViewDelegate {
             Text(title.localString)
                 .foregroundColor(theme.textColor)
                 .font(.f15)
+                .fontWeight(.medium)
         }
         .background(Color.clear)
     }

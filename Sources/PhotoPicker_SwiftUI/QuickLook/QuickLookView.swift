@@ -63,6 +63,8 @@ struct QuickLookView: View {
                         ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, picture in
                             
                             QLThumbnailView(asset: picture, isStatic: viewModel.isStatic)
+                                .frame(width: 90, height: 90)
+                                .environmentObject(viewModel)
                                 .ss.border(selectedTab == index ? .mainBlue : .clear, cornerRadius: 5, lineWidth: 2)
                                 .id(index)
                                 .onTapGesture {
@@ -75,8 +77,10 @@ struct QuickLookView: View {
                     .background(.backColor)
                     .shadow(color: .gray.opacity(0.2), radius: 0.5, y: -0.8)
                     .onChange(of: selectedTab) { new in
-                        withAnimation {
-                            value.scrollTo(new, anchor: .center)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation {
+                                value.scrollTo(new, anchor: .center)
+                            }
                         }
                     }
                     //                    .id(UUID())
@@ -88,7 +92,7 @@ struct QuickLookView: View {
                         let sset = viewModel.selectedAssets[selectedTab]
                         switch sset.fetchPHAssetType(){
                         case .image:
-                            if let image = sset.asset.getImage(){
+                            if let image = sset.asset.toImage(){
                                 viewModel.selectedAsset = sset
                                 viewModel.selectedAsset?.image = image
                                 isPresentedEdit.toggle()

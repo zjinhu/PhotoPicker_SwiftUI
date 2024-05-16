@@ -4,26 +4,32 @@
 //
 //  Created by HU on 2024/4/23.
 //
-
 import Foundation
 import Photos
 import SwiftUI
+import Combine
 
+@MainActor
 class GalleryModel: ObservableObject {
-    let photoLibrary = PhotoLibraryService()
+    let photoLibrary = PhotoLibraryService.shared
     @Published var albums: [AlbumItem] = []
     var maxSelectionCount: Int = 0
     @Published var oneSelectedDone: Bool = false
     @Published var autoCrop: Bool = false
     @Published var closedGallery: Bool = false
     @Published var isStatic: Bool = false
+    
     @Published var permission: PhotoLibraryPermission = .denied
     @Published var selectedAssets: [SelectedAsset] = []
     @Published var showToast: Bool = false
     @Published var cropRatio: CGSize = .zero
     @Published var selectedAsset: SelectedAsset?
+     
+    
+    private var subscribers: [AnyCancellable] = []
+    
     init() {
- 
+        
         switch photoLibrary.photoLibraryPermissionStatus {
         case .restricted, .limited:
             permission = .limited
@@ -33,8 +39,17 @@ class GalleryModel: ObservableObject {
             permission = .denied
             Task{
                 await photoLibrary.requestPhotoLibraryPermission()
+                await loadAllAlbums()
             }
         }
+
+        photoLibrary.$photoLibraryChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] change in
+                self?.bindLibraryUpdate(change: change)
+            }
+            .store(in: &subscribers)
+        
     }
     
     enum PhotoLibraryPermission {
@@ -45,16 +60,98 @@ class GalleryModel: ObservableObject {
 }
 
 extension GalleryModel {
-    public func loadImage(for assetId: String, targetSize: CGSize) async -> UIImage? {
-        try? await photoLibrary.loadImage(for: assetId, targetSize: targetSize)
+    func bindLibraryUpdate(change: PHChange?) {
+        for item in albums{
+            if let result = item.result, let changes = change?.changeDetails(for: result) {
+                withAnimation {
+                    item.result = changes.fetchResultAfterChanges
+                }
+            }
+        }
+
     }
+}
+
+extension GalleryModel {
 
     public func loadAllAlbums() async {
-        let albums = await photoLibrary.fetchAllAlbums(type: isStatic ? .image : nil)
+        let options = PHFetchOptions()
+//        options.includeAssetSourceTypes = [.typeUserLibrary, .typeiTunesSynced, .typeCloudShared]
+//        options.sortDescriptors = [NSSortDescriptor(key: "localizedTitle", ascending: true)]
+ 
+        let albums = await photoLibrary.fetchAssetAllAlbums(options: options, type: isStatic ? .image : nil)
+        
         await MainActor.run {
             withAnimation {
                 self.albums = albums
             }
         }
     }
+ 
 }
+
+@MainActor
+class PhotoViewModel: ObservableObject {
+    @Published var image: UIImage?
+    @Published var time: Double?
+    private var requestID: PHImageRequestID?
+    private var currentTask: Task<Void, Never>?
+    
+    let asset: PHAsset
+    let isStatic: Bool
+    init(asset: PHAsset, isStatic: Bool = false) {
+        self.asset = asset
+        self.isStatic = isStatic
+    }
+    
+    func loadImage(size: CGSize = .zero) {
+        requestID = asset.getImage(size: size) { [weak self] ima in
+            self?.image = ima
+        }
+    }
+    
+    func onStop() {
+        currentTask = nil
+        if let requestID = requestID {
+            PHCachingImageManager.default().cancelImageRequest(requestID)
+        }
+    }
+    
+    func onStart() async {
+        if isStatic{ return }
+        guard asset.mediaType == .video else { return }
+
+        currentTask?.cancel()
+        currentTask = Task {
+            time = await asset.getVideoTime()
+        }
+    }
+}
+
+//相簿列表项
+public class AlbumItem: Identifiable{
+    public let id = UUID()
+    //相簿名称
+    var title: String?
+    /// 相册里的资源数量
+    var count: Int = 0
+    //相簿内的资源
+    var result: PHFetchResult<PHAsset>?
+    /// 相册对象
+    var collection: PHAssetCollection?
+ 
+    init(title: String?,
+         collection: PHAssetCollection?) {
+        self.collection = collection
+        self.title = title
+    }
+   
+    func fetchResult(options: PHFetchOptions?) {
+        guard let collection = collection  else {
+            return
+        }
+        result = PHAsset.fetchAssets(in: collection, options: options)
+        count = result?.count ?? 0
+    }
+}
+ 

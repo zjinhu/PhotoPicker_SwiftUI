@@ -10,11 +10,11 @@ import Photos
 import PhotosUI
 public extension View {
     
-    
     /// Customize the album to select photos
     /// - Parameters:
     ///   - isPresented: view state
     ///   - maxSelectionCount: Maximum number of selections
+    ///   - selectTitle: selectTitle
     ///   - autoCrop: maxSelectionCount == 1, Auto jump to crop photo
     ///   - cropRatio: Crop ratio, width height
     ///   - onlyImage: Select photos only
@@ -22,12 +22,14 @@ public extension View {
     /// - Returns: description
     @ViewBuilder func galleryPicker(isPresented: Binding<Bool>,
                                     maxSelectionCount: Int = 0,
+                                    selectTitle: String? = nil,
                                     autoCrop: Bool = false,
                                     cropRatio: CGSize = .zero,
                                     onlyImage: Bool = false,
                                     selected: Binding<[SelectedAsset]>) -> some View {
         fullScreenCover(isPresented: isPresented) {
             GalleryPageView(maxSelectionCount: maxSelectionCount,
+                            selectTitle: selectTitle,
                             autoCrop: autoCrop,
                             cropRatio: cropRatio,
                             onlyImage: onlyImage,

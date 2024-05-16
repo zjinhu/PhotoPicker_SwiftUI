@@ -36,27 +36,28 @@ struct EditView: UIViewControllerRepresentable {
     func makeCropper(context: Context) -> UIViewController {
         
         var config = EditorConfiguration()
-//        config.isFixedCropSizeState = true
-//        config.photo.defaultSelectedToolOption = .cropSize
-//        config.video.defaultSelectedToolOption = .cropSize
-//        if cropRatio != .zero{
-//            config.cropSize.isFixedRatio = true
-//            config.cropSize.aspectRatio = cropRatio
-//            config.cropSize.aspectRatios = []
-//        }else{
-//            config.cropSize.isFixedRatio = false
-//        }
-//        
+        config.isFixedCropSizeState = true
+        config.cropSize.isShowScaleSize = false
+        config.photo.defaultSelectedToolOption = .cropSize
+        config.video.defaultSelectedToolOption = .cropSize
+        if cropRatio != .zero{
+            config.cropSize.isFixedRatio = true
+            config.cropSize.aspectRatio = cropRatio
+            config.cropSize.aspectRatios = []
+        }else{
+            config.cropSize.isFixedRatio = false
+        }
+        
         if let image = selectedAsset.image,
            selectedAsset.assetType == .image{
-            let vc = EditorViewController(.init(type: .image(image)), config: config)
+            let vc = CropViewController(.init(type: .image(image)), config: config)
             vc.delegate = context.coordinator
             return vc
         }
         
         if let videoUrl = selectedAsset.videoUrl,
            (selectedAsset.assetType == .video || selectedAsset.assetType == .livePhoto){
-            let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
+            let vc = CropViewController(.init(type: .video(videoUrl)), config: config)
             vc.delegate = context.coordinator
             return vc
         }
@@ -64,7 +65,7 @@ struct EditView: UIViewControllerRepresentable {
         return UIViewController()
     }
     
-    class Coordinator: EditorViewControllerDelegate {
+    class Coordinator: CropViewControllerDelegate {
         var parent: EditView
         
         init(_ parent: EditView) {
@@ -75,7 +76,7 @@ struct EditView: UIViewControllerRepresentable {
         /// - Parameters:
         ///   - editorViewController: 对应的 EditorViewController
         ///   - result: 编辑后的数据
-        func editorViewController(_ editorViewController: EditorViewController,
+        func editorViewController(_ editorViewController: CropViewController,
                                   didFinish asset: EditorAsset) {
             switch parent.selectedAsset.assetType {
             case .image:
@@ -93,7 +94,7 @@ struct EditView: UIViewControllerRepresentable {
             parent.dismiss()
         }
         
-        func editorViewController(didCancel editorViewController: EditorViewController) {
+        func editorViewController(didCancel editorViewController: CropViewController) {
             parent.dismiss()
         }
         

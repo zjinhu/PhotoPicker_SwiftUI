@@ -39,10 +39,11 @@ struct ContentView: View {
                         .frame(height: 50)
                 }
                 .galleryPicker(isPresented: $isPresentedGallery,
-                               maxSelectionCount: 1,
+                               maxSelectionCount: 7,
+                               selectTitle: "Videos",
                                autoCrop: true,
                                cropRatio: .init(width: 1, height: 1),
-                               onlyImage: false,
+                               onlyImage: true,
                                selected: $selectItem.pictures)
                 
                 Button {
@@ -88,7 +89,7 @@ struct ContentView: View {
                             
                             switch picture.fetchPHAssetType(){
                             case .image:
-                                if let image = picture.asset.getImage(){
+                                if let image = picture.asset.toImage(){
                                     selectItem.selectedAsset = picture
                                     selectItem.selectedAsset?.image = image
                                     isPresentedCrop.toggle()

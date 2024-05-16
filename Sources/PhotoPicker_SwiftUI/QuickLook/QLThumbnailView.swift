@@ -11,64 +11,68 @@ import BrickKit
 public struct QLThumbnailView: View {
     let asset: SelectedAsset
     let isStatic: Bool
-    @State var time: Double = 0
-    @State var image: UIImage?
+    @StateObject var photoModel: PhotoViewModel
     
     public init(asset: SelectedAsset, isStatic: Bool = false) {
         self.asset = asset
         self.isStatic = isStatic
+        _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset.asset))
     }
     
     public var body: some View {
-        ZStack(alignment: .bottomLeading){
-
-            Image(uiImage: image ?? UIImage())
-                .resizable()
-                .scaledToFill()
-                .frame(width: 90, height: 90)
-                .clipShape(Rectangle())
-                .cornerRadius(5)
-            
-            if asset.asset.mediaSubtypes.contains(.photoLive), !isStatic{
-                
-                Image(systemName: "livephoto")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundColor(.white)
-                    .frame(width: 14, height: 14)
-                    .padding(5)
-            }
-            
-            if time != 0, !isStatic{
-                HStack{
-                    Image(systemName: "video")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 14, height: 14)
-                    
-                    Text(time.formatDuration())
-                        .font(.system(size: 12))
+        GeometryReader { proxy in
+            Rectangle()
+                .foregroundColor(Color.gray.opacity(0.3))
+                .ss.overlay{
+                    if let image = photoModel.image {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: proxy.size.width, height: proxy.size.height)
+                            .clipped()
+                            .allowsHitTesting(false)
+                    }
                 }
-                .foregroundColor(.white)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-            }
+                .ss.overlay(alignment: .bottomLeading) {
+                    if asset.asset.mediaSubtypes.contains(.photoLive), !isStatic{
+                        
+                        Image(systemName: "livephoto")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.white)
+                            .frame(width: 22, height: 22)
+                            .padding(5)
+                        
+                    }
+                }
+                .ss.overlay(alignment: .bottomLeading) {
+                    if let time = photoModel.time{
+                        HStack{
+                            Image(systemName: "video")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 14, height: 14)
+                            
+                            Text(time.formatDuration())
+                                .font(.system(size: 12))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                    }
+                }
+                .onAppear{
+                    if let _ = photoModel.image{ }else{
+                        photoModel.loadImage(size: proxy.size)
+                    }
+                }
+                .onDisappear {
+                    photoModel.onStop()
+                }
+                .ss.task {
+                    await photoModel.onStart()
+                }
         }
-        .ss.task {
-            await loadAsset()
-        }
-    }
-    
-    private func loadAsset() async {
-        
-        if asset.asset.mediaType == .video{
-            time = await asset.asset.getVideoTime()
-        }
-
-        if let _ = image{}else{
-            image = asset.asset.getImage()
-        }
-
     }
 }
 

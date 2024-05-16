@@ -8,102 +8,20 @@
 import SwiftUI
 import Photos
  
-class PhotoLibraryService: NSObject {
+public class PhotoLibraryService: NSObject {
+    static let shared = PhotoLibraryService()
     let photoLibrary: PHPhotoLibrary
-    let imageCachingManager = PHCachingImageManager()
-    
+ 
     @Published var photoLibraryChange : PHChange?
     
-    override init() {
-        
+    private override init() {
         self.photoLibrary = .shared()
         super.init()
         self.photoLibrary.register(self)
     }
 }
 
-extension PhotoLibraryService {
-    func fetchAllAlbums(type: PHAssetMediaType?) async -> [AlbumItem] {
-
-        var albums : [AlbumItem] = []
-        // 列出所有系统的智能相册
-        let smartOptions = PHFetchOptions()
-        let smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum,
-                                                                  subtype: .albumRegular,
-                                                                  options: smartOptions)
-        
-        let userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-        as! PHFetchResult<PHAssetCollection>
-        
-        for i in 0..<smartAlbums.count{
-            let assetCollection = smartAlbums.object(at: i)
-            await albums.append(contentsOf: fetchAlbumsPhotos(collection: assetCollection, type: type))
-        }
-   
-        for i in 0..<userCollections.count{
-            let assetCollection = userCollections.object(at: i)
-            await albums.append(contentsOf: fetchAlbumsPhotos(collection: assetCollection, type: type))
-        }
-        
-        albums.sort { (item1, item2) -> Bool in
-            return item1.fetchResult.count > item2.fetchResult.count
-        }
-        return albums
-    }
-
-    func fetchAlbumsPhotos(collection: PHAssetCollection, type: PHAssetMediaType?) async -> [AlbumItem] {
-
-        await withCheckedContinuation { (continuation: CheckedContinuation<[AlbumItem], Never>) in
-            
-            var items : [AlbumItem] = []
-            if collection.isKind(of: PHCollectionList.self){
-                continuation.resume(returning: items)
-            }else{
-                imageCachingManager.allowsCachingHighQualityImages = false
-                let fetchOptions = PHFetchOptions()
-                fetchOptions.includeHiddenAssets = false
-                
-                if let type {
-                    fetchOptions.predicate = NSPredicate(format: "mediaType == %d", type.rawValue)
-                }
-                
-                fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-                let assetsFetchResult = PHAsset.fetchAssets(in: collection , options: fetchOptions)
-                if assetsFetchResult.count > 0{ 
-                    items.append(AlbumItem(title: collection.localizedTitle, fetchResult: assetsFetchResult))
-                }
-                continuation.resume(returning: items)
-            }
-        }
-    }
- 
-    func loadImage(for localId: String, targetSize: CGSize = PHImageManagerMaximumSize, contentMode: PHImageContentMode = .default) async throws -> UIImage? {
-        let results = PHAsset.fetchAssets(withLocalIdentifiers: [localId], options: nil)
-        guard let asset = results.firstObject else {
-            throw PhotoLibraryError.photoNotFound
-        }
-        let options = PHImageRequestOptions()
-        options.deliveryMode = .opportunistic
-        options.resizeMode = .fast
-        options.isNetworkAccessAllowed = true
-        options.isSynchronous = true
-        return try await withCheckedThrowingContinuation { [unowned self] continuation in
-            imageCachingManager.requestImage(for: asset,
-                                             targetSize: targetSize,
-                                             contentMode: contentMode,
-                                             options: options,
-                                             resultHandler: { image, info in
-                if let error = info?[PHImageErrorKey] as? Error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                continuation.resume(returning: image)
-            })
-        }
-    }
-}
-
-extension PhotoLibraryService {
+public extension PhotoLibraryService {
     func savePhoto(for photoData: Data, withLivePhotoURL url: URL? = nil) async throws {
         guard photoLibraryPermissionStatus == .authorized else {
             throw PhotoLibraryError.photoLibraryDenied
@@ -125,13 +43,18 @@ extension PhotoLibraryService {
     }
 }
 
-extension PhotoLibraryService {
+public extension PhotoLibraryService {
     var photoLibraryPermissionStatus: PHAuthorizationStatus {
         PHPhotoLibrary.authorizationStatus(for: .readWrite)
     }
     
+    @discardableResult
     func requestPhotoLibraryPermission() async -> PHAuthorizationStatus  {
         await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+    }
+    
+    func requestPhotoLibraryPermission(_ handler: @escaping (PHAuthorizationStatus) -> Void){
+        PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: handler)
     }
 }
 
@@ -178,5 +101,74 @@ extension PhotoLibraryError {
         case .unknownError:
             return "Oops! The unknown error occurs."
         }
+    }
+}
+
+
+public extension PhotoLibraryService {
+    
+    func fetchAssetAllAlbums(options: PHFetchOptions, type: PHAssetMediaType? = nil) async -> [AlbumItem] {
+        await withCheckedContinuation { (continuation: CheckedContinuation<[AlbumItem], Never>) in
+            continuation.resume(returning: allAlbums(options: options, type: type))
+        }
+    }
+    
+    func fetchSmartAlbums(options: PHFetchOptions?) -> PHFetchResult<PHAssetCollection> {
+        PHAssetCollection.fetchAssetCollections(
+            with: .smartAlbum,
+            subtype: .any,
+            options: options
+        )
+    }
+    
+    func fetchUserAlbums(options: PHFetchOptions?) -> PHFetchResult<PHAssetCollection> {
+        PHAssetCollection.fetchAssetCollections(
+            with: .album,
+            subtype: .any,
+            options: options
+        )
+    }
+    
+    func allAlbums(options: PHFetchOptions?, type: PHAssetMediaType? = nil) -> [AlbumItem] {
+        
+        let smartAlbums: PHFetchResult<PHAssetCollection> = fetchSmartAlbums(options: options)
+        let userAlbums: PHFetchResult<PHAssetCollection> = fetchUserAlbums(options: options)
+        let albums: [PHFetchResult<PHAssetCollection>] = [smartAlbums, userAlbums]
+        var items : [AlbumItem] = []
+        for result in albums {
+            result.enumerateObjects { (collection, _, _) in
+                if !collection.isKind(of: PHAssetCollection.self) {
+                    return
+                }
+                if  collection.estimatedAssetCount <= 0 ||
+                    collection.assetCollectionSubtype.rawValue == 205 ||
+                    collection.assetCollectionSubtype.rawValue == 215 ||
+                    collection.assetCollectionSubtype.rawValue == 217 ||
+                    collection.assetCollectionSubtype.rawValue == 218 ||
+                    collection.assetCollectionSubtype.rawValue == 212 ||
+                    collection.assetCollectionSubtype.rawValue == 204 ||
+                    collection.assetCollectionSubtype.rawValue == 1000000201 {
+                    return
+                }
+                
+                let fetchOptions = PHFetchOptions()
+                fetchOptions.includeHiddenAssets = false
+                fetchOptions.fetchLimit = 1
+                if let type {
+                    fetchOptions.predicate = NSPredicate(format: "mediaType == %d", type.rawValue)
+                }
+                let assetsFetchResult = PHAsset.fetchAssets(in: collection , options: fetchOptions)
+                if assetsFetchResult.count <= 0{
+                    return
+                }
+                
+                let assetCollection = AlbumItem(
+                    title: collection.localizedTitle,
+                    collection: collection
+                )
+                items.append(assetCollection)
+            }
+        }
+        return items
     }
 }

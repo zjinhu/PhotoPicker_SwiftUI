@@ -20,8 +20,10 @@ struct GalleryPageView: View {
     let onlyImage: Bool
     let autoCrop: Bool
     let cropRatio: CGSize
+    let selectTitle: String?
     
     init(maxSelectionCount: Int = 0,
+         selectTitle: String? = nil,
          autoCrop: Bool = false,
          cropRatio: CGSize = .zero,
          onlyImage: Bool = false,
@@ -31,7 +33,7 @@ struct GalleryPageView: View {
         self.autoCrop = autoCrop
         self.onlyImage = onlyImage
         self.cropRatio = cropRatio
-
+        self.selectTitle = selectTitle
     }
     
     var body: some View {
@@ -70,10 +72,14 @@ struct GalleryPageView: View {
                     .padding(.horizontal, 16)
                 }
 
+                if viewModel.albums.isEmpty{
+                    ProgressView()
+                }
+                
                 PagerTabStripView(selection: $selection) {
                     
                     ForEach(viewModel.albums) { album in
-                        GalleryView(results: album.fetchResult)
+                        GalleryView(album: album)
                             .pagerTabItem {
                                 PageTitleView(title: album.title ?? "")
                             }
@@ -162,15 +168,27 @@ struct GalleryPageView: View {
             viewModel.cropRatio = cropRatio
         }
         .ss.task {
-            await PHPhotoLibrary.requestAuthorization(for: .readWrite)
             await viewModel.loadAllAlbums()
+            await MainActor.run {
+                if let selectTitle{
+                    let index = viewModel.albums.firstIndex { item in
+                        item.title == selectTitle
+                    } ?? 0
+                    
+                    selection = index
+                }
+            }
         }
         .onChange(of: viewModel.oneSelectedDone) { value in
-            selected = viewModel.selectedAssets
-            dismiss()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                selected = viewModel.selectedAssets
+                dismiss()
+            }
         }
         .onChange(of: viewModel.closedGallery) { value in
-            dismiss()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                dismiss()
+            }
         }
         .toast(isPresenting: $viewModel.showToast){
     
@@ -189,8 +207,4 @@ struct GalleryPageView: View {
         }
         return title
     }
-}
-
-#Preview {
-    GalleryPageView(selected: .constant([]))
 }

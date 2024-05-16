@@ -9,10 +9,10 @@ import SwiftUI
 import BrickKit
 import Photos
 struct ThumbnailView: View {
-    @State var image: UIImage?
+
     @State var number: Int = 0
     @State var buttonDisable: Bool = false
-    @State var time: Double = 0
+    @StateObject var photoModel: PhotoViewModel
     @EnvironmentObject var viewModel: GalleryModel
     @StateObject var selected = NowAsset()
     @State private var isNavigationActive = false
@@ -20,39 +20,38 @@ struct ThumbnailView: View {
     
     init(asset: PHAsset) {
         self.asset = asset
+        _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset))
     }
     
     var body: some View {
         GeometryReader { proxy in
-            ZStack(alignment: .topLeading) {
-                if let image {
-                    
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: proxy.size.width, height: proxy.size.height)
-                        .clipped()
-                    
-                } else {
-                    Color.gray
-                        .opacity(0.3)
+            
+            Rectangle()
+                .foregroundColor(Color.gray.opacity(0.3))
+                .ss.overlay{
+                    if let image = photoModel.image {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: proxy.size.width, height: proxy.size.height)
+                            .clipped()
+                            .allowsHitTesting(false)
+                    }
                 }
-                
-                if asset.mediaSubtypes.contains(.photoLive), !viewModel.isStatic{
-                    
-                    Image(systemName: "livephoto")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.white)
-                        .frame(width: 22, height: 22)
-                        .padding(5)
-                    
-                }
-                
-                if time != 0{
-                    VStack{
-                        Spacer()
+                .ss.overlay(alignment: .topLeading) {
+                    if asset.mediaSubtypes.contains(.photoLive), !viewModel.isStatic{
                         
+                        Image(systemName: "livephoto")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.white)
+                            .frame(width: 22, height: 22)
+                            .padding(5)
+                        
+                    }
+                }
+                .ss.overlay(alignment: .bottomLeading) {
+                    if let time = photoModel.time{
                         HStack{
                             Image(systemName: "video")
                                 .resizable()
@@ -62,20 +61,20 @@ struct ThumbnailView: View {
                             Text(time.formatDuration())
                                 .font(.system(size: 12))
                         }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
                     }
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
                 }
-                
-                if viewModel.maxSelectionCount != 1{
-                    
+                .ss.overlay{
                     if number > 0{
                         Color.black
                             .opacity(0.5)
                     }
-                    HStack{
-                        Spacer()
+                }
+                .ss.overlay(alignment: .topTrailing) {
+                    if viewModel.maxSelectionCount != 1{
+    
                         Text(number > 0 ? "\(number)" : "")
                             .font(Font.f12)
                             .foregroundColor(.white)
@@ -92,86 +91,81 @@ struct ThumbnailView: View {
                             .padding(5)
                     }
                 }
-                
-                if viewModel.autoCrop, viewModel.maxSelectionCount == 1{
-                    NavigationLink(isActive: $isNavigationActive) {
-                        if let selectedAsset = selected.selectedAsset{
-                            EditView(asset: selectedAsset,
-                                     cropRatio: viewModel.cropRatio){ replace in
-                                viewModel.selectedAssets.append(replace)
-                                viewModel.oneSelectedDone.toggle()
+                .ss.overlay{
+                    if viewModel.autoCrop, viewModel.maxSelectionCount == 1{
+                        NavigationLink(isActive: $isNavigationActive) {
+                            if let selectedAsset = selected.selectedAsset{
+                                EditView(asset: selectedAsset,
+                                         cropRatio: viewModel.cropRatio){ replace in
+                                    viewModel.selectedAssets.append(replace)
+                                    viewModel.oneSelectedDone.toggle()
+                                }
+                                         .ignoresSafeArea()
                             }
-                                     .ignoresSafeArea()
-                        }
-                    } label: {
-                        EmptyView()
-                    }
-                    
-                    Button {
-                        let selectItem = SelectedAsset(asset: asset)
-                        
-                        if selectItem.fetchPHAssetType() == .image, let image = asset.getImage(){
-                            selected.selectedAsset = selectItem
-                            selected.selectedAsset?.image = image
-                            isNavigationActive = true
+                        } label: {
+                            EmptyView()
                         }
                         
-                        if selectItem.fetchPHAssetType() == .livePhoto || selectItem.fetchPHAssetType() == .video{
-                            Task{
-                                if let url = await asset.getVideoUrl(){
-                                    await MainActor.run{
-                                        selected.selectedAsset = selectItem
-                                        selected.selectedAsset?.videoUrl = url
-                                        isNavigationActive = true
+                        Button {
+                            let selectItem = SelectedAsset(asset: asset)
+                            
+                            if selectItem.fetchPHAssetType() == .image, let image = asset.toImage(){
+                                selected.selectedAsset = selectItem
+                                selected.selectedAsset?.image = image
+                                isNavigationActive = true
+                            }
+                            
+                            if selectItem.fetchPHAssetType() == .livePhoto || selectItem.fetchPHAssetType() == .video{
+                                Task{
+                                    if let url = await asset.getVideoUrl(){
+                                        await MainActor.run{
+                                            selected.selectedAsset = selectItem
+                                            selected.selectedAsset?.videoUrl = url
+                                            isNavigationActive = true
+                                        }
                                     }
                                 }
                             }
-                        }
-                        
-                    } label: {
-                        Color.clear
-                            .frame(width: proxy.size.width, height: proxy.size.height)
-                    }
-                    
-                }else{
-                    Button {
-                        if buttonDisable{
-                            viewModel.showToast.toggle()
-                        }else{
-                            onTap()
-                        }
-                    } label: {
-                        if buttonDisable{
-                            Color.white.opacity(0.5)
-                                .frame(width: proxy.size.width, height: proxy.size.height)
-                        }else{
+                            
+                        } label: {
                             Color.clear
                                 .frame(width: proxy.size.width, height: proxy.size.height)
                         }
+                        
+                    }else{
+                        Rectangle()
+                            .foregroundColor(Color.white.opacity(buttonDisable ? 0.5 : 0.00001))
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    if self.buttonDisable{
+                                        self.viewModel.showToast.toggle()
+                                    }else{
+                                        self.onTap()
+                                    }
+                                }
+                            }
                     }
                 }
-                
-            }
-            .ss.task {
-                if asset.mediaType == .video{
-                    await loadAsset()
+                .ss.task {
+                    await photoModel.onStart()
                 }
-                let image = try? await viewModel.photoLibrary.loadImage(for: asset.localIdentifier, targetSize: proxy.size)
-                await MainActor.run {
-                    self.image = image
+                .onAppear{
+                    if let _ = photoModel.image{ }else{
+                        photoModel.loadImage(size: proxy.size)
+                    }
+                    getPhotoStatus()
                 }
-            }
-            .onDisappear {
-                self.image = nil
-            }
-            .onChange(of: viewModel.selectedAssets) { value in
-                getPhotoStatus()
-            }
+                .onDisappear {
+                    photoModel.onStop()
+                }
+                .onChange(of: viewModel.selectedAssets) { value in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.getPhotoStatus()
+                    }
+                }
         }
-    }
-    
-    private func loadAsset() async {
-        time = await asset.getVideoTime()
+
     }
     
     func onTap(){

@@ -514,7 +514,7 @@ extension EditorViewController: EditorToolsViewDelegate {
         }
     }
     
-    func showCropSizeToolsView() {
+    open func showCropSizeToolsView() {
         if !rotateScaleView.isHidden && rotateScaleView.alpha == 1 {
             return
         }
