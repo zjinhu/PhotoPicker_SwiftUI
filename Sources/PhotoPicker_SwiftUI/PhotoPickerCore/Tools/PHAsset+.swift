@@ -10,7 +10,7 @@ import Photos
 import UIKit
 public extension PHAsset{
     
-    func toImage(size: CGSize = PHImageManagerMaximumSize,
+    func toImage(size: CGSize = .zero,
                  mode: PHImageContentMode = .default) -> UIImage? {
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
@@ -18,7 +18,14 @@ public extension PHAsset{
         var image: UIImage?
         options.isSynchronous = true
         
-        PHCachingImageManager.default().requestImage(for: self, targetSize: size, contentMode: mode, options: options) { result, info in
+        var requestSize: CGSize
+        if size == .zero{
+            requestSize = CGSize(width: UIScreen.main.bounds.size.width * UIScreen.main.scale, height: UIScreen.main.bounds.size.height * UIScreen.main.scale)
+        }else{
+            requestSize = CGSize(width: size.width * UIScreen.main.scale, height: size.height * UIScreen.main.scale)
+        }
+        
+        PHCachingImageManager.default().requestImage(for: self, targetSize: requestSize, contentMode: mode, options: options) { result, info in
             image = result
         }
         return image
@@ -54,6 +61,23 @@ public extension PHAsset{
                 resultClosure(image) // called for every quality approximation
             }
         )
+    }
+    
+    func loadLivePhoto(size: CGSize = PHImageManagerMaximumSize,
+                       mode: PHImageContentMode = .default,
+                       resultClosure: @escaping (PHLivePhoto?)->()) -> PHImageRequestID {
+        
+        let options = PHLivePhotoRequestOptions()
+        options.isNetworkAccessAllowed = true      // 允许从iCloud下载
+        options.deliveryMode = .opportunistic  // 请求高质量的Live Photo
+        
+        return PHCachingImageManager.default().requestLivePhoto(for: self,
+                                                                targetSize: size,
+                                                                contentMode: mode,
+                                                                options: options) { live, info in
+            resultClosure(live)
+        }
+        
     }
     
     func getLivePhoto(size: CGSize = PHImageManagerMaximumSize,

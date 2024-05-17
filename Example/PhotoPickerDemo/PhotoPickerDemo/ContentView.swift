@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  Example
 //
-//  Created by FunWidget on 2024/4/22.
+//  Created by HU on 2024/4/22.
 //
 
 import SwiftUI
@@ -30,6 +30,21 @@ struct ContentView: View {
         NavigationView{
             
             VStack {
+                
+                Button {
+                    isPresentedGallery.toggle()
+                } label: {
+                    Text("打开自定义相册")
+                        .foregroundColor(Color.red)
+                        .frame(height: 50)
+                }
+                .galleryHostPicker(isPresented: $isPresentedGallery,
+                                   maxSelectionCount: 9,
+                                   selectTitle: "Videos",
+                                   autoCrop: true,
+                                   cropRatio: .init(width: 1, height: 1),
+                                   onlyImage: false,
+                                   selected: $selectItem.pictures)
                 
                 Button {
                     isPresentedGallery.toggle()

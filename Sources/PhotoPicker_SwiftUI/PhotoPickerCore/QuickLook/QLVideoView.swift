@@ -1,6 +1,6 @@
 //
 //  SwiftUIView.swift
-//  
+//
 //
 //  Created by HU on 2024/4/28.
 //
@@ -43,10 +43,14 @@ public struct QLVideoView: View {
             Task{@MainActor in
                 if let _ = playerItem{}else{
                     await loadAsset()
- 
                 }
             }
-        } 
+        }
+        .onDisappear{
+            isPlaying = false
+            player.pause()
+            player.seek(to: .zero)
+        }
     }
     
     private func loadAsset() async {
@@ -55,9 +59,9 @@ public struct QLVideoView: View {
             player.replaceCurrentItem(with: playerItem)
             return
         }
-
-            playerItem = await asset.asset.getPlayerItem()
-            player = AVPlayer(playerItem: playerItem)
+        
+        playerItem = await asset.asset.getPlayerItem()
+        player = AVPlayer(playerItem: playerItem)
     }
 }
 

@@ -179,13 +179,13 @@ struct GalleryPageView: View {
                 }
             }
         }
-        .onChange(of: viewModel.oneSelectedDone) { value in
+        .onChange(of: viewModel.onSelectedDone) { value in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 selected = viewModel.selectedAssets
                 dismiss()
             }
         }
-        .onChange(of: viewModel.closedGallery) { value in
+        .onChange(of: viewModel.onSelectedDone) { value in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 dismiss()
             }

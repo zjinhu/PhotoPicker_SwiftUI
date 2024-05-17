@@ -14,10 +14,12 @@ class GalleryModel: ObservableObject {
     let photoLibrary = PhotoLibraryService.shared
     @Published var albums: [AlbumItem] = []
     var maxSelectionCount: Int = 0
-    @Published var oneSelectedDone: Bool = false
+    @Published var defaultSelectIndex: Int = 0
+    @Published var onSelectedDone: Bool = false
     @Published var autoCrop: Bool = false
-    @Published var closedGallery: Bool = false
     @Published var isStatic: Bool = false
+    @Published var showQuicklook: Bool = false
+    @Published var showCrop: Bool = false
     
     @Published var permission: PhotoLibraryPermission = .denied
     @Published var selectedAssets: [SelectedAsset] = []
@@ -78,7 +80,6 @@ extension GalleryModel {
         let options = PHFetchOptions()
 //        options.includeAssetSourceTypes = [.typeUserLibrary, .typeiTunesSynced, .typeCloudShared]
 //        options.sortDescriptors = [NSSortDescriptor(key: "localizedTitle", ascending: true)]
- 
         let albums = await photoLibrary.fetchAssetAllAlbums(options: options, type: isStatic ? .image : nil)
         
         await MainActor.run {
@@ -128,6 +129,32 @@ class PhotoViewModel: ObservableObject {
     }
 }
 
+@MainActor
+class LivePhotoViewModel: ObservableObject {
+    @Published var livePhoto: PHLivePhoto?
+ 
+    private var requestID: PHImageRequestID?
+ 
+    let asset: PHAsset
+ 
+    init(asset: PHAsset) {
+        self.asset = asset
+    }
+    
+    func loadAsset() {
+        requestID =  asset.loadLivePhoto(resultClosure: { [weak self] photo in
+            self?.livePhoto = photo
+        })
+    }
+    
+    func onStop() {
+        if let requestID = requestID {
+            PHCachingImageManager.default().cancelImageRequest(requestID)
+        }
+    }
+ 
+}
+
 //相簿列表项
 public class AlbumItem: Identifiable{
     public let id = UUID()
@@ -136,7 +163,7 @@ public class AlbumItem: Identifiable{
     /// 相册里的资源数量
     var count: Int = 0
     //相簿内的资源
-    var result: PHFetchResult<PHAsset>?
+    @Published var result: PHFetchResult<PHAsset>?
     /// 相册对象
     var collection: PHAssetCollection?
  

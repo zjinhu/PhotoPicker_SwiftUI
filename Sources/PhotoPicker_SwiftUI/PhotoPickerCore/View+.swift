@@ -8,36 +8,9 @@
 import SwiftUI
 import Photos
 import PhotosUI
+
 public extension View {
-    
-    /// Customize the album to select photos
-    /// - Parameters:
-    ///   - isPresented: view state
-    ///   - maxSelectionCount: Maximum number of selections
-    ///   - selectTitle: selectTitle
-    ///   - autoCrop: maxSelectionCount == 1, Auto jump to crop photo
-    ///   - cropRatio: Crop ratio, width height
-    ///   - onlyImage: Select photos only
-    ///   - selected: Bind return result
-    /// - Returns: description
-    @ViewBuilder func galleryPicker(isPresented: Binding<Bool>,
-                                    maxSelectionCount: Int = 0,
-                                    selectTitle: String? = nil,
-                                    autoCrop: Bool = false,
-                                    cropRatio: CGSize = .zero,
-                                    onlyImage: Bool = false,
-                                    selected: Binding<[SelectedAsset]>) -> some View {
-        fullScreenCover(isPresented: isPresented) {
-            GalleryPageView(maxSelectionCount: maxSelectionCount,
-                            selectTitle: selectTitle,
-                            autoCrop: autoCrop,
-                            cropRatio: cropRatio,
-                            onlyImage: onlyImage,
-                            selected: selected)
-            .ignoresSafeArea()
-        }
-    }
-    
+
     /// Customize albums to take screenshots after selecting photos
     /// - Parameters:
     ///   - isPresented: view state
@@ -46,9 +19,9 @@ public extension View {
     ///   - returnAsset: Return the cropped result
     /// - Returns: description
     @ViewBuilder func editPicker(isPresented: Binding<Bool>,
-                                cropRatio: CGSize = .zero,
-                                asset: SelectedAsset?,
-                                returnAsset: @escaping (SelectedAsset) -> Void) -> some View {
+                                 cropRatio: CGSize = .zero,
+                                 asset: SelectedAsset?,
+                                 returnAsset: @escaping (SelectedAsset) -> Void) -> some View {
         
         fullScreenCover(isPresented: isPresented) {
             if asset != nil {

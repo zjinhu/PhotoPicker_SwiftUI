@@ -55,7 +55,7 @@ struct QuickLookView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
-                .id(UUID())
+//                .id(UUID())
                 
                 ScrollViewReader { value in
                     
@@ -121,7 +121,7 @@ struct QuickLookView: View {
                     Spacer()
                     
                     Button {
-                        viewModel.closedGallery.toggle()
+                        viewModel.onSelectedDone.toggle()
                     } label: {
                         Text("完成".localString)
                             .font(.f15)
@@ -153,7 +153,7 @@ struct QuickLookView: View {
                     Image(systemName: "chevron.left")
                         .resizable()
                         .scaledToFit()
-                        .maxHeight(12)
+                        .maxHeight(24)
                         .foregroundColor(Color.textColor)
                 }
             }

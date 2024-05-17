@@ -11,21 +11,17 @@ import Photos
 import BrickKit
 public struct QLivePhotoView: View {
     let asset: SelectedAsset
-    @State var livePhoto: PHLivePhoto?
+    @StateObject var photoModel: LivePhotoViewModel
     
     public init(asset: SelectedAsset) {
         self.asset = asset
+        _photoModel = StateObject(wrappedValue: LivePhotoViewModel(asset: asset.asset))
     }
     
     public var body: some View {
         ZStack(alignment: .topLeading) {
-            LivePhoto(livePhoto: livePhoto)
-                .ss.task {
-                    if let _ = livePhoto{}else{
-                        await loadAsset()
-                    }
-                }
-            
+            LivePhoto(livePhoto: photoModel.livePhoto)
+ 
             HStack{
                 Image(systemName: "livephoto")
                     .resizable()
@@ -39,12 +35,14 @@ public struct QLivePhotoView: View {
             .clipShape(Capsule())
             .padding(10)
         }
-    }
-    
-    private func loadAsset() async {
-
-        livePhoto = await asset.asset.getLivePhoto()
-
+        .onAppear{
+            if let _ = photoModel.livePhoto{}else{
+                photoModel.loadAsset()
+            }
+        }
+        .onDisappear{
+            photoModel.onStop()
+        }
     }
 }
  
