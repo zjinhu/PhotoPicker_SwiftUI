@@ -34,7 +34,7 @@ struct ContentView: View {
                 Button {
                     isPresentedGallery.toggle()
                 } label: {
-                    Text("打开自定义相册")
+                    Text("打开自定义相册UIKit")
                         .foregroundColor(Color.red)
                         .frame(height: 50)
                 }
@@ -49,7 +49,7 @@ struct ContentView: View {
                 Button {
                     isPresentedGallery.toggle()
                 } label: {
-                    Text("打开自定义相册")
+                    Text("打开自定义相册SwiftUI")
                         .foregroundColor(Color.red)
                         .frame(height: 50)
                 }
@@ -58,7 +58,7 @@ struct ContentView: View {
                                selectTitle: "Videos",
                                autoCrop: true,
                                cropRatio: .init(width: 1, height: 1),
-                               onlyImage: true,
+                               onlyImage: false,
                                selected: $selectItem.pictures)
                 
                 Button {

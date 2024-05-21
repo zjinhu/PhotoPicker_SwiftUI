@@ -37,7 +37,7 @@ class EditorToolsView: UIView {
             if contentType == .image {
                 switch option.type {
                     //MARK: xiugai
-                case .graffiti, .text, /*.chartlet,*/ .cropSize, .filter, .filterEdit, .mosaic:
+                case .cropSize:
                     options.append(option)
                 default:
                     break
@@ -45,7 +45,7 @@ class EditorToolsView: UIView {
             }else if contentType == .video {
                 switch option.type {
                     //MARK: xiugai
-                case .time, .graffiti, .text, /*.chartlet,*/ .cropSize, .filter, .filterEdit:
+                case .time, .cropSize:
                     options.append(option)
                 default:
                     break

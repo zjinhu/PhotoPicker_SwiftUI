@@ -72,6 +72,10 @@ extension EditorViewController: EditorToolsViewDelegate {
             }
             showCropSizeToolsView()
             checkFinishButtonState()
+            //xiugai tianjia
+            if editorView.type == .video{
+                showVideoControlView()
+            }
             return
         case .time:
             showVideoControlView()
@@ -521,13 +525,14 @@ extension EditorViewController: EditorToolsViewDelegate {
         if !config.cropSize.aspectRatios.isEmpty {
             ratioToolView.isHidden = false
         }
-        rotateScaleView.isHidden = false
+        ///xiugai
+//        rotateScaleView.isHidden = false
+//        mirrorVerticallyButton.isHidden = false
+//        mirrorHorizontallyButton.isHidden = false
         resetButton.isHidden = false
         leftRotateButton.isHidden = false
         rightRotateButton.isHidden = false
-        mirrorVerticallyButton.isHidden = false
-        mirrorHorizontallyButton.isHidden = false
-        
+
         var isShowMaskList: Bool = true
         if let ratio = ratioToolView.selectedRatio?.ratio, (ratio.width < 0 || ratio.height < 0) {
             isShowMaskList = false

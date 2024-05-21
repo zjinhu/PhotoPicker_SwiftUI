@@ -38,6 +38,7 @@ struct EditView: UIViewControllerRepresentable {
         var config = EditorConfiguration()
         config.isFixedCropSizeState = true
         config.cropSize.isShowScaleSize = false
+//        config.cropSize.maskType = .customColor(color: .black)  
         config.photo.defaultSelectedToolOption = .cropSize
         config.video.defaultSelectedToolOption = .cropSize
         if cropRatio != .zero{
@@ -50,14 +51,14 @@ struct EditView: UIViewControllerRepresentable {
         
         if let image = selectedAsset.image,
            selectedAsset.assetType == .image{
-            let vc = CropViewController(.init(type: .image(image)), config: config)
+            let vc = EditorViewController(.init(type: .image(image)), config: config)
             vc.delegate = context.coordinator
             return vc
         }
         
         if let videoUrl = selectedAsset.videoUrl,
            (selectedAsset.assetType == .video || selectedAsset.assetType == .livePhoto){
-            let vc = CropViewController(.init(type: .video(videoUrl)), config: config)
+            let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
             vc.delegate = context.coordinator
             return vc
         }
@@ -65,7 +66,7 @@ struct EditView: UIViewControllerRepresentable {
         return UIViewController()
     }
     
-    class Coordinator: CropViewControllerDelegate {
+    class Coordinator: EditorViewControllerDelegate {
         var parent: EditView
         
         init(_ parent: EditView) {
@@ -76,7 +77,7 @@ struct EditView: UIViewControllerRepresentable {
         /// - Parameters:
         ///   - editorViewController: 对应的 EditorViewController
         ///   - result: 编辑后的数据
-        func editorViewController(_ editorViewController: CropViewController,
+        func editorViewController(_ editorViewController: EditorViewController,
                                   didFinish asset: EditorAsset) {
             switch parent.selectedAsset.assetType {
             case .image:
@@ -94,7 +95,7 @@ struct EditView: UIViewControllerRepresentable {
             parent.dismiss()
         }
         
-        func editorViewController(didCancel editorViewController: CropViewController) {
+        func editorViewController(didCancel editorViewController: EditorViewController) {
             parent.dismiss()
         }
         

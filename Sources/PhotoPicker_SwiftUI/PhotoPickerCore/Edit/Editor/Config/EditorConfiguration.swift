@@ -189,7 +189,8 @@ public extension EditorConfiguration {
             
             /// The color of the highlighted border
             /// 边框高亮状态下的颜色
-            public var frameHighlightedColor: UIColor = "#FDCC00".hx.color
+            /// xiugai
+            public var frameHighlightedColor: UIColor = .white
             
             public init() { }
         }

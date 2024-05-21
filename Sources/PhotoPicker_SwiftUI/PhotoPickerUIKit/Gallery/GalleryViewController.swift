@@ -127,7 +127,11 @@ extension GalleryViewController: UICollectionViewDelegate {
             if viewModel.maxSelectionCount == 1{
                 let picture = SelectedAsset(asset: asset)
                 viewModel.selectedAssets.append(picture)
-                viewModel.showCrop.toggle()
+                if viewModel.autoCrop{
+                    viewModel.showCrop.toggle()
+                }else{
+                    viewModel.onSelectedDone.toggle()
+                }
                 return
             }
             

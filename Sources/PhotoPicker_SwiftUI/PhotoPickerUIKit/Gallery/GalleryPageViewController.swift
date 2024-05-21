@@ -116,6 +116,7 @@ class GalleryPageViewController: UIViewController {
         button.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         button.addTarget(self, action: #selector(switchStatic), for: .touchUpInside)
         button.isSelected = true
+        button.isHidden = viewModel.isStatic
         return button
     }()
     

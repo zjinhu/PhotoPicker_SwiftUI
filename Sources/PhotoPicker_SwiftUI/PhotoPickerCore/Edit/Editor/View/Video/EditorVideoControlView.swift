@@ -48,6 +48,29 @@ class EditorVideoControlView: UIView {
     private var totalTimeView: UIVisualEffectView!
     private var totalTimeLb: UILabel!
     
+    //xiugai add
+    private lazy var titleLb: UILabel = {
+        let lb = UILabel()
+        lb.text = "选择范围"
+        lb.textColor = .white
+        lb.font = .systemFont(ofSize: 14, weight: .medium)
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        return lb
+    }()
+    private lazy var subTitlelb: UILabel = {
+        let lb = UILabel()
+        lb.text = "由于系统限制，较长的动画时间可能会出现卡顿"
+        lb.textColor = .gray
+        lb.font = .systemFont(ofSize: 12)
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        return lb
+    }()
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     var isPlaying: Bool {
         get {
             playButton.isSelected
@@ -69,6 +92,21 @@ class EditorVideoControlView: UIView {
     }
     
     private func initViews() {
+        ///xiugai add
+        addSubview(contentView)
+        contentView.addSubview(titleLb)
+        contentView.addSubview(subTitlelb)
+        NSLayoutConstraint.activate([
+            titleLb.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            titleLb.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            titleLb.topAnchor.constraint(equalTo: contentView.topAnchor),
+            
+            subTitlelb.topAnchor.constraint(equalTo: titleLb.bottomAnchor, constant: 5),
+            subTitlelb.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            subTitlelb.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            subTitlelb.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ])
+        
         flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .horizontal
         flowLayout.minimumLineSpacing = 0
@@ -105,6 +143,7 @@ class EditorVideoControlView: UIView {
         playButton.setImage(.imageResource.editor.video.pause.image, for: .selected)
         playButton.tintColor = .white
         playButton.addTarget(self, action: #selector(didPlayButtonClick), for: .touchUpInside)
+        
         playView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         playView.contentView.addSubview(playButton)
         playView.layer.cornerRadius = 4
@@ -114,10 +153,10 @@ class EditorVideoControlView: UIView {
         progressLineView = UIView()
         progressLineView.backgroundColor = .white
  
-            progressLineView.cornersRound(radius: 2, corner: .allCorners)
-
-        progressLineView.layer.borderColor = UIColor.black.cgColor
-        progressLineView.layer.borderWidth = 0.25
+        progressLineView.cornersRound(radius: 2, corner: .allCorners)
+//xiugai
+//        progressLineView.layer.borderColor = UIColor.black.cgColor
+//        progressLineView.layer.borderWidth = 0.25
         progressLineView.alpha = 0
         progressLineView.addGestureRecognizer(
             PhotoPanGestureRecognizer(
@@ -226,22 +265,32 @@ class EditorVideoControlView: UIView {
         }
         return leftMargin - UIDevice.leftMargin
     }
+    //xiugai
+//    private var bgWidth: CGFloat {
+//        if UIDevice.isPortrait {
+//            return width - UIDevice.rightMargin - margin - (margin + UIDevice.leftMargin + playWidth) - 1
+//        }else {
+//            return width - UIDevice.rightMargin - margin - (margin + UIDevice.leftMargin + playWidth) - 1
+//        }
+//    }
     private var bgWidth: CGFloat {
         if UIDevice.isPortrait {
-            return width - UIDevice.rightMargin - margin - (margin + UIDevice.leftMargin + playWidth) - 1
+            return width - UIDevice.rightMargin - margin - (margin + UIDevice.leftMargin) - 1
         }else {
             return width - UIDevice.rightMargin - margin - (margin + UIDevice.leftMargin + playWidth) - 1
         }
     }
     private var isBeginScrolling: Bool = false
     private var isFirstLoad: Bool = true
-    private var playWidth: CGFloat {
-        if UIDevice.isPortrait {
-            return height
-        }else {
-            return height * 1.5
-        }
-    }
+    ///xiugai
+    private var playWidth: CGFloat = 50
+//    private var playWidth: CGFloat {
+//        if UIDevice.isPortrait {
+//            return height
+//        }else {
+//            return height * 1.5
+//        }
+//    }
     var currentDuration: Double {
         let lineFrame = progressLineView.layer.presentation()?.frame ?? progressLineView.frame
         let scale = (
@@ -404,19 +453,45 @@ class EditorVideoControlView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        progressLineView.size = .init(width: 4, height: height - 4)
-        progressLineView.centerY = height / 2
+            //xiugai
+//        progressLineView.size = .init(width: 4, height: height - 4)
+//        progressLineView.centerY = height / 2
         if UIDevice.isPortrait {
+            ///xiugai add
+            progressLineView.size = .init(width: 4, height: playWidth - 3)
+            progressLineView.centerY = height - playWidth / 2 + 1
+            
             let leftMargin: CGFloat = margin + UIDevice.leftMargin
             let rightMargin: CGFloat = UIDevice.rightMargin + margin
-            playView.frame = .init(x: leftMargin, y: 0, width: playWidth, height: height)
+            //xiugai
+//            playView.frame = .init(x: leftMargin, y: 0, width: playWidth, height: height)
+//            bgView.frame = .init(
+//                x: playView.frame.maxX + 1,
+//                y: 0,
+//                width: width - rightMargin - playView.frame.maxX - 1,
+//                height: height
+//            )
+            playView.frame = .init(x: (width-playWidth)/2, y: 0, width: playWidth, height: playWidth)
             bgView.frame = .init(
-                x: playView.frame.maxX + 1,
-                y: 0,
-                width: width - rightMargin - playView.frame.maxX - 1,
-                height: height
+                x: leftMargin,
+                y: 150,
+                width: width - rightMargin - leftMargin,
+                height: playWidth
             )
+            ///xiugai add
+            contentView.isHidden = false
+            NSLayoutConstraint.activate([
+                self.contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+                self.contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+                self.contentView.bottomAnchor.constraint(equalTo: self.bgView.topAnchor, constant: -40),
+                self.contentView.heightAnchor.constraint(equalToConstant: 40)
+            ])
         }else {
+            ///xiugai add
+            progressLineView.size = .init(width: 4, height: height - 4)
+            progressLineView.centerY = height / 2
+            contentView.isHidden = true
+            
             playView.frame = .init(x: margin + UIDevice.leftMargin, y: 0, width: playWidth, height: height)
             bgView.frame = .init(
                 x: playView.frame.maxX + 1,
@@ -483,9 +558,12 @@ extension EditorVideoControlView {
         currentTimeLb.size = currentTimeLb.textSize
         currentTimeView.size = .init(width: currentTimeLb.width + 10, height: currentTimeLb.size.height + 5)
         currentTimeLb.center = .init(x: currentTimeView.width / 2, y: currentTimeView.height / 2)
-        currentLineView.y = -currentLineView.height - 5
+        ///xiugai
+//        currentLineView.y = -currentLineView.height - 5
+        currentLineView.y = -currentLineView.height - 5 + 150
         currentLineView.centerX = progressLineView.centerX
         currentTimeView.y = currentLineView.y - currentTimeView.height - 2
+        
         currentTimeView.centerX = currentLineView.centerX
         if currentTimeView.frame.maxX + margin + UIDevice.rightMargin > width {
             currentTimeView.x = width - margin - UIDevice.rightMargin - currentTimeView.width
@@ -730,14 +808,16 @@ extension EditorVideoControlView {
         endTimeLb.size = endTimeLb.textSize
         endTimeView.size = .init(width: endTimeLb.width + 10, height: endTimeLb.size.height + 5)
         endTimeLb.center = .init(x: endTimeView.width / 2, y: endTimeView.height / 2)
-        
-        startLineView.y = -startLineView.height - 5
+        ///xiugai
+        startLineView.y = -startLineView.height - 5 + 150
+//        startLineView.y = -startLineView.height - 5
         startLineView.centerX = bgView.x + frameMaskView.validRect.minX
         
         var startTimeX = startLineView.centerX - startTimeView.width / 2
         startTimeView.y = startLineView.y - startTimeView.height - 2
-        
-        endLineView.y = -endLineView.height - 5
+        ///xiugai
+        endLineView.y = -endLineView.height - 5 + 150
+//        endLineView.y = -endLineView.height - 5
         endLineView.centerX = bgView.x + frameMaskView.validRect.maxX
         
         var endTimeX = endLineView.centerX - endTimeView.width / 2

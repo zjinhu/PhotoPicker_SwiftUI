@@ -332,23 +332,24 @@ extension EditorFrameView {
     }
     
     func showVideoSlider(_ animated: Bool) {
-        if contentType != .video {
-            return
-        }
-        if isRoundCrop {
-            return
-        }
-        if !videoSliderView.isHidden && videoSliderView.alpha == 1 {
-            return
-        }
-        videoSliderView.isHidden = false
-        if animated {
-            UIView.animate {
-                self.videoSliderView.alpha = 1
-            }
-        }else {
-            videoSliderView.alpha = 1
-        }
+        //xiugai
+//        if contentType != .video {
+//            return
+//        }
+//        if isRoundCrop {
+//            return
+//        }
+//        if !videoSliderView.isHidden && videoSliderView.alpha == 1 {
+//            return
+//        }
+//        videoSliderView.isHidden = false
+//        if animated {
+//            UIView.animate {
+//                self.videoSliderView.alpha = 1
+//            }
+//        }else {
+//            videoSliderView.alpha = 1
+//        }
     }
     
     func hideVideoSilder(_ animated: Bool) {
