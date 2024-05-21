@@ -38,7 +38,6 @@ struct EditView: UIViewControllerRepresentable {
         var config = EditorConfiguration()
         config.isFixedCropSizeState = true
         config.cropSize.isShowScaleSize = false
-//        config.cropSize.maskType = .customColor(color: .black)  
         config.photo.defaultSelectedToolOption = .cropSize
         config.video.defaultSelectedToolOption = .cropSize
         if cropRatio != .zero{
