@@ -9,28 +9,93 @@
 
 ## 例子
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+SwiftUI封装完相册后当用户手机内相册存储的照片视频达到一定的数量及（例如150G以上，两万张照片视频左右），LazyVGrid就会陷入一个运算艰难的境地，CPU占用居高不下，暂时没找到很好的优化办法，所以就用UIKit又封装了一遍，看实际需求酌情使用
+
+打开使用UIKit封装的相册
+
+```swift
+                Button {
+                    isPresentedGallery.toggle()
+                } label: {
+                    Text("打开自定义相册UIKit")
+                        .foregroundColor(Color.red)
+                        .frame(height: 50)
+                }
+                .galleryHostPicker(isPresented: $isPresentedGallery,
+                                   maxSelectionCount: 9,
+                                   selectTitle: "Videos",
+                                   autoCrop: true,
+                                   cropRatio: .init(width: 1, height: 1),
+                                   onlyImage: false,
+                                   selected: $selectItem.pictures)
+```
+
+打开使用SwiftUI封装的相册
+
+```swift
+                Button {
+                    isPresentedGallery.toggle()
+                } label: {
+                    Text("打开自定义相册SwiftUI")
+                        .foregroundColor(Color.red)
+                        .frame(height: 50)
+                }
+                .galleryPicker(isPresented: $isPresentedGallery,
+                               maxSelectionCount: 7,
+                               selectTitle: "Videos",
+                               autoCrop: true,
+                               cropRatio: .init(width: 1, height: 1),
+                               onlyImage: false,
+                               selected: $selectItem.pictures)
+```
+
+打开系统相册
+
+```swift
+                Button {
+                    showPicker.toggle()
+                } label: {
+                    Text("打开系统相册")
+                }
+                .photoPicker(isPresented: $showPicker,
+                             selected: $selectedItems,
+                             maxSelectionCount: 5,
+                             matching: .any(of: [.images, .livePhotos, .videos]))
+                .onChange(of: selectedItems) { newItems in
+                    var images = [UIImage]()
+                    Task{
+                        for item in newItems{
+                            if let image = try await item.loadTransfer(type: UIImage.self){
+                                images.append(image)
+                            }
+                        }
+                        await MainActor.run {
+                            selectedImages = images
+                        }
+                    }
+                }
+```
+
+进入照片视频编辑工具
+
+```swift
+        .editPicker(isPresented: $isPresentedCrop,
+                    cropRatio: .init(width: 10, height: 1),
+                    asset: selectItem.selectedAsset) { asset in
+            selectItem.pictures.replaceSubrange(selectItem.selectedIndex...selectItem.selectedIndex, with: [asset])
+        }
+```
+
+
 
 ## 用法
 
 
 ## 安装
 
-### cocoapods
-
-1.在 Podfile 中添加 `pod 'PhotoPicker_SwiftUI'`
-
-2.执行 `pod install 或 pod update`
-
-3.导入 `import PhotoPicker_SwiftUI`
-
-### Swift Package Manager
-
-从 Xcode 11 开始，集成了 Swift Package Manager，使用起来非常方便。PhotoPicker_SwiftUI 也支持通过 Swift Package Manager 集成。
-
 在 Xcode 的菜单栏中选择 `File > Swift Packages > Add Pacakage Dependency`，然后在搜索栏输入
 
-`https://github.com/jackiehu/PhotoPicker_SwiftUI`，即可完成集成
+`https://github.com/jackiehu/PhotoPicker_SwiftUI`
 
 ### 手动集成
 
