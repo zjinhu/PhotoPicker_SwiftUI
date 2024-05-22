@@ -11,6 +11,7 @@ import PhotoPickerUIKit
 import PhotoPickerCore
 import Photos
 import PhotosUI
+import BrickKit
 
 class SelectItem: ObservableObject{
     @Published var pictures: [SelectedAsset] = []
@@ -105,13 +106,18 @@ struct ContentView: View {
                             selectItem.selectedIndex = index
                             
                             switch picture.fetchPHAssetType(){
+                                
                             case .image:
+                                
                                 if let image = picture.asset.toImage(){
                                     selectItem.selectedAsset = picture
                                     selectItem.selectedAsset?.image = image
                                     isPresentedCrop.toggle()
                                 }
-                            case .livePhoto, .video:
+                                
+                            case .video:
+                                
+                                
                                 Task{
                                     if let url = await picture.asset.getVideoUrl(){
                                         await MainActor.run{
@@ -121,11 +127,38 @@ struct ContentView: View {
                                         }
                                     }
                                 }
+                                
+                                
+                            case .livePhoto:
+                                
+                                picture.asset.getLivePhotoVideoUrl { url in
+                                    if let url {
+                                        DispatchQueue.main.async {
+                                            selectItem.selectedAsset = picture
+                                            selectItem.selectedAsset?.videoUrl = url
+                                            isPresentedCrop.toggle()
+                                        }
+                                    }
+                                }
+                                
+                                
                             default: break
                             }
                             
                         } label: {
-                            QLImageView(asset: picture)
+//                            QLImageView(asset: picture)
+                            switch picture.fetchPHAssetType(){
+                            case .image:
+                                QLImageView(asset: picture)
+                            case .livePhoto:
+                                QLivePhotoView(asset: picture)
+                                    .frame(height: Screen.width)
+                            case .video:
+                                QLVideoView(asset: picture)
+                                    .frame(height: 200)
+                            case .unknown, .audio:
+                                EmptyView()
+                            }
                         }
                         .tag(index)
                         

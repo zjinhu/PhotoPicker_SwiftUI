@@ -59,7 +59,7 @@ public struct QuickLookView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
-//                .id(UUID())
+                .id(UUID())
                 
                 ScrollViewReader { value in
                     
@@ -112,7 +112,7 @@ public struct QuickLookView: View {
                                 }
                             }
                         case .livePhoto:
- 
+
                             sset.asset.getLivePhotoVideoUrl { url in
                                 if let url {
                                     DispatchQueue.main.async {

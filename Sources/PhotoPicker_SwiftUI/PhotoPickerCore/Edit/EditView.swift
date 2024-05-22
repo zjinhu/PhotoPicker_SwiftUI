@@ -8,17 +8,23 @@
 import SwiftUI
 import BrickKit
 public struct EditView: UIViewControllerRepresentable {
-    
     @Environment(\.dismiss) private var dismiss
+    
     var cropRatio: CGSize
     var selectedAsset: SelectedAsset
     var editDone: (SelectedAsset) -> Void
+    var cropVideoTime: TimeInterval
+    var cropVideoFixTime: Bool
     public init(asset: SelectedAsset,
-         cropRatio: CGSize = .zero,
-         done: @escaping (SelectedAsset) -> Void) {
+                cropVideoTime: TimeInterval = 5,
+                cropVideoFixTime: Bool = false,
+                cropRatio: CGSize = .zero,
+                done: @escaping (SelectedAsset) -> Void) {
         self.selectedAsset = asset
         self.cropRatio = cropRatio
         self.editDone = done
+        self.cropVideoTime = cropVideoTime
+        self.cropVideoFixTime = cropVideoFixTime
     }
     
     public func makeCoordinator() -> Coordinator {
@@ -42,6 +48,8 @@ public struct EditView: UIViewControllerRepresentable {
         config.photo.defaultSelectedToolOption = .cropSize
         config.video.defaultSelectedToolOption = .cropSize
         config.video.cropTime.minimumTime = 1
+        config.video.cropTime.maximumTime = cropVideoTime
+        config.video.cropTime.isCanControlMove = !cropVideoFixTime
         if cropRatio != .zero{
             config.cropSize.isFixedRatio = true
             config.cropSize.aspectRatio = cropRatio
@@ -59,7 +67,6 @@ public struct EditView: UIViewControllerRepresentable {
         
         if let videoUrl = selectedAsset.videoUrl,
            selectedAsset.assetType == .video{
-            config.video.cropTime.maximumTime = 5
             let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
             vc.delegate = context.coordinator
             return vc
@@ -67,7 +74,6 @@ public struct EditView: UIViewControllerRepresentable {
         
         if let videoUrl = selectedAsset.videoUrl,
            selectedAsset.assetType == .livePhoto{
-            config.video.cropTime.maximumTime = 2
             let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
             vc.delegate = context.coordinator
             return vc
@@ -87,22 +93,45 @@ public struct EditView: UIViewControllerRepresentable {
         /// - Parameters:
         ///   - editorViewController: 对应的 EditorViewController
         ///   - result: 编辑后的数据
-        public func editorViewController(_ editorViewController: EditorViewController,
-                                  didFinish asset: EditorAsset) {
+        public func editorViewController(_ editorViewController: EditorViewController, didFinish asset: EditorAsset) {
             switch parent.selectedAsset.assetType {
             case .image:
-                parent.selectedAsset.image = asset.result?.image
+                if let imageURL = asset.result?.url,
+                   let imageData = try? Data(contentsOf: imageURL),
+                   let image = UIImage(data: imageData){
+                    parent.selectedAsset.image = image
+                }else{
+                    parent.selectedAsset.image = asset.result?.image
+                }
+                parent.editDone(parent.selectedAsset)
+                parent.dismiss()
             case .livePhoto:
-                parent.selectedAsset.image = asset.result?.image
-                parent.selectedAsset.videoUrl = asset.result?.url
+                
+                let temporaryDirectoryURL = FileManager.default.temporaryDirectory
+                let imageFileURL = temporaryDirectoryURL.appendingPathComponent("livephoto.png")
+                try? FileManager.default.removeItem(at: imageFileURL)
+                
+                let imageData = asset.result?.image?.pngData()
+                try? imageData?.write(to: imageFileURL)
+                        
+                if let videoUrl = asset.result?.url{
+                    LivePhoto.generate(from: imageFileURL, videoURL: videoUrl) { progress in
+                        print("LivePhoto--\(progress)")
+                    } completion: { live, res in
+                        self.parent.selectedAsset.livePhoto = live
+                        self.parent.selectedAsset.videoUrl = videoUrl
+                        self.parent.editDone(self.parent.selectedAsset)
+                        self.parent.dismiss()
+                    }
+                }
             case.video:
-                parent.selectedAsset.image = asset.result?.image
                 parent.selectedAsset.videoUrl = asset.result?.url
+                parent.editDone(parent.selectedAsset)
+                parent.dismiss()
             default:
                 break
             }
-            parent.editDone(parent.selectedAsset)
-            parent.dismiss()
+
         }
         
         public func editorViewController(didCancel editorViewController: EditorViewController) {

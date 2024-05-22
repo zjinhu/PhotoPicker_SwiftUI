@@ -56,8 +56,9 @@ open class EditorViewController: HXBaseViewController {
     var landscapeConstraints: [NSLayoutConstraint] = []
     lazy var invertColorButton: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "circle.lefthalf.filled"), for: .normal)
+        btn.setImage(UIImage(systemName: "circle.lefthalf.filled.inverse"), for: .normal)
         btn.tintColor = .white
+        btn.transform = CGAffineTransform(rotationAngle: .pi / 4)
 //        btn.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
         btn.addTarget(self, action: #selector(didIvertColorClick(button:)), for: .touchUpInside)
         btn.translatesAutoresizingMaskIntoConstraints = false

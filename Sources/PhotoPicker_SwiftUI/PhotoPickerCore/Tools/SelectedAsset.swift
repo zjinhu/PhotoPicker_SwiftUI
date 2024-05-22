@@ -11,12 +11,15 @@ import Photos
 public struct SelectedAsset : Identifiable, Equatable, Hashable{
     
     public let id = UUID()
-    
     public let asset: PHAsset
     
+    /// 获取修改后Live Photo
+    public var livePhoto: PHLivePhoto?
+    /// 获取修改后视频URL或者Live Photo的视频URL
     public var videoUrl: URL?
+    /// 获取修改后的图片
     public var image: UIImage?
-    
+
     public init(asset: PHAsset) {
         self.asset = asset
     }

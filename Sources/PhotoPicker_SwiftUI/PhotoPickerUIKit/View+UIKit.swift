@@ -10,7 +10,16 @@ import Photos
 import PhotosUI
 import PhotoPickerCore
 public extension View {
-
+    /// Customize the album to select photos
+    /// - Parameters:
+    ///   - isPresented: view state
+    ///   - maxSelectionCount: Maximum number of selections 最大可选数量
+    ///   - selectTitle: selectTitle 设置选中title
+    ///   - autoCrop: maxSelectionCount == 1, Auto jump to crop photo 当最大可选数量为1时是否自动跳转裁剪
+    ///   - cropRatio: Crop ratio, width height 裁剪比例
+    ///   - onlyImage: Select photos only 只选择照片
+    ///   - selected: Bind return result
+    /// - Returns: description
     @ViewBuilder func galleryHostPicker(isPresented: Binding<Bool>,
                                         maxSelectionCount: Int = 0,
                                         selectTitle: String? = nil,

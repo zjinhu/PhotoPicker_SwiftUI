@@ -20,7 +20,7 @@ public struct QLImageView: View {
     public var body: some View {
         Image(uiImage: photoModel.image ?? UIImage())
             .resizable()
-            .scaledToFill()
+            .scaledToFit()
             .onAppear{
                 if let _ = photoModel.image{}else{
                     loadAsset()

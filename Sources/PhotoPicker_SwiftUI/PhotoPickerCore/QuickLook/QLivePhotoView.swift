@@ -20,7 +20,7 @@ public struct QLivePhotoView: View {
     
     public var body: some View {
         ZStack(alignment: .topLeading) {
-            LivePhoto(livePhoto: photoModel.livePhoto)
+            LivePhotoView(livePhoto: photoModel.livePhoto)
  
             HStack{
                 Image(systemName: "livephoto")
@@ -37,17 +37,26 @@ public struct QLivePhotoView: View {
         }
         .onAppear{
             if let _ = photoModel.livePhoto{}else{
-                photoModel.loadAsset()
+                loadAsset()
             }
         }
         .onDisappear{
             photoModel.onStop()
         }
     }
+    
+    private func loadAsset() {
+        
+        if let ima = asset.livePhoto{
+            photoModel.livePhoto = ima
+            return
+        }
+        photoModel.loadAsset()
+    }
 }
  
 
-struct LivePhoto: UIViewRepresentable {
+struct LivePhotoView: UIViewRepresentable {
     var livePhoto: PHLivePhoto?
 
     func makeUIView(context: Context) -> PHLivePhotoView {

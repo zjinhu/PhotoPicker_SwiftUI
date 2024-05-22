@@ -126,6 +126,8 @@ class EditorVideoControlView: UIView {
         )
         
         frameMaskView = EditorVideoControlMaskView()
+        ///xiugai add
+        frameMaskView.isCanControlMove = config.isCanControlMove
         frameMaskView.frameHighlightedColor = config.frameHighlightedColor
         frameMaskView.arrowNormalColor = config.arrowNormalColor
         frameMaskView.arrowHighlightedColor = config.arrowHighlightedColor

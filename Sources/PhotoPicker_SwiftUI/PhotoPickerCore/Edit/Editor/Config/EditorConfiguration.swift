@@ -166,7 +166,8 @@ public extension EditorConfiguration {
         public init() { }
         
         public struct CropTime {
-            
+            ///xiugai add
+            public var isCanControlMove: Bool = false
             /// Video maximum cropping duration
             /// > 0 The video must be cropped when it is longer than
             /// = 0 for no clipping

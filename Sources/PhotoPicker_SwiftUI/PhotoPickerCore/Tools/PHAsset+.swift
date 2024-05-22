@@ -155,11 +155,11 @@ public extension PHAsset{
             }
         }
     }
-    
+
     func getLivePhotoVideoUrl(size: CGSize = .zero,
                               mode: PHImageContentMode = .default,
                               completion: @escaping (URL?) -> Void) {
-        // 请求 Live Photo 对象
+        var didResume = false
         let options = PHLivePhotoRequestOptions()
         options.deliveryMode = .opportunistic
         options.isNetworkAccessAllowed = true
@@ -171,38 +171,37 @@ public extension PHAsset{
             requestSize = CGSize(width: size.width * UIScreen.main.scale, height: size.height * UIScreen.main.scale)
         }
         
-        
         PHCachingImageManager.default().requestLivePhoto(for: self,
                                                          targetSize: requestSize,
                                                          contentMode: mode,
                                                          options: options) { (livePhoto, info) in
-            guard let livePhoto = livePhoto else {
+            guard let livePhoto = livePhoto,
+                  let assetResources = PHAssetResource.assetResources(for: livePhoto) as? [PHAssetResource],
+                  let videoResource = assetResources.first(where: { $0.type == .pairedVideo }) else {
                 completion(nil)
                 return
             }
-
-            if let assetResources = PHAssetResource.assetResources(for: livePhoto) as? [PHAssetResource] {
-                if let videoResource = assetResources.first(where: { $0.type == .pairedVideo }) {
-                    let options = PHAssetResourceRequestOptions()
-                    options.isNetworkAccessAllowed = true
-                    
-                    let temporaryDirectoryURL = FileManager.default.temporaryDirectory
-                    let videoFileURL = temporaryDirectoryURL.appendingPathComponent(videoResource.originalFilename)
-                    try? FileManager.default.removeItem(at: videoFileURL)
-                    
-                    PHAssetResourceManager.default().writeData(for: videoResource, toFile: videoFileURL, options: options) { error in
-                        if let error = error {
-                            print("Error writing video data: \(error.localizedDescription)")
-                            completion(nil)
-                        } else {
-                            completion(videoFileURL)
-                        }
-                    }
+            
+            let options = PHAssetResourceRequestOptions()
+            options.isNetworkAccessAllowed = true
+            
+            let temporaryDirectoryURL = FileManager.default.temporaryDirectory
+            let videoFileURL = temporaryDirectoryURL.appendingPathComponent(videoResource.originalFilename)
+            try? FileManager.default.removeItem(at: videoFileURL)
+            
+            PHAssetResourceManager.default().writeData(for: videoResource, toFile: videoFileURL, options: options) { error in
+                if didResume {
                     return
+                }
+                didResume = true
+                if let error = error {
+                    print("Error writing video data: \(error.localizedDescription)")
+                    completion(nil)
+                } else {
+                    completion(videoFileURL)
                 }
             }
             
-            completion(nil)
         }
     }
 }

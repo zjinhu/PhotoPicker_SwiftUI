@@ -51,7 +51,8 @@ class EditorVideoControlMaskView: UIView {
     var arrowNormalColor: UIColor = .white
     var arrowHighlightedColor: UIColor = .black
     var frameHighlightedColor: UIColor = "#FDCC00".color
-    
+    ///xiugai add
+    var isCanControlMove: Bool = true
     init() {
         super.init(frame: .zero)
         initViews()
@@ -119,6 +120,11 @@ class EditorVideoControlMaskView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         mask_View.frame = bounds
+        ///xiugai add
+        if !isCanControlMove{
+            leftControl.removeAllGestureRecognizers()
+            rightControl.removeAllGestureRecognizers()
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -238,5 +244,13 @@ class EditorVideoControlMaskView: UIView {
             return rightControl
         }
         return nil
+    }
+}
+
+///xiugai add
+extension UIView {
+    func removeAllGestureRecognizers() {
+        // 确保 gestureRecognizers 不为 nil
+        gestureRecognizers?.forEach(self.removeGestureRecognizer)
     }
 }
