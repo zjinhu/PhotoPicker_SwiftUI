@@ -6,7 +6,9 @@
 //
 
 import SwiftUI
-import PhotoPicker_SwiftUI
+import PhotoPickerSwiftUI
+import PhotoPickerUIKit
+import PhotoPickerCore
 import Photos
 import PhotosUI
 

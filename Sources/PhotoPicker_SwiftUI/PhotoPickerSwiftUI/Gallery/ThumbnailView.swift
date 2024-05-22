@@ -8,6 +8,7 @@
 import SwiftUI
 import BrickKit
 import Photos
+import PhotoPickerCore
 struct ThumbnailView: View {
     
     @State var number: Int = 0

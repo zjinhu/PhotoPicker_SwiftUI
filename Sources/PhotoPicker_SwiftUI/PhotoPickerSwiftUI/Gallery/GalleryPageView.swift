@@ -9,7 +9,7 @@ import SwiftUI
 import PagerTabStripView
 import Photos
 import BrickKit
-
+import PhotoPickerCore
 struct GalleryPageView: View {
     @Environment(\.dismiss) private var dismiss
     @State var selection = 0

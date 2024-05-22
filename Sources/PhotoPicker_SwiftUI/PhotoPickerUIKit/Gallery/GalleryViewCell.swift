@@ -9,6 +9,7 @@ import UIKit
 import Photos
 import Combine
 import SwiftUI
+import PhotoPickerCore
 class GalleryViewCell: UICollectionViewCell {
     var asset: PHAsset?{
         didSet{

@@ -11,7 +11,7 @@ import BrickKit
 import Photos
 import Combine
 import SwiftUI
-
+import PhotoPickerCore
 let cellSpace: CGFloat = 5
 let numberOfCellsInRow = 4
 let cellWidth = (Screen.width - cellSpace * CGFloat(numberOfCellsInRow + 1)) / CGFloat(numberOfCellsInRow)

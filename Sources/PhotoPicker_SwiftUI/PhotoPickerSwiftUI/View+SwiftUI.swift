@@ -8,6 +8,7 @@
 import SwiftUI
 import Photos
 import PhotosUI
+import PhotoPickerCore
 public extension View {
     
     /// Customize the album to select photos

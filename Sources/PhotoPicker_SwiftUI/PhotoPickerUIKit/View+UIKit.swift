@@ -8,6 +8,7 @@
 import SwiftUI
 import Photos
 import PhotosUI
+import PhotoPickerCore
 public extension View {
 
     @ViewBuilder func galleryHostPicker(isPresented: Binding<Bool>,

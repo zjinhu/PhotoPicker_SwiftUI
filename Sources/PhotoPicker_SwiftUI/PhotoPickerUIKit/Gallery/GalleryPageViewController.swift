@@ -10,6 +10,7 @@ import JXSegmentedView
 import BrickKit
 import Combine
 import SwiftUI
+import PhotoPickerCore
 class GalleryPageViewController: UIViewController {
  
     let viewModel: GalleryModel

@@ -8,6 +8,7 @@
 import SwiftUI
 import Photos
 import BrickKit
+import PhotoPickerCore
 struct GalleryPageEntranceView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isNavigationQuickLook = false

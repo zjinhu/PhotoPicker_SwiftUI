@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8C1D79DA2BFCADF20018AB58 /* PhotoPickerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8C1D79D92BFCADF20018AB58 /* PhotoPickerKit */; };
 		8C977C562BECB8A700EAD700 /* PhotoPickerDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */; };
 		8C977C582BECB8A700EAD700 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C977C572BECB8A700EAD700 /* ContentView.swift */; };
 		8C977C5A2BECB8A800EAD700 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C977C592BECB8A800EAD700 /* Assets.xcassets */; };
@@ -28,6 +29,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C1D79DA2BFCADF20018AB58 /* PhotoPickerKit in Frameworks */,
 				8CBE8EA82BF7427300AD8F96 /* PhotoPicker_SwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -97,6 +99,7 @@
 			name = PhotoPickerDemo;
 			packageProductDependencies = (
 				8CBE8EA72BF7427300AD8F96 /* PhotoPicker_SwiftUI */,
+				8C1D79D92BFCADF20018AB58 /* PhotoPickerKit */,
 			);
 			productName = PhotoPickerDemo;
 			productReference = 8C977C522BECB8A700EAD700 /* PhotoPickerDemo.app */;
@@ -375,6 +378,11 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8C1D79D92BFCADF20018AB58 /* PhotoPickerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8CBE8EA62BF7427300AD8F96 /* XCLocalSwiftPackageReference "../../../PhotoPicker" */;
+			productName = PhotoPickerKit;
+		};
 		8CBE8EA72BF7427300AD8F96 /* PhotoPicker_SwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PhotoPicker_SwiftUI;

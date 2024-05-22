@@ -7,7 +7,7 @@
 
 import SwiftUI
 import PagerTabStripView
-
+import PhotoPickerCore
 private class TitleTheme: ObservableObject {
     @Published var textColor = Color.secondGray
 }

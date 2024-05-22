@@ -7,13 +7,13 @@ let package = Package(
     name: "PhotoPicker_SwiftUI",
     defaultLocalization: "en",
     products: [
-//        .library(
-//            name: "PhotoPicker_SwiftUI",
-//            targets: ["PhotoPicker_SwiftUI",]
-//        ),
         .library(
             name: "PhotoPicker_SwiftUI",
-            targets: ["PhotoPickerSwiftUI","PhotoPickerUIKit","PhotoPickerCore"]
+            targets: ["PhotoPickerSwiftUI","PhotoPickerCore"]
+        ),
+        .library(
+            name: "PhotoPickerKit",
+            targets: ["PhotoPickerUIKit","PhotoPickerCore"]
         ),
     ],
     dependencies: [

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import PhotoPickerCore
 struct GalleryPageHostView: UIViewControllerRepresentable {
  
     @EnvironmentObject var viewModel: GalleryModel

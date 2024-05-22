@@ -10,27 +10,38 @@ import SwiftUI
 import Combine
 
 @MainActor
-class GalleryModel: ObservableObject {
-    let photoLibrary = PhotoLibraryService.shared
-    @Published var albums: [AlbumItem] = []
-    var maxSelectionCount: Int = 0
-    @Published var defaultSelectIndex: Int = 0
-    @Published var onSelectedDone: Bool = false
-    @Published var autoCrop: Bool = false
-    @Published var isStatic: Bool = false
-    @Published var showQuicklook: Bool = false
-    @Published var showCrop: Bool = false
+public class GalleryModel: ObservableObject {
+    public let photoLibrary = PhotoLibraryService.shared
+    @Published
+    public var albums: [AlbumItem] = []
+    public var maxSelectionCount: Int = 0
+    @Published
+    public var defaultSelectIndex: Int = 0
+    @Published
+    public var onSelectedDone: Bool = false
+    @Published
+    public var autoCrop: Bool = false
+    @Published
+    public var isStatic: Bool = false
+    @Published 
+    public var showQuicklook: Bool = false
+    @Published
+    public var showCrop: Bool = false
     
-    @Published var permission: PhotoLibraryPermission = .denied
-    @Published var selectedAssets: [SelectedAsset] = []
-    @Published var showToast: Bool = false
-    @Published var cropRatio: CGSize = .zero
-    @Published var selectedAsset: SelectedAsset?
+    @Published 
+    public var permission: PhotoLibraryPermission = .denied
+    @Published
+    public var selectedAssets: [SelectedAsset] = []
+    @Published
+    public var showToast: Bool = false
+    @Published
+    public var cropRatio: CGSize = .zero
+    @Published
+    public var selectedAsset: SelectedAsset?
      
-    
     private var subscribers: [AnyCancellable] = []
     
-    init() {
+    public init() {
         
         switch photoLibrary.photoLibraryPermissionStatus {
         case .restricted, .limited:
@@ -54,7 +65,7 @@ class GalleryModel: ObservableObject {
         
     }
     
-    enum PhotoLibraryPermission {
+    public enum PhotoLibraryPermission {
         case denied
         case limited
         case authorized
@@ -92,33 +103,35 @@ extension GalleryModel {
 }
 
 @MainActor
-class PhotoViewModel: ObservableObject {
-    @Published var image: UIImage?
-    @Published var time: Double?
+public class PhotoViewModel: ObservableObject {
+    @Published
+    public var image: UIImage?
+    @Published
+    public var time: Double?
     private var requestID: PHImageRequestID?
     private var currentTask: Task<Void, Never>?
     
     let asset: PHAsset
     let isStatic: Bool
-    init(asset: PHAsset, isStatic: Bool = false) {
+    public init(asset: PHAsset, isStatic: Bool = false) {
         self.asset = asset
         self.isStatic = isStatic
     }
     
-    func loadImage(size: CGSize = .zero) {
+    public func loadImage(size: CGSize = .zero) {
         requestID = asset.getImage(size: size) { [weak self] ima in
             self?.image = ima
         }
     }
     
-    func onStop() {
+    public func onStop() {
         currentTask = nil
         if let requestID = requestID {
             PHCachingImageManager.default().cancelImageRequest(requestID)
         }
     }
     
-    func onStart() async {
+    public func onStart() async {
         if isStatic{ return }
         guard asset.mediaType == .video else { return }
 
@@ -130,24 +143,24 @@ class PhotoViewModel: ObservableObject {
 }
 
 @MainActor
-class LivePhotoViewModel: ObservableObject {
+public class LivePhotoViewModel: ObservableObject {
     @Published var livePhoto: PHLivePhoto?
  
     private var requestID: PHImageRequestID?
  
     let asset: PHAsset
  
-    init(asset: PHAsset) {
+    public init(asset: PHAsset) {
         self.asset = asset
     }
     
-    func loadAsset() {
+    public func loadAsset() {
         requestID =  asset.loadLivePhoto(resultClosure: { [weak self] photo in
             self?.livePhoto = photo
         })
     }
     
-    func onStop() {
+    public func onStop() {
         if let requestID = requestID {
             PHCachingImageManager.default().cancelImageRequest(requestID)
         }
@@ -159,21 +172,22 @@ class LivePhotoViewModel: ObservableObject {
 public class AlbumItem: Identifiable{
     public let id = UUID()
     //相簿名称
-    var title: String?
+    public var title: String?
     /// 相册里的资源数量
-    var count: Int = 0
+    public var count: Int = 0
     //相簿内的资源
-    @Published var result: PHFetchResult<PHAsset>?
+    @Published
+    public var result: PHFetchResult<PHAsset>?
     /// 相册对象
-    var collection: PHAssetCollection?
+    public var collection: PHAssetCollection?
  
-    init(title: String?,
+    public init(title: String?,
          collection: PHAssetCollection?) {
         self.collection = collection
         self.title = title
     }
    
-    func fetchResult(options: PHFetchOptions?) {
+    public func fetchResult(options: PHFetchOptions?) {
         guard let collection = collection  else {
             return
         }
