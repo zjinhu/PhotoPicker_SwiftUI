@@ -101,7 +101,7 @@ public struct QuickLookView: View {
                                 viewModel.selectedAsset?.image = image
                                 isPresentedEdit.toggle()
                             }
-                        case .livePhoto, .video:
+                        case .video:
                             Task{
                                 if let url = await sset.asset.getVideoUrl(){
                                     await MainActor.run{
@@ -111,6 +111,18 @@ public struct QuickLookView: View {
                                     }
                                 }
                             }
+                        case .livePhoto:
+ 
+                            sset.asset.getLivePhotoVideoUrl { url in
+                                if let url {
+                                    DispatchQueue.main.async {
+                                        viewModel.selectedAsset = sset
+                                        viewModel.selectedAsset?.videoUrl = url
+                                        isPresentedEdit.toggle()
+                                    }
+                                }
+                            }
+                            
                         default: break
                         }
                         

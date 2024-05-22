@@ -37,9 +37,11 @@ public struct EditView: UIViewControllerRepresentable {
         
         var config = EditorConfiguration()
         config.isFixedCropSizeState = true
+        config.isIgnoreCropTimeWhenFixedCropSizeState = false
         config.cropSize.isShowScaleSize = false
         config.photo.defaultSelectedToolOption = .cropSize
         config.video.defaultSelectedToolOption = .cropSize
+        config.video.cropTime.minimumTime = 1
         if cropRatio != .zero{
             config.cropSize.isFixedRatio = true
             config.cropSize.aspectRatio = cropRatio
@@ -56,7 +58,16 @@ public struct EditView: UIViewControllerRepresentable {
         }
         
         if let videoUrl = selectedAsset.videoUrl,
-           (selectedAsset.assetType == .video || selectedAsset.assetType == .livePhoto){
+           selectedAsset.assetType == .video{
+            config.video.cropTime.maximumTime = 5
+            let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
+            vc.delegate = context.coordinator
+            return vc
+        }
+        
+        if let videoUrl = selectedAsset.videoUrl,
+           selectedAsset.assetType == .livePhoto{
+            config.video.cropTime.maximumTime = 2
             let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
             vc.delegate = context.coordinator
             return vc

@@ -490,7 +490,7 @@ open class EditorViewController: HXBaseViewController {
         portraitConstraints = [
             self.stackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16),
             self.stackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
-            self.stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -40),
+            self.stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -UIDevice.bottomMargin),
             self.stackView.heightAnchor.constraint(equalToConstant: 40)
         ]
         landscapeConstraints = [
@@ -964,9 +964,7 @@ open class EditorViewController: HXBaseViewController {
         }
         
         if orientationDidChange || firstAppear {
-            //xiugai
-            //            videoControlView.frame = .init(x: 0, y: toolsView.y - 80, width: view.width, height: 50)
-            videoControlView.frame = .init(x: 0, y: toolsView.y - 80 - 150, width: view.width, height: 200)
+            videoControlView.frame = .init(x: 0, y: toolsView.y - 80, width: view.width, height: 50)
         }
     }
     
