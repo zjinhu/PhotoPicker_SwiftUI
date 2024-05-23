@@ -8,7 +8,7 @@
 import SwiftUI
 import BrickKit
 import Photos
-import PhotoPickerCore
+
 struct ThumbnailView: View {
     
     @State var number: Int = 0
@@ -48,6 +48,18 @@ struct ThumbnailView: View {
                         .frame(width: 22, height: 22)
                         .padding(5)
                     
+                }
+            }
+            .ss.overlay(alignment: .bottomTrailing) {
+                if asset.isGIF(){
+                    Text("GIF")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.vertical, 5)
+                        .background(.black.opacity(0.4))
+                        .cornerRadius(5)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
                 }
             }
             .ss.overlay(alignment: .bottomLeading) {

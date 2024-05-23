@@ -25,6 +25,9 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
     }
     
     public var assetType: SelectedAssetType{
+        if asset.isGIF(){
+            return .gif
+        }
         switch asset.mediaType {
         case .image:
             if asset.mediaSubtypes.contains(.photoLive) {
@@ -33,8 +36,6 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
             return .image
         case .video:
             return .video
-        case .audio:
-            return .audio
         default:
             return .unknown
         }
@@ -44,11 +45,14 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
         case image
         case livePhoto
         case video
-        case audio
+        case gif
         case unknown
     }
     
     public func fetchPHAssetType() -> SelectedAssetType {
+        if asset.isGIF(){
+            return .gif
+        }
         switch asset.mediaType {
         case .image:
             if asset.mediaSubtypes.contains(.photoLive) {
@@ -57,8 +61,6 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
             return .image
         case .video:
             return .video
-        case .audio:
-            return .audio
         default:
             return .unknown
         }

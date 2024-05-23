@@ -42,16 +42,18 @@ public struct QuickLookView: View {
                                 QLivePhotoView(asset: asset)
                                     .frame(width: proxy.size.width)
                                     .clipped()
-                                    .tag(index)
-                                    .id(UUID())
+                                    .tag(index) 
                             case .video:
                                 QLVideoView(asset: asset)
                                     .frame(width: proxy.size.width)
                                     .clipped()
                                     .tag(index)
-                                    .id(UUID())
-                                
-                            case .unknown, .audio:
+                            case.gif:
+                                QLGifView(asset: asset)
+                                    .frame(width: proxy.size.width)
+                                    .clipped()
+                                    .tag(index) 
+                            default:
                                 EmptyView()
                                     .tag(index)
                             }

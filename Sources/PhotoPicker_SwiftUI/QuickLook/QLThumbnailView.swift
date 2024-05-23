@@ -45,6 +45,18 @@ public struct QLThumbnailView: View {
                         
                     }
                 }
+                .ss.overlay(alignment: .bottomTrailing) {
+                    if asset.asset.isGIF(){
+                        Text("GIF")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white)
+                            .padding(.vertical, 5)
+                            .background(.black.opacity(0.4))
+                            .cornerRadius(5)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                    }
+                }
                 .ss.overlay(alignment: .bottomLeading) {
                     if let time = photoModel.time{
                         HStack{

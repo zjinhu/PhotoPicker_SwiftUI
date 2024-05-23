@@ -6,9 +6,7 @@
 //
 
 import SwiftUI
-import PhotoPickerSwiftUI
-import PhotoPickerUIKit
-import PhotoPickerCore
+import PhotoPicker_SwiftUI
 import Photos
 import PhotosUI
 import BrickKit
@@ -33,22 +31,7 @@ struct ContentView: View {
         NavigationView{
             
             VStack {
-                
-                Button {
-                    isPresentedGallery.toggle()
-                } label: {
-                    Text("打开自定义相册UIKit")
-                        .foregroundColor(Color.red)
-                        .frame(height: 50)
-                }
-                .galleryHostPicker(isPresented: $isPresentedGallery,
-                                   maxSelectionCount: 9,
-                                   selectTitle: "Videos",
-                                   autoCrop: true,
-                                   cropRatio: .init(width: 1, height: 1),
-                                   onlyImage: false,
-                                   selected: $selectItem.pictures)
-                
+ 
                 Button {
                     isPresentedGallery.toggle()
                 } label: {
@@ -156,7 +139,7 @@ struct ContentView: View {
                             case .video:
                                 QLVideoView(asset: picture)
                                     .frame(height: 200)
-                            case .unknown, .audio:
+                            default:
                                 EmptyView()
                             }
                         }

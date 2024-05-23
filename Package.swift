@@ -9,52 +9,22 @@ let package = Package(
     products: [
         .library(
             name: "PhotoPicker_SwiftUI",
-            targets: ["PhotoPickerSwiftUI","PhotoPickerCore"]
-        ),
-        .library(
-            name: "PhotoPickerKit",
-            targets: ["PhotoPickerUIKit","PhotoPickerCore"]
-        ),
+            targets: ["PhotoPicker_SwiftUI"]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/zjinhu/Brick_SwiftUI.git", .upToNextMajor(from: "0.3.0")),
-        .package(url: "https://github.com/zjinhu/PagerTabStripView.git", .upToNextMajor(from: "0.0.1")),
-        .package(url: "https://github.com/pujiaxin33/JXSegmentedView.git", .upToNextMajor(from: "1.3.3")),
+        .package(url: "https://github.com/zjinhu/PagerTabStripView.git", .upToNextMajor(from: "0.0.1"))
     ],
     targets: [
-//        .target(name: "PhotoPicker_SwiftUI",
-//                dependencies:
-//                    [
-//                        .product(name: "BrickKit", package: "Brick_SwiftUI"),
-//                        .product(name: "PagerTabStripView", package: "PagerTabStripView"),
-//                        .product(name: "JXSegmentedView", package: "JXSegmentedView"),
-//                    ],
-//                resources: [.process("Resources")]
-//               ),
-        .target(name: "PhotoPickerCore",
+        .target(name: "PhotoPicker_SwiftUI",
                 dependencies:
                     [
-                        .product(name: "BrickKit", package: "Brick_SwiftUI")
-                    ],
-                path: "Sources/PhotoPicker_SwiftUI/PhotoPickerCore",
-                resources: [.process("Resources")]
-               ),
-        .target(name: "PhotoPickerSwiftUI",
-                dependencies:
-                    [
-                        .target(name: "PhotoPickerCore"),
+                        .product(name: "BrickKit", package: "Brick_SwiftUI"),
                         .product(name: "PagerTabStripView", package: "PagerTabStripView")
                     ],
-                path: "Sources/PhotoPicker_SwiftUI/PhotoPickerSwiftUI"
+                resources: [.process("Resources")]
                ),
-        .target(name: "PhotoPickerUIKit",
-                dependencies:
-                    [
-                        .target(name: "PhotoPickerCore"),
-                        .product(name: "JXSegmentedView", package: "JXSegmentedView")
-                    ],
-                path: "Sources/PhotoPicker_SwiftUI/PhotoPickerUIKit"
-               )
     ]
 )
 package.platforms = [

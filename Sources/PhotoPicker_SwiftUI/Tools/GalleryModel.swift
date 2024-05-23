@@ -168,6 +168,32 @@ public class LivePhotoViewModel: ObservableObject {
  
 }
 
+@MainActor
+public class GifViewModel: ObservableObject {
+    @Published
+    public var imageData: Data?
+ 
+    private var requestID: PHImageRequestID?
+    let asset: PHAsset
+ 
+    public init(asset: PHAsset) {
+        self.asset = asset
+    }
+    
+    public func loadImageData() {
+        requestID = asset.getImageData({ [weak self] data in
+            self?.imageData = data
+        })
+    }
+    
+    public func onStop() {
+        if let requestID = requestID {
+            PHCachingImageManager.default().cancelImageRequest(requestID)
+        }
+    }
+
+}
+
 //相簿列表项
 public class AlbumItem: Identifiable{
     public let id = UUID()

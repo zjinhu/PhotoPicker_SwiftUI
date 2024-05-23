@@ -10,6 +10,7 @@ import Photos
 import UIKit
 public extension PHAsset{
     
+    /// 单次使用，不要频繁调用，尤其是列表或者循环中
     func toImage(size: CGSize = .zero,
                  mode: PHImageContentMode = .default) -> UIImage? {
         let options = PHImageRequestOptions()
@@ -203,5 +204,47 @@ public extension PHAsset{
             }
             
         }
+    }
+
+    func isGIF() -> Bool {
+        let options = PHAssetResourceRequestOptions()
+        options.isNetworkAccessAllowed = true
+        
+        let resources = PHAssetResource.assetResources(for: self)
+        for resource in resources {
+            if resource.uniformTypeIdentifier == "com.compuserve.gif" {
+                return true
+            }
+        }
+        return false
+    }
+    /// 单次使用，不要频繁调用，尤其是列表或者循环中
+    func toImageData() -> Data? {
+        let options = PHImageRequestOptions()
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .opportunistic
+        var imageData: Data?
+        options.isSynchronous = true
+ 
+        PHCachingImageManager.default().requestImageDataAndOrientation(for: self, options: options) { data, _, _, _ in
+            imageData = data
+        }
+        return imageData
+    }
+    
+    @discardableResult
+    func getImageData(_ resultClosure: @escaping (Data?)->()) -> PHImageRequestID{
+
+        let options = PHImageRequestOptions()
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .opportunistic
+        
+        return PHCachingImageManager.default().requestImageDataAndOrientation(
+            for: self,
+            options: options,
+            resultHandler: { imageData, _, _, _  in
+                resultClosure(imageData)
+            }
+        )
     }
 }
