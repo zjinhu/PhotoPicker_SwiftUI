@@ -24,9 +24,22 @@ extension PhotoTools {
     }
     
     public static func defaultColors() -> [String] {
-
+        if #available(iOS 14.0, *) {
             return ["#ffffff", "#2B2B2B", "#FA5150", "#FEC200", "#07C160", "#10ADFF", "#6467EF", "#9EB6DC"]
-
+        }
+        return ["#ffffff", "#2B2B2B", "#FA5150", "#FEC200", "#07C160", "#10ADFF", "#6467EF"]
+    }
+    static func defaultMusicInfos() -> [VideoEditorMusicInfo] {
+        var infos: [VideoEditorMusicInfo] = []
+        if let audioURL = URL(string: "http://tsnrhapp.oss-cn-hangzhou.aliyuncs.com/chartle/%E5%A4%A9%E5%A4%96%E6%9D%A5%E7%89%A9.mp3"), // swiftlint:disable:this line_length
+           let lrc = "天外来物".lrc {
+            let info = VideoEditorMusicInfo(
+                audioURL: .network(url: audioURL),
+                lrc: lrc
+            )
+            infos.append(info)
+        }
+        return infos
     }
 
     /// 默认滤镜

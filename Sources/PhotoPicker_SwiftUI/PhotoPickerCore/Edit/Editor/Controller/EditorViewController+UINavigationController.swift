@@ -154,9 +154,12 @@ extension EditorViewController {
         switch loadAssetStatus {
         case .loadding(let isProgress):
             if isProgress {
-
-                assetLoadingView = PhotoManager.HUDView.show(with: nil, delay: 0, animated: true, addedTo: view)
-                
+                switch selectedAsset.type {
+                case .networkVideo:
+                    assetLoadingView = PhotoManager.HUDView.show(with: .textManager.editor.videoLoadTitle.text, delay: 0, animated: true, addedTo: view)
+                default:
+                    assetLoadingView = PhotoManager.HUDView.show(with: nil, delay: 0, animated: true, addedTo: view)
+                }
             }else {
                 PhotoManager.HUDView.show(with: nil, delay: 0, animated: true, addedTo: view)
             }

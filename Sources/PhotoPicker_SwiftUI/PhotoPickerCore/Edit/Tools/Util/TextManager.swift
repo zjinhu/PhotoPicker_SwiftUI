@@ -14,10 +14,8 @@ public extension HX {
     
     class TextManager {
         public static let shared = TextManager()
-
         /// 编辑器
         public var editor: Editor = .init()
-
     }
 }
 
@@ -45,6 +43,7 @@ public extension HX.TextManager {
         public var text: Text = .init()
         public var sticker: Sticker = .init()
         public var crop: Crop = .init()
+        public var music: Music = .init()
         public var adjustment: Adjustment = .init()
         public var filter: Filter = .init()
         
@@ -94,6 +93,33 @@ public extension HX.TextManager {
             
         }
         
+        public struct Music {
+            public var emptyHudTitle: TextType = .localized("暂无配乐")
+            public var lyricEmptyTitle: TextType = .localized("此歌曲暂无歌词，请您欣赏")
+            
+            public var searchButtonTitle: TextType = .localized("搜索")
+            public var searchButtonTitleFont: UIFont = HXPickerWrapper<UIFont>.mediumPingFang(ofSize: 14) 
+            public var volumeButtonTitle: TextType = .localized("音量")
+            public var volumeButtonTitleFont: UIFont = HXPickerWrapper<UIFont>.mediumPingFang(ofSize: 14)
+            public var volumeMusicButtonTitle: TextType = .localized("配乐")
+            public var volumeMusicButtonTitleFont: UIFont = .systemFont(ofSize: 15)
+            public var volumeOriginalButtonTitle: TextType = .localized("视频原声")
+            public var volumeOriginalButtonTitleFont: UIFont = .systemFont(ofSize: 15)
+            
+            public var musicButtonTitle: TextType = .localized("配乐")
+            public var musicButtonTitleFont: UIFont = HXPickerWrapper<UIFont>.mediumPingFang(ofSize: 16)
+            public var originalButtonTitle: TextType = .localized("视频原声")
+            public var originalButtonTitleFont: UIFont = HXPickerWrapper<UIFont>.mediumPingFang(ofSize: 16)
+            public var lyricButtonTitle: TextType = .localized("歌词")
+            public var lyricButtonTitleFont: UIFont = HXPickerWrapper<UIFont>.mediumPingFang(ofSize: 16)
+            
+            public var listTitle: TextType = .localized("背景音乐")
+            public var finishTitle: TextType = .localized("完成")
+            public var finishTitleFont: UIFont = .systemFont(ofSize: 17)
+            public var searchPlaceholder: TextType = .localized("搜索歌名")
+            public var searchPlaceholderFont: UIFont = .systemFont(ofSize: 17)
+        }
+        
         public struct Adjustment {
             public var brightnessTitle: TextType = .localized("亮度")
             public var contrastTitle: TextType = .localized("对比度")
@@ -114,7 +140,6 @@ public extension HX.TextManager {
             public var parameterFont: UIFont = HXPickerWrapper<UIFont>.regularPingFang(ofSize: 11)
         }
     }
-    
 }
 
 extension HX.TextManager.TextType: Codable {

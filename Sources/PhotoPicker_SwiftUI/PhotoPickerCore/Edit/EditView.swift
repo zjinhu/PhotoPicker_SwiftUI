@@ -43,6 +43,7 @@ public struct EditView: UIViewControllerRepresentable {
         
         var config = EditorConfiguration()
         config.isFixedCropSizeState = true
+        config.isAutoBack = false
         config.isIgnoreCropTimeWhenFixedCropSizeState = false
         config.cropSize.isShowScaleSize = false
         config.photo.defaultSelectedToolOption = .cropSize
@@ -125,9 +126,15 @@ public struct EditView: UIViewControllerRepresentable {
                     }
                 }
             case.video:
-                parent.selectedAsset.videoUrl = asset.result?.url
-                parent.editDone(parent.selectedAsset)
-                parent.dismiss()
+                switch asset.result{
+                case .video(let result, _): 
+                    parent.selectedAsset.videoUrl = result.url
+                    parent.editDone(parent.selectedAsset)
+                    parent.dismiss()
+                default:
+                    break
+                }
+
             default:
                 break
             }

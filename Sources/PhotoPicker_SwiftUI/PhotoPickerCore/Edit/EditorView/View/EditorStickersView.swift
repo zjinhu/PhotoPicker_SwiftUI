@@ -17,6 +17,8 @@ protocol EditorStickersViewDelegate: AnyObject {
     func stickerView(_ stickerView: EditorStickersView, shouldRemoveItem itemView: EditorStickersItemView)
     func stickerView(_ stickerView: EditorStickersView, didRemoveItem itemView: EditorStickersItemView)
     
+    func stickerView(_ stickerView: EditorStickersView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool
+    
     func stickerView(itemCenter stickerView: EditorStickersView) -> CGPoint?
     func stickerView(_ stickerView: EditorStickersView, resetItemViews itemViews: [EditorStickersItemBaseView])
     
@@ -48,7 +50,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         willSet {
             if let selectView = selectView,
                let selectSuperView = selectView.superview,
-               selectSuperView == UIApplication.keyWindow {
+               selectSuperView == UIApplication._keyWindow {
                 endDragging(selectView)
             }
         }
@@ -188,7 +190,11 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         mirrorScale = item.mirrorScale
         var itemViews: [EditorStickersItemBaseView] = []
         for itemData in item.items {
-
+            if let audio = itemData.item.audio,
+               let isShould = delegate?.stickerView(self, shouldAddAudioItem: audio),
+               !isShould {
+                continue
+            }
             let itemView = add(sticker: itemData.item, isSelected: false, viewWidth: viewSize.width)
             itemView.mirrorScale = itemData.mirrorScale
             itemView.editMirrorScale = itemData.editMirrorScale
@@ -218,13 +224,22 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         for case let itemView as EditorStickersItemView in subviews {
             let image: UIImage?
             if let imageData = itemView.item.imageData {
-
                 image = UIImage(data: imageData)
-
             }else {
                 image = itemView.item.image
             }
-
+            
+            var audioInfo: AudioInfo?
+            if let audio = itemView.item.audio {
+                audioInfo = .init(
+                    fontSizeScale: 25.0 / width,
+                    animationSizeScale: CGSize(
+                        width: 20 / width,
+                        height: 15 / height
+                    ),
+                    audio: audio
+                )
+            }
             let infoScale = itemView.pinchScale
             itemView.videoReset(false)
             let frameScale: Info.FrameScale = .init(
@@ -245,7 +260,8 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
                 angel: itemView.radian.angle,
                 mirrorScale: itemView.mirrorScale,
                 scale: infoScale,
-                viewSize: size
+                viewSize: size,
+                audio: audioInfo
             )
             infos.append(info)
         }
@@ -274,7 +290,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         )
         itemView.delegate = self
         var pScale: CGFloat
-        if !item.isText{
+        if !item.isText && !item.isAudio {
             let ratio: CGFloat = 0.5
             var width = self.width * self.scale
             var height = self.height * self.scale
@@ -305,7 +321,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         if let center = delegate?.stickerView(itemCenter: self) {
             itemView.center = center
         }else {
-            if let keyWindow = UIApplication.keyWindow {
+            if let keyWindow = UIApplication._keyWindow {
                 itemView.center = convert(keyWindow.center, from: keyWindow)
             }
         }
@@ -369,10 +385,10 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         beforeItemArg = itemView.radian
         let radians = angle.radians
         currentItemDegrees = radians
-        if itemView.superview != UIApplication.keyWindow {
-            let rect = convert(itemView.frame, to: UIApplication.keyWindow)
+        if itemView.superview != UIApplication._keyWindow {
+            let rect = convert(itemView.frame, to: UIApplication._keyWindow)
             itemView.frame = rect
-            UIApplication.keyWindow?.addSubview(itemView)
+            UIApplication._keyWindow?.addSubview(itemView)
         }
         let rotation: CGFloat
         if itemView.mirrorScale.x * itemView.mirrorScale.y == 1 {
@@ -404,7 +420,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
             return
         }
         let arg = itemView.radian - currentItemArg
-        if superview == UIApplication.keyWindow {
+        if superview == UIApplication._keyWindow {
             let rect = superview.convert(itemView.frame, to: self)
             itemView.frame = rect
         }
@@ -533,8 +549,8 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         if !isDragging {
             startDragging(itemView)
         }
-        if !trashViewIsVisible && isShowTrash {
-            UIApplication.keyWindow?.addSubview(trashView)
+        if !trashViewIsVisible && (isShowTrash || itemView.item.isAudio) {
+            UIApplication._keyWindow?.addSubview(trashView)
             showTrashView()
         }
     }
@@ -585,10 +601,10 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         _ itemView: EditorStickersItemView,
         panGestureRecognizerChanged panGR: UIPanGestureRecognizer
     ) {
-        if !isShowTrash{
+        if !isShowTrash && !itemView.item.isAudio {
             return
         }
-        let point = panGR.location(in: UIApplication.keyWindow)
+        let point = panGR.location(in: UIApplication._keyWindow)
         if trashView.frame.contains(point) && !trashViewDidRemove {
             trashView.inArea = true
             if !hasImpactFeedback {
@@ -619,7 +635,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         delegate?.stickerView(self, moveToCenter: itemView) ?? false
     }
     func stickerItemView(panGestureRecognizerEnded itemView: EditorStickersItemView) -> Bool {
-        if !isShowTrash{
+        if !isShowTrash && !itemView.item.isAudio {
             if let selectView = selectView, selectView != itemView {
                 selectView.isSelected = false
                 self.selectView = itemView
@@ -675,7 +691,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         if let center = delegate?.stickerView(itemCenter: self) {
             return center
         }else {
-            if let keyWindow = UIApplication.keyWindow {
+            if let keyWindow = UIApplication._keyWindow {
                 return convert(keyWindow.center, from: keyWindow)
             }
         }
@@ -707,7 +723,13 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
             let initialMirrorScale: CGPoint
         }
     }
-
+    
+    struct AudioInfo {
+        let fontSizeScale: CGFloat
+        let animationSizeScale: CGSize
+        let audio: EditorStickerAudio
+    }
+    
     struct Info {
         let image: UIImage?
         let isText: Bool
@@ -716,7 +738,8 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         let mirrorScale: CGPoint
         let scale: CGFloat
         let viewSize: CGSize
-
+        let audio: AudioInfo?
+        
         struct FrameScale {
             let center: CGPoint
             let size: CGSize

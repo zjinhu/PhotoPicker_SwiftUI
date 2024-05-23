@@ -40,6 +40,8 @@ open class EditorViewController: HXBaseViewController {
         finish: FinishHandler? = nil,
         cancel: CancelHandler? = nil
     ) {
+        ///xiugai
+//        PhotoManager.shared.createLanguageBundle(languageType: config.languageType)
         self.assets = [asset]
         self.selectedAsset = asset
         self.config = config
@@ -50,6 +52,7 @@ open class EditorViewController: HXBaseViewController {
         finishRatioIndex = config.cropSize.isRoundCrop ? -1 : config.cropSize.defaultSeletedIndex
         super.init(nibName: nil, bundle: nil)
     }
+    
     //xiugai add
     private var stackView: UIStackView!
     var portraitConstraints: [NSLayoutConstraint] = []
@@ -64,7 +67,6 @@ open class EditorViewController: HXBaseViewController {
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
-    
     @objc
     func didIvertColorClick(button: UIButton) {
         button.isSelected.toggle()
@@ -85,6 +87,8 @@ open class EditorViewController: HXBaseViewController {
     var rotateScaleView: EditorScaleView!
     var ratioToolView: EditorRatioToolView!
     var mosaicToolView: EditorMosaicToolView!
+    var musicView: EditorMusicView!
+    var volumeView: EditorVolumeView!
     var toolsView: EditorToolsView!
     var cancelButton: UIButton!
     var finishButton: UIButton!
@@ -223,21 +227,41 @@ open class EditorViewController: HXBaseViewController {
         mosaicToolView.alpha = 0
         mosaicToolView.isHidden = true
         
+        musicView = EditorMusicView(config: config.video.music)
+        musicView.delegate = self
+        
+        volumeView = EditorVolumeView(config.video.music.tintColor)
+        volumeView.hasMusic = false
+        volumeView.delegate = self
+        
         toolsView = EditorToolsView(config: config.toolsView, contentType: selectedAsset.type.contentType)
         toolsView.delegate = self
         
-        //xiugai
         cancelButton = UIButton(type: .custom)
+//        cancelButton.setTitle(.textManager.editor.tools.cancelTitle.text, for: .normal)
+//        cancelButton.setTitleColor(config.cancelButtonTitleColor, for: .normal)
+//        cancelButton.setTitleColor(config.cancelButtonTitleColor.withAlphaComponent(0.5), for: .highlighted)
+//        cancelButton.titleLabel?.font = .textManager.editor.tools.cancelTitleFont
+//        cancelButton.contentHorizontalAlignment = .left
+        ///xiugai
         cancelButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         cancelButton.tintColor = .white
-        cancelButton.addTarget(self, action: #selector(didCancelButtonClick(button:)), for: .touchUpInside)
         cancelButton.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
+       
+        cancelButton.addTarget(self, action: #selector(didCancelButtonClick(button:)), for: .touchUpInside)
         
-        //xiugai
         finishButton = UIButton(type: .custom)
+//        finishButton.setTitle(.textManager.editor.tools.finishTitle.text, for: .normal)
+//        finishButton.setTitleColor(config.finishButtonTitleNormalColor, for: .normal)
+//        finishButton.setTitleColor(config.finishButtonTitleNormalColor.withAlphaComponent(0.5), for: .highlighted)
+//        finishButton.setTitleColor(config.finishButtonTitleDisableColor.withAlphaComponent(0.5), for: .disabled)
+//        finishButton.titleLabel?.font = .textManager.editor.tools.finishTitleFont
+//        finishButton.contentHorizontalAlignment = .right
+        ///xiugai
         finishButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
         finishButton.tintColor = .white
         finishButton.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
+        
         finishButton.addTarget(self, action: #selector(didFinishButtonClick(button:)), for: .touchUpInside)
         finishButton.isEnabled = !config.isWhetherFinishButtonDisabledInUneditedState
         
@@ -324,73 +348,70 @@ open class EditorViewController: HXBaseViewController {
         scaleSwitchView.addSubview(scaleSwitchRightBtn)
         
         editorView = EditorView()
-        
-        backgroundView = UIScrollView()
-        backgroundView.maximumZoomScale = 1
-        backgroundView.showsVerticalScrollIndicator = false
-        backgroundView.showsHorizontalScrollIndicator = false
-        backgroundView.clipsToBounds = false
-        backgroundView.scrollsToTop = false
-        backgroundView.isScrollEnabled = false
-        backgroundView.bouncesZoom = false
-        backgroundView.delegate = self
-        backgroundView.contentInsetAdjustmentBehavior = .never
-        editorView.drawType = .canvas
-        
-        drawCancelButton = UIButton(type: .custom)
-        drawCancelButton.setTitle(.textManager.editor.brush.cancelTitle.text, for: .normal)
-        drawCancelButton.setTitleColor(config.cancelButtonTitleColor, for: .normal)
-        drawCancelButton.setTitleColor(config.cancelButtonTitleColor.withAlphaComponent(0.5), for: .highlighted)
-        drawCancelButton.titleLabel?.font = .textManager.editor.brush.cancelTitleFont
-        drawCancelButton.contentHorizontalAlignment = .left
-        drawCancelButton.alpha = 0
-        drawCancelButton.isHidden = true
-        drawCancelButton.addTarget(self, action: #selector(didCancelButtonClick(button:)), for: .touchUpInside)
-        
-        drawFinishButton = UIButton(type: .custom)
-        drawFinishButton.setTitle(.textManager.editor.brush.finishTitle.text, for: .normal)
-        drawFinishButton.setTitleColor(config.finishButtonTitleNormalColor, for: .normal)
-        drawFinishButton.setTitleColor(config.finishButtonTitleNormalColor.withAlphaComponent(0.5), for: .highlighted)
-        drawFinishButton.setTitleColor(config.finishButtonTitleDisableColor.withAlphaComponent(0.5), for: .disabled)
-        drawFinishButton.titleLabel?.font = .textManager.editor.brush.finishTitleFont
-        drawFinishButton.contentHorizontalAlignment = .right
-        drawFinishButton.alpha = 0
-        drawFinishButton.isHidden = true
-        drawFinishButton.addTarget(self, action: #selector(didFinishButtonClick(button:)), for: .touchUpInside)
-        
-        drawUndoBtn = ExpandButton(type: .custom)
-        drawUndoBtn.setImage(.imageResource.editor.brush.canvasUndo.image, for: .normal)
-        if let btnSize = drawUndoBtn.currentImage?.size {
-            drawUndoBtn.size = btnSize
+        if #available(iOS 13.0, *) {
+            backgroundView = UIScrollView()
+            backgroundView.maximumZoomScale = 1
+            backgroundView.showsVerticalScrollIndicator = false
+            backgroundView.showsHorizontalScrollIndicator = false
+            backgroundView.clipsToBounds = false
+            backgroundView.scrollsToTop = false
+            backgroundView.isScrollEnabled = false
+            backgroundView.bouncesZoom = false
+            backgroundView.delegate = self
+            backgroundView.contentInsetAdjustmentBehavior = .never
+            editorView.drawType = .canvas
+            
+            drawCancelButton = UIButton(type: .custom)
+            drawCancelButton.setTitle(.textManager.editor.brush.cancelTitle.text, for: .normal)
+            drawCancelButton.setTitleColor(config.cancelButtonTitleColor, for: .normal)
+            drawCancelButton.setTitleColor(config.cancelButtonTitleColor.withAlphaComponent(0.5), for: .highlighted)
+            drawCancelButton.titleLabel?.font = .textManager.editor.brush.cancelTitleFont
+            drawCancelButton.contentHorizontalAlignment = .left
+            drawCancelButton.alpha = 0
+            drawCancelButton.isHidden = true
+            drawCancelButton.addTarget(self, action: #selector(didCancelButtonClick(button:)), for: .touchUpInside)
+            
+            drawFinishButton = UIButton(type: .custom)
+            drawFinishButton.setTitle(.textManager.editor.brush.finishTitle.text, for: .normal)
+            drawFinishButton.setTitleColor(config.finishButtonTitleNormalColor, for: .normal)
+            drawFinishButton.setTitleColor(config.finishButtonTitleNormalColor.withAlphaComponent(0.5), for: .highlighted)
+            drawFinishButton.setTitleColor(config.finishButtonTitleDisableColor.withAlphaComponent(0.5), for: .disabled)
+            drawFinishButton.titleLabel?.font = .textManager.editor.brush.finishTitleFont
+            drawFinishButton.contentHorizontalAlignment = .right
+            drawFinishButton.alpha = 0
+            drawFinishButton.isHidden = true
+            drawFinishButton.addTarget(self, action: #selector(didFinishButtonClick(button:)), for: .touchUpInside)
+            
+            drawUndoBtn = ExpandButton(type: .custom)
+            drawUndoBtn.setImage(.imageResource.editor.brush.canvasUndo.image, for: .normal)
+            if let btnSize = drawUndoBtn.currentImage?.size {
+                drawUndoBtn.size = btnSize
+            }
+            drawUndoBtn.isEnabled = false
+            drawUndoBtn.alpha = 0
+            drawUndoBtn.isHidden = true
+            drawUndoBtn.addTarget(self, action: #selector(didDrawUndoBtn(button:)), for: .touchUpInside)
+            
+            drawUndoAllBtn = ExpandButton(type: .custom)
+            drawUndoAllBtn.setImage(.imageResource.editor.brush.canvasUndoAll.image, for: .normal)
+            if let btnSize = drawUndoAllBtn.currentImage?.size {
+                drawUndoAllBtn.size = btnSize
+            }
+            drawUndoAllBtn.isEnabled = false
+            drawUndoAllBtn.alpha = 0
+            drawUndoAllBtn.isHidden = true
+            drawUndoAllBtn.addTarget(self, action: #selector(didDrawUndoAllBtn(button:)), for: .touchUpInside)
+            
+            drawRedoBtn = ExpandButton(type: .custom)
+            drawRedoBtn.setImage(.imageResource.editor.brush.canvasRedo.image, for: .normal)
+            if let btnSize = drawRedoBtn.currentImage?.size {
+                drawRedoBtn.size = btnSize
+            }
+            drawRedoBtn.isEnabled = false
+            drawRedoBtn.alpha = 0
+            drawRedoBtn.isHidden = true
+            drawRedoBtn.addTarget(self, action: #selector(didDrawRedoBtn(button:)), for: .touchUpInside)
         }
-        drawUndoBtn.tintColor = .white
-        drawUndoBtn.isEnabled = false
-        drawUndoBtn.alpha = 0
-        drawUndoBtn.isHidden = true
-        drawUndoBtn.addTarget(self, action: #selector(didDrawUndoBtn(button:)), for: .touchUpInside)
-        
-        drawUndoAllBtn = ExpandButton(type: .custom)
-        drawUndoAllBtn.setImage(.imageResource.editor.brush.canvasUndoAll.image, for: .normal)
-        if let btnSize = drawUndoAllBtn.currentImage?.size {
-            drawUndoAllBtn.size = btnSize
-        }
-        drawUndoAllBtn.isEnabled = false
-        drawUndoAllBtn.alpha = 0
-        drawUndoAllBtn.tintColor = .white
-        drawUndoAllBtn.isHidden = true
-        drawUndoAllBtn.addTarget(self, action: #selector(didDrawUndoAllBtn(button:)), for: .touchUpInside)
-        
-        drawRedoBtn = ExpandButton(type: .custom)
-        drawRedoBtn.setImage(.imageResource.editor.brush.canvasRedo.image, for: .normal)
-        if let btnSize = drawRedoBtn.currentImage?.size {
-            drawRedoBtn.size = btnSize
-        }
-        drawRedoBtn.isEnabled = false
-        drawRedoBtn.alpha = 0
-        drawRedoBtn.tintColor = .white
-        drawRedoBtn.isHidden = true
-        drawRedoBtn.addTarget(self, action: #selector(didDrawRedoBtn(button:)), for: .touchUpInside)
-        
         editorView.editContentInset = { [weak self] _ in
             guard let self = self else {
                 return .zero
@@ -469,7 +490,7 @@ open class EditorViewController: HXBaseViewController {
         }
         editorView.drawLineWidth = config.brush.lineWidth
         editorView.mosaicWidth = config.mosaic.mosaiclineWidth
-        
+        editorView.smearWidth = config.mosaic.smearWidth
         editorView.editDelegate = self
         editorView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapClick)))
         
@@ -500,16 +521,17 @@ open class EditorViewController: HXBaseViewController {
             self.stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -16),
             self.stackView.widthAnchor.constraint(equalToConstant: 128)
         ]
-
     }
     
     private func addViews() {
         view.clipsToBounds = true
         view.backgroundColor = .black
-        
-        view.addSubview(backgroundView)
-        backgroundView.addSubview(editorView)
-        
+        if #available(iOS 13.0, *) {
+            view.addSubview(backgroundView)
+            backgroundView.addSubview(editorView)
+        }else {
+            view.addSubview(editorView)
+        }
         view.addSubview(bottomMaskView)
         view.addSubview(topMaskView)
         view.addSubview(videoControlView)
@@ -521,7 +543,7 @@ open class EditorViewController: HXBaseViewController {
         if !config.cropSize.aspectRatios.isEmpty {
             view.addSubview(ratioToolView)
             for aspectRatio in config.cropSize.aspectRatios
-            where aspectRatio.ratio.width < 0 || aspectRatio.ratio.height < 0 {
+                where aspectRatio.ratio.width < 0 || aspectRatio.ratio.height < 0 {
                 view.addSubview(scaleSwitchView)
             }
         }
@@ -539,20 +561,20 @@ open class EditorViewController: HXBaseViewController {
         stackView.addArrangedSubview(rightRotateButton)
         stackView.addArrangedSubview(finishButton)
         //xiugai
-        //        view.addSubview(resetButton)
-        //        view.addSubview(cancelButton)
-        //        view.addSubview(finishButton)
+//        view.addSubview(resetButton)
+//        view.addSubview(cancelButton)
+//        view.addSubview(finishButton)
         
-        
-        view.addSubview(drawUndoBtn)
-        view.addSubview(drawRedoBtn)
-        view.addSubview(drawUndoAllBtn)
-        view.addSubview(drawCancelButton)
-        view.addSubview(drawFinishButton)
-        
+        if #available(iOS 13.0, *) {
+            view.addSubview(drawUndoBtn)
+            view.addSubview(drawRedoBtn)
+            view.addSubview(drawUndoAllBtn)
+            view.addSubview(drawCancelButton)
+            view.addSubview(drawFinishButton)
+        }
         //xiugai
-        //        view.addSubview(leftRotateButton)
-        //        view.addSubview(rightRotateButton)
+//        view.addSubview(leftRotateButton)
+//        view.addSubview(rightRotateButton)
         view.addSubview(mirrorHorizontallyButton)
         view.addSubview(mirrorVerticallyButton)
         
@@ -562,6 +584,36 @@ open class EditorViewController: HXBaseViewController {
         
         view.addSubview(filterParameterView)
         
+        view.addSubview(musicView)
+        view.addSubview(volumeView)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterPlayGround),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+    }
+    
+    var didEnterPlayGround: Bool = false
+    @objc
+    func appDidEnterBackground() {
+        didEnterPlayGround = true
+        musicPlayer?.pausePlay()
+    }
+    
+    @objc
+    func appDidEnterPlayGround() {
+        if didEnterPlayGround {
+            musicPlayer?.startPlay()
+        }
+        didEnterPlayGround = false
     }
     
     var isDismissed: Bool = false
@@ -583,6 +635,42 @@ open class EditorViewController: HXBaseViewController {
     var orientationDidChange: Bool = false
     var videoControlInfo: EditorVideoControlInfo?
     
+    weak var audioSticker: EditorStickersItemBaseView?
+    var isSelectedOriginalSound: Bool = true {
+        didSet {
+            volumeView.hasOriginalSound = isSelectedOriginalSound
+            checkFinishButtonState()
+        }
+    }
+    var selectedMusicURL: VideoEditorMusicURL? {
+        didSet {
+            if let task = lastMusicDownloadTask {
+                task.cancel()
+                lastMusicDownloadTask = nil
+            }
+            toolsView.musicCellShowBox = selectedMusicURL != nil
+            checkFinishButtonState()
+        }
+    }
+    
+    var videoVolume: Float = 1 {
+        didSet {
+            editorView.videoVolume = CGFloat(videoVolume)
+            checkFinishButtonState()
+        }
+    }
+    var musicVolume: Float = 1 {
+        didSet {
+            musicPlayer?.volume = musicVolume
+            checkFinishButtonState()
+        }
+    }
+    var musicPlayer: EditorPlayAuido? {
+        didSet {
+            volumeView.hasMusic = musicPlayer != nil
+            checkFinishButtonState()
+        }
+    }
     var imageFilter: PhotoEditorFilter?
     var videoFilterInfo: PhotoEditorFilterInfo?
     var videoFilter: VideoEditorFilter?
@@ -591,13 +679,14 @@ open class EditorViewController: HXBaseViewController {
     var imageFilterQueue: OperationQueue!
     
     var isStartFilterParameterTime: CMTime?
+    var lastMusicDownloadTask: URLSessionDownloadTask?
     var videoCoverView: UIImageView?
     weak var videoTool: EditorVideoTool?
     
-    public override func deviceOrientationWillChanged() {
+    public override func deviceOrientationWillChanged(notify: Notification) {
         orientationDidChange = true
         if editorView.type == .video {
-            if ProcessInfo.processInfo.isiOSAppOnMac, editorView.isVideoPlaying {
+            if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac, editorView.isVideoPlaying {
                 stopPlayVideo()
                 editorView.pauseVideo()
             }
@@ -605,14 +694,14 @@ open class EditorViewController: HXBaseViewController {
             videoControlView.stopLineAnimation()
             videoControlInfo = videoControlView.controlInfo
         }
-        if editorView.drawType == .canvas, selectedTool?.type == .graffiti {
+        if #available(iOS 13.0, *), editorView.drawType == .canvas, selectedTool?.type == .graffiti {
             hideCanvasViews(true, animated: false)
             editorView.quitCanvasDrawing()
         }
     }
     
-    open override func deviceOrientationDidChanged() {
-        if editorView.drawType == .canvas, selectedTool?.type == .graffiti {
+    open override func deviceOrientationDidChanged(notify: Notification) {
+        if #available(iOS 13.0, *), editorView.drawType == .canvas, selectedTool?.type == .graffiti {
             showCanvasViews()
             startCanvasDrawing(true)
         }
@@ -632,7 +721,6 @@ open class EditorViewController: HXBaseViewController {
             return modalPresentationStyle == .fullScreen || modalPresentationStyle == .custom || isFull
         }
     }
-    
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if selectedTool?.type != .graffiti || orientationDidChange {
@@ -645,62 +733,62 @@ open class EditorViewController: HXBaseViewController {
             buttonHeight = 44
         }
         //xiugai
-        //        let cancelWidth: CGFloat
-        //        if let title = cancelButton.currentTitle,
-        //           let font = cancelButton.titleLabel?.font {
-        //            cancelWidth = title.width(ofFont: font, maxHeight: buttonHeight)
-        //        }else {
-        //            cancelWidth = 0
-        //        }
-        //        let finishWidth: CGFloat
-        //        if let title = finishButton.currentTitle,
-        //           let font = finishButton.titleLabel?.font {
-        //            finishWidth = title.width(ofFont: font, maxHeight: buttonHeight)
-        //        }else {
-        //            finishWidth = 0
-        //        }
-        //        let resetWidth: CGFloat
-        //        if let title = resetButton.currentTitle,
-        //           let font = resetButton.titleLabel?.font {
-        //            resetWidth = title.width(ofFont: font, maxHeight: buttonHeight)
-        //        }else {
-        //            resetWidth = 0
-        //        }
-        //
-        //        cancelButton.height = buttonHeight
-        //        finishButton.height = buttonHeight
-        //        cancelButton.width = cancelWidth + 10
-        //        finishButton.width = finishWidth + 10
+//        let cancelWidth: CGFloat
+//        if let title = cancelButton.currentTitle,
+//           let font = cancelButton.titleLabel?.font {
+//            cancelWidth = title.width(ofFont: font, maxHeight: buttonHeight)
+//        }else {
+//            cancelWidth = 0
+//        }
+//        let finishWidth: CGFloat
+//        if let title = finishButton.currentTitle,
+//           let font = finishButton.titleLabel?.font {
+//            finishWidth = title.width(ofFont: font, maxHeight: buttonHeight)
+//        }else {
+//            finishWidth = 0
+//        }
+//        let resetWidth: CGFloat
+//        if let title = resetButton.currentTitle,
+//           let font = resetButton.titleLabel?.font {
+//            resetWidth = title.width(ofFont: font, maxHeight: buttonHeight)
+//        }else {
+//            resetWidth = 0
+//        }
+//        
+//        cancelButton.height = buttonHeight
+//        finishButton.height = buttonHeight
+//        cancelButton.width = cancelWidth + 10
+//        finishButton.width = finishWidth + 10
         
         let buttonMargin: CGFloat
-        if ProcessInfo.processInfo.isiOSAppOnMac {
+        if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
             buttonMargin = 12
         }else {
             buttonMargin = UIDevice.isPad ? 20 : 12
         }
         //xiugai
-        //        cancelButton.x = UIDevice.leftMargin + buttonMargin
-        //        finishButton.x = view.width - finishButton.width - buttonMargin - UIDevice.rightMargin
+//        cancelButton.x = UIDevice.leftMargin + buttonMargin
+//        finishButton.x = view.width - finishButton.width - buttonMargin - UIDevice.rightMargin
         
-        
-        if selectedTool?.type != .graffiti || orientationDidChange {
-            backgroundView.frame = view.bounds
-            backgroundView.contentSize = view.size
+        if #available(iOS 13.0, *) {
+            if selectedTool?.type != .graffiti || orientationDidChange {
+                backgroundView.frame = view.bounds
+                backgroundView.contentSize = view.size
+            }
+            let padding: CGFloat = UIDevice.isPad ? 20 : 15
+            
+            drawCancelButton.size = cancelButton.size
+            drawFinishButton.size = finishButton.size
+            drawCancelButton.x = UIDevice.leftMargin + buttonMargin
+            drawFinishButton.x = view.width - drawFinishButton.width - buttonMargin - UIDevice.rightMargin
+            
+            drawUndoBtn.x = drawCancelButton.frame.maxX + padding
+            drawRedoBtn.x = drawUndoBtn.frame.maxX + padding
+            drawUndoAllBtn.x = drawFinishButton.x - padding - drawUndoAllBtn.width
         }
-        let padding: CGFloat = UIDevice.isPad ? 20 : 15
-        
-        drawCancelButton.size = cancelButton.size
-        drawFinishButton.size = finishButton.size
-        drawCancelButton.x = UIDevice.leftMargin + buttonMargin + 10
-        drawFinishButton.x = view.width - drawFinishButton.width - buttonMargin - UIDevice.rightMargin - 10
-        
-        drawUndoBtn.x = drawCancelButton.frame.maxX + padding
-        drawRedoBtn.x = drawUndoBtn.frame.maxX + padding
-        drawUndoAllBtn.x = drawFinishButton.x - padding - drawUndoAllBtn.width
-        
         //xiugai
-        //        resetButton.size = .init(width: resetWidth, height: buttonHeight)
-        //        resetButton.centerX = view.width * 0.5
+//        resetButton.size = .init(width: resetWidth, height: buttonHeight)
+//        resetButton.centerX = view.width * 0.5
         brushSizeView.size = .init(width: 30, height: 200)
         brushSizeView.centerY = view.height * 0.5
         bottomMaskLayer.removeFromSuperlayer()
@@ -721,7 +809,8 @@ open class EditorViewController: HXBaseViewController {
         topMaskLayer.frame = topMaskView.bounds
         updateBottomMaskLayer()
         filterEditView.frame = filtersView.frame
-        
+        updateMusicViewFrame()
+        updateVolumeViewFrame()
         updateFilterParameterViewFrame()
         if firstAppear {
             firstAppear = false
@@ -741,6 +830,7 @@ open class EditorViewController: HXBaseViewController {
                 if let selectedTool = self.selectedTool {
                     self.toolsView.scrollToOption(with: selectedTool.type)
                 }
+                self.musicView.scrollToSelected()
             }
             orientationDidChange = false
         }
@@ -750,7 +840,6 @@ open class EditorViewController: HXBaseViewController {
         invertColorButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
         invertColorButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         invertColorButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
     }
     
     func layoutPortraitViews(_ buttonHeight: CGFloat) {
@@ -814,9 +903,9 @@ open class EditorViewController: HXBaseViewController {
                 bottomMargin = 0
             }
             //xiugai
-            //            cancelButton.y = view.height - bottomMargin - buttonHeight
-            //            finishButton.centerY = cancelButton.centerY
-            //            resetButton.centerY = cancelButton.centerY
+//            cancelButton.y = view.height - bottomMargin - buttonHeight
+//            finishButton.centerY = cancelButton.centerY
+//            resetButton.centerY = cancelButton.centerY
             toolsView.frame = CGRect(
                 x: cancelButton.frame.maxX,
                 y: view.height - bottomMargin - buttonHeight,
@@ -832,10 +921,10 @@ open class EditorViewController: HXBaseViewController {
         }else {
             let toolsHeight: CGFloat
             let ratioToolHeight: CGFloat
-#if targetEnvironment(macCatalyst)
+            #if targetEnvironment(macCatalyst)
             toolsHeight = 55
             ratioToolHeight = 50
-#else
+            #else
             if UIDevice.isPad {
                 toolsHeight = 55
                 ratioToolHeight = 50
@@ -843,20 +932,20 @@ open class EditorViewController: HXBaseViewController {
                 toolsHeight = buttonHeight
                 ratioToolHeight = 40
             }
-#endif
+            #endif
             var bottomMargin = UIDevice.bottomMargin
             //xiugai
-            //            if isFullScreen {
-            //                cancelButton.centerY = navY + navHeight / 2
-            //            }else {
-            //                if UIDevice.isPad {
-            //                    bottomMargin = 0
-            //                }
-            //                cancelButton.centerY = navHeight / 2
-            //            }
-            //            finishButton.centerY = cancelButton.centerY
-            //            resetButton.centerY = cancelButton.centerY
-            
+//            if isFullScreen {
+//                cancelButton.centerY = navY + navHeight / 2
+//            }else {
+//                if UIDevice.isPad {
+//                    bottomMargin = 0
+//                }
+//                cancelButton.centerY = navHeight / 2
+//            }
+//            finishButton.centerY = cancelButton.centerY
+//            resetButton.centerY = cancelButton.centerY
+             
             toolsView.frame = CGRect(
                 x: 0,
                 y: view.height - bottomMargin - toolsHeight,
@@ -864,7 +953,7 @@ open class EditorViewController: HXBaseViewController {
                 height: toolsHeight + bottomMargin
             )
             let rotateBottom: CGFloat
-            if ProcessInfo.processInfo.isiOSAppOnMac {
+            if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
                 rotateBottom = bottomMargin + 5
             }else {
                 rotateBottom = UIDevice.isPad ? bottomMargin + 10 : bottomMargin
@@ -887,10 +976,10 @@ open class EditorViewController: HXBaseViewController {
             }
             if UIDevice.isPad {
                 //xiugai
-                //                leftRotateButton.centerY = cancelButton.centerY
-                //                leftRotateButton.x = cancelButton.frame.maxX + 20
-                //                rightRotateButton.centerY = leftRotateButton.centerY
-                //                rightRotateButton.x = leftRotateButton.frame.maxX + 20
+//                leftRotateButton.centerY = cancelButton.centerY
+//                leftRotateButton.x = cancelButton.frame.maxX + 20
+//                rightRotateButton.centerY = leftRotateButton.centerY
+//                rightRotateButton.x = leftRotateButton.frame.maxX + 20
                 
                 mirrorHorizontallyButton.x = finishButton.x - mirrorHorizontallyButton.width - 20
                 mirrorVerticallyButton.x = mirrorHorizontallyButton.x - 20 - mirrorVerticallyButton.width
@@ -902,17 +991,17 @@ open class EditorViewController: HXBaseViewController {
             }
         }
         
-        
-        if isFullScreen {
-            drawCancelButton.centerY = navY + navHeight / 2 + UIDevice.statusBarHeight
-        }else {
-            drawCancelButton.centerY = navHeight / 2
+        if #available(iOS 13.0, *) {
+            if isFullScreen {
+                drawCancelButton.centerY = navY + navHeight / 2
+            }else {
+                drawCancelButton.centerY = navHeight / 2
+            }
+            drawUndoBtn.centerY = drawCancelButton.centerY
+            drawRedoBtn.centerY = drawCancelButton.centerY
+            drawUndoAllBtn.centerY = drawCancelButton.centerY
+            drawFinishButton.centerY = drawCancelButton.centerY
         }
-        drawUndoBtn.centerY = drawCancelButton.centerY
-        drawRedoBtn.centerY = drawCancelButton.centerY
-        drawUndoAllBtn.centerY = drawCancelButton.centerY
-        drawFinishButton.centerY = drawCancelButton.centerY
-        
         
         filtersView.frame = .init(x: 0, y: toolsView.y - 120, width: view.width, height: 120)
         brushColorView.frame = .init(x: 0, y: toolsView.y - 65, width: view.width, height: 65)
@@ -926,10 +1015,10 @@ open class EditorViewController: HXBaseViewController {
         
         if !UIDevice.isPad || config.buttonType == .bottom {
             //xiugai
-            //            leftRotateButton.y = rotateScaleView.y - leftRotateButton.height - 10
-            //            leftRotateButton.x = UIDevice.leftMargin + 20
-            //            rightRotateButton.centerY = leftRotateButton.centerY
-            //            rightRotateButton.x = leftRotateButton.frame.maxX + 15
+//            leftRotateButton.y = rotateScaleView.y - leftRotateButton.height - 10
+//            leftRotateButton.x = UIDevice.leftMargin + 20
+//            rightRotateButton.centerY = leftRotateButton.centerY
+//            rightRotateButton.x = leftRotateButton.frame.maxX + 15
             
             mirrorHorizontallyButton.x = view.width - UIDevice.rightMargin - mirrorHorizontallyButton.width - 20
             mirrorVerticallyButton.x = mirrorHorizontallyButton.x - 15 - mirrorVerticallyButton.width
@@ -989,22 +1078,22 @@ open class EditorViewController: HXBaseViewController {
         }
         topMaskView.frame = .init(x: 0, y: 0, width: view.width, height: UIDevice.topMargin + 50)
         //xiugai
-        //        cancelButton.y = UIDevice.topMargin
-        //        finishButton.centerY = cancelButton.centerY
-        //        resetButton.centerY = cancelButton.centerY
+//        cancelButton.y = UIDevice.topMargin
+//        finishButton.centerY = cancelButton.centerY
+//        resetButton.centerY = cancelButton.centerY
         
-        
-        drawCancelButton.y = UIDevice.topMargin
-        drawUndoBtn.centerY = drawCancelButton.centerY
-        drawRedoBtn.centerY = drawCancelButton.centerY
-        drawUndoAllBtn.centerY = drawCancelButton.centerY
-        drawFinishButton.centerY = drawCancelButton.centerY
-        
+        if #available(iOS 13.0, *) {
+            drawCancelButton.y = UIDevice.topMargin
+            drawUndoBtn.centerY = drawCancelButton.centerY
+            drawRedoBtn.centerY = drawCancelButton.centerY
+            drawUndoAllBtn.centerY = drawCancelButton.centerY
+            drawFinishButton.centerY = drawCancelButton.centerY
+        }
         //xiugai
-        //        leftRotateButton.centerY = cancelButton.centerY
-        //        leftRotateButton.x = cancelButton.frame.maxX + 15
-        //        rightRotateButton.centerY = cancelButton.centerY
-        //        rightRotateButton.x = leftRotateButton.frame.maxX + 15
+//        leftRotateButton.centerY = cancelButton.centerY
+//        leftRotateButton.x = cancelButton.frame.maxX + 15
+//        rightRotateButton.centerY = cancelButton.centerY
+//        rightRotateButton.x = leftRotateButton.frame.maxX + 15
         
         mirrorHorizontallyButton.x = finishButton.x - mirrorHorizontallyButton.width - 15
         mirrorVerticallyButton.x = mirrorHorizontallyButton.x - 15 - mirrorVerticallyButton.width
@@ -1089,7 +1178,7 @@ open class EditorViewController: HXBaseViewController {
         if let videoControlInfo = videoControlInfo {
             videoControlView.reloadVideo()
             videoControlView.layoutIfNeeded()
-            if ProcessInfo.processInfo.isiOSAppOnMac {
+            if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
                 videoControlView.setControlInfo(videoControlInfo)
                 videoControlView.resetLineViewFrsme(at: editorView.videoPlayTime)
                 updateVideoTimeRange()
@@ -1117,7 +1206,8 @@ open class EditorViewController: HXBaseViewController {
                     }
                 case .mosaic:
                     layerHeight = UIDevice.bottomMargin + 130
-                    
+                case .music:
+                    layerHeight = UIDevice.bottomMargin + 55
                 default:
                     layerHeight = UIDevice.bottomMargin + 180
                 }
@@ -1137,7 +1227,8 @@ open class EditorViewController: HXBaseViewController {
                     }
                 case .mosaic:
                     layerWidth = 130 + UIDevice.rightMargin
-                    
+                case .music:
+                    layerWidth = 65 + UIDevice.rightMargin
                 default:
                     layerWidth = 180 + UIDevice.rightMargin
                 }
@@ -1147,6 +1238,59 @@ open class EditorViewController: HXBaseViewController {
             bottomMaskView.frame = .init(x: view.width - layerWidth, y: 0, width: layerWidth, height: view.height)
         }
         bottomMaskLayer.frame = bottomMaskView.bounds
+    }
+    
+    func updateMusicViewFrame() {
+        let marginHeight: CGFloat = 190
+        let musicY: CGFloat
+        let musicHeight: CGFloat
+        let bottomMargin: CGFloat
+        if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
+            bottomMargin = UIDevice.bottomMargin + 5
+        }else {
+            bottomMargin = UIDevice.bottomMargin
+        }
+        if let type = selectedTool?.type,
+           type == .music {
+            musicY = view.height - marginHeight - bottomMargin
+            musicHeight = marginHeight + bottomMargin
+        }else {
+            musicY = view.height
+            musicHeight = marginHeight + bottomMargin
+        }
+        musicView.frame = CGRect(
+            x: 0,
+            y: musicY,
+            width: view.width,
+            height: musicHeight
+        )
+    }
+    
+    var isShowVolume: Bool = false
+    
+    func updateVolumeViewFrame() {
+        let marginHeight: CGFloat = 120
+        let volumeY: CGFloat
+        let volumeHeight: CGFloat
+        if !isShowVolume {
+            volumeY = view.height
+            volumeHeight = marginHeight
+        }else {
+            volumeY = view.height - marginHeight - UIDevice.bottomMargin - 20
+            volumeHeight = marginHeight
+        }
+        let marginWidth: CGFloat
+        if UIDevice.isPortrait {
+            marginWidth = UIDevice.leftMargin + UIDevice.rightMargin + 30
+        }else {
+            marginWidth = UIDevice.leftMargin + UIDevice.rightMargin + 100
+        }
+        volumeView.frame = CGRect(
+            x: marginWidth * 0.5,
+            y: volumeY,
+            width: view.width - marginWidth,
+            height: volumeHeight
+        )
     }
     
     var isShowFilterParameter: Bool = false
@@ -1252,6 +1396,8 @@ open class EditorViewController: HXBaseViewController {
     func removeVideo() {
         if editorView.type == .video {
             editorView.pauseVideo()
+            musicPlayer?.stopPlay()
+            musicPlayer = nil
             editorView.cancelVideoCroped()
             videoTool?.cancelExport()
             videoTool = nil
@@ -1304,7 +1450,7 @@ extension EditorViewController: UIScrollViewDelegate {
             let viewWidth = scrollView.width - scrollView.contentInset.left - scrollView.contentInset.right
             let viewHeight = scrollView.height - scrollView.contentInset.top - scrollView.contentInset.bottom
             let offsetX = (viewWidth > scrollView.contentSize.width) ?
-            (viewWidth - scrollView.contentSize.width) * 0.5 : 0
+                (viewWidth - scrollView.contentSize.width) * 0.5 : 0
             let offsetY = (viewHeight > contentHeight) ?
             (viewHeight - contentHeight) * 0.5 : 0
             let centerX = scrollView.contentSize.width * 0.5 + offsetX

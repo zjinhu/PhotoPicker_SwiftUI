@@ -10,7 +10,7 @@ import UIKit
 extension UIViewController {
     
     class var topViewController: UIViewController? {
-        let window = UIApplication.keyWindow
+        let window = UIApplication._keyWindow
         if var topViewController = window?.rootViewController {
             while true {
                 if let controller = topViewController.presentedViewController {

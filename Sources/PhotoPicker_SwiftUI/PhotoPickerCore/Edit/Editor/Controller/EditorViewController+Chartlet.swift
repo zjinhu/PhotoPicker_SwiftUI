@@ -76,9 +76,7 @@ extension EditorViewController: EditorChartletViewControllerDelegate {
             )
         }else {
             // 默认加载这些贴图
-
             response(titleIndex, [])
-
         }
     }
 }

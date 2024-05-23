@@ -54,12 +54,12 @@ class EditorChartletViewListCell: UICollectionViewCell,
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsHorizontalScrollIndicator = false
-
+        if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
-
+        }
         collectionView.register(EditorChartletViewCell.self, forCellWithReuseIdentifier: "EditorChartletViewListCellID")
         contentView.addSubview(collectionView)
-        loadingView = UIActivityIndicatorView(style: .medium)
+        loadingView = UIActivityIndicatorView(style: .white)
         loadingView.hidesWhenStopped = true
         contentView.addSubview(loadingView)
     }

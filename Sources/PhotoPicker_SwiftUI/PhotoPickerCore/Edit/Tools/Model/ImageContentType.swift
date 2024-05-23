@@ -17,5 +17,6 @@ public enum ImageContentType: String {
 enum FileType: String {
     case unknown
     case image
+    case auido
     case video
 }

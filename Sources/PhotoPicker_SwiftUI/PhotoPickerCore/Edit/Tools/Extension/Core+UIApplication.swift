@@ -7,61 +7,59 @@
 
 import UIKit
 
-private extension UIScene.ActivationState {
-    var sortPriority: Int {
-        switch self {
-        case .foregroundActive: return 1
-        case .foregroundInactive: return 2
-        case .background: return 3
-        case .unattached: return 4
-        @unknown default: return 5
-        }
-    }
-}
-
 extension UIApplication {
-    static var keyWindow: UIWindow? {
-        return UIApplication.shared.connectedScenes
-            .sorted { $0.activationState.sortPriority < $1.activationState.sortPriority }
-            .compactMap { $0 as? UIWindowScene }
-            .compactMap { $0.windows.first { $0.isKeyWindow } }
-            .first
+    static var _keyWindow: UIWindow? {
+        if #available(iOS 13.0, *), Thread.isMainThread,
+           let window = shared.windows.filter({ $0.isKeyWindow }).last {
+            return window
+        }
+        guard let window = shared.delegate?.window else {
+            return shared.keyWindow
+        }
+        return window
     }
     
     static var interfaceOrientation: UIInterfaceOrientation {
-        let orientation = keyWindow?.windowScene?.interfaceOrientation ?? .portrait
-        return orientation
+        if #available(iOS 13.0, *), Thread.isMainThread,
+           let orientation = _keyWindow?.windowScene?.interfaceOrientation {
+            return orientation
+        }
+        return shared.statusBarOrientation
     }
 }
 
 extension UIScreen {
     
     static var _scale: CGFloat {
-        
-        let scale = UIApplication.keyWindow?.windowScene?.screen.scale ?? 0
-        return scale
-        
+        if #available(iOS 13.0, *), Thread.isMainThread,
+           let scale = UIApplication._keyWindow?.windowScene?.screen.scale {
+            return scale
+        }
+        return main.scale
     }
     
     static var _width: CGFloat {
-        
-        let width = UIApplication.keyWindow?.windowScene?.screen.bounds.width ?? 0
-        return width
-        
+        if #available(iOS 13.0, *), Thread.isMainThread,
+           let width = UIApplication._keyWindow?.windowScene?.screen.bounds.width {
+            return width
+        }
+        return main.bounds.width
     }
     
     static var _height: CGFloat {
-        
-        let height = UIApplication.keyWindow?.windowScene?.screen.bounds.height ?? 0
-        return height
-        
+        if #available(iOS 13.0, *), Thread.isMainThread,
+           let height = UIApplication._keyWindow?.windowScene?.screen.bounds.height {
+            return height
+        }
+        return main.bounds.height
     }
     
     static var _size: CGSize {
-        
-        let size = UIApplication.keyWindow?.windowScene?.screen.bounds.size ?? .zero
-        return size
-        
+        if #available(iOS 13.0, *), Thread.isMainThread,
+           let size = UIApplication._keyWindow?.windowScene?.screen.bounds.size {
+            return size
+        }
+        return main.bounds.size
     }
     
 }

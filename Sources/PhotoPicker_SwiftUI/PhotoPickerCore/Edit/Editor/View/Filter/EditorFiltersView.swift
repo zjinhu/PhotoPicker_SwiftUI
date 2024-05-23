@@ -48,15 +48,15 @@ class EditorFiltersView: UIView {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-
+        if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
-
+        }
         collectionView.register(
             EditorFiltersViewCell.self,
             forCellWithReuseIdentifier: "EditorFiltersViewCellID"
         )
         addSubview(collectionView)
-        loaddingView = UIActivityIndicatorView(style: .medium)
+        loaddingView = UIActivityIndicatorView(style: .white)
         loaddingView.hidesWhenStopped = true
         loadQueue = OperationQueue()
         loadQueue.maxConcurrentOperationCount = 1

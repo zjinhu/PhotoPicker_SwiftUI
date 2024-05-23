@@ -97,10 +97,19 @@ extension UIView: HXPickerCompatible {
     }
     
     func cornersRound(radius: CGFloat, corner: UIRectCorner) {
-
+        if #available(iOS 11.0, *) {
             layer.cornerRadius = radius
             layer.maskedCorners = corner.mask
-
+        } else {
+            let path = UIBezierPath(
+                roundedRect: bounds,
+                byRoundingCorners: corner,
+                cornerRadii: CGSize(width: radius, height: radius)
+            )
+            let mask = CAShapeLayer()
+            mask.path = path.cgPath
+            layer.mask = mask
+        }
     }
 }
 

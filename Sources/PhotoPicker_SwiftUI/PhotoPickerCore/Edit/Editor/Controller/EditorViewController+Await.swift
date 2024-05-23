@@ -7,7 +7,8 @@
 //
 
 import UIKit
- 
+
+@available(iOS 13.0.0, *)
 public extension EditorViewController {
     
     @MainActor

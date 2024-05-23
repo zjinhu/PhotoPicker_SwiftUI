@@ -34,7 +34,16 @@ class EditorVideoPlayerView: VideoPlayerView {
     var videoSize: CGSize = .zero
     
     var coverImageView: UIImageView!
-
+    
+    var volume: CGFloat {
+        get {
+            CGFloat(player.volume)
+        }
+        set {
+            player.volume = Float(newValue)
+        }
+    }
+    
     var playTime: CMTime {
         player.currentTime()
     }

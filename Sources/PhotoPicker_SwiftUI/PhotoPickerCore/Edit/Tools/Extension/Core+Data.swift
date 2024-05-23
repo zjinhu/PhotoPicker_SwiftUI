@@ -35,6 +35,8 @@ extension Data {
         switch firstByte {
         case 0xFF:
             return .image
+        case 0x25:
+            return .auido
         case 0x00:
             return .video
         default:

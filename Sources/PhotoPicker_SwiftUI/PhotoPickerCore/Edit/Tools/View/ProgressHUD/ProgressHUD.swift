@@ -111,7 +111,7 @@ final class ProgressHUD: UIView {
             indicatorView.startAnimating()
             self.indicatorView = indicatorView
         case .system:
-            let indicatorView: UIActivityIndicatorView = .init(style: .large)
+            let indicatorView: UIActivityIndicatorView = .init(style: .whiteLarge)
             indicatorView.hidesWhenStopped = true
             indicatorView.startAnimating()
             self.indicatorView = indicatorView

@@ -46,9 +46,9 @@ class EditorRatioToolViewCell: UICollectionViewCell {
         contentView.addSubview(bgEffectView)
         
         bgView = UIView()
-  
+        if #available(iOS 11.0, *) {
             bgView.cornersRound(radius: bgHeight / 2, corner: .allCorners)
-        
+        }
         titleLb = UILabel()
         titleLb.textAlignment = .center
         titleLb.font = .systemFont(ofSize: UIDevice.isPad ? 16 : 14)
@@ -86,7 +86,10 @@ class EditorRatioToolViewCell: UICollectionViewCell {
         }
         titleLb.frame = bgView.bounds
         bgEffectView.frame = bgView.frame
-
+        guard #available(iOS 11.0, *) else {
+            bgView.cornersRound(radius: bgHeight / 2, corner: .allCorners)
+            return
+        }
     }
     
     required init?(coder: NSCoder) {

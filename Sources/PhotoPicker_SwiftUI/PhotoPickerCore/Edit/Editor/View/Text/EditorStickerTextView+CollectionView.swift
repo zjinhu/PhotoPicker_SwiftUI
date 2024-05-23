@@ -36,7 +36,7 @@ extension EditorStickerTextView: UICollectionViewDataSource,
         let color: UIColor
         if isShowCustomColor, indexPath.item == config.colors.count - 1 {
             color = customColor.color
-      
+            if #available(iOS 14.0, *) {
                 if !customColor.isFirst && !customColor.isSelected {
                     customColor.isSelected = true
                 }else {
@@ -47,7 +47,7 @@ extension EditorStickerTextView: UICollectionViewDataSource,
                     customColor.isFirst = false
                     customColor.isSelected = true
                 }
-            
+            }
         }else {
             color = colorHex.color
         }

@@ -43,11 +43,14 @@ public struct QuickLookView: View {
                                     .frame(width: proxy.size.width)
                                     .clipped()
                                     .tag(index)
+                                    .id(UUID())
                             case .video:
                                 QLVideoView(asset: asset)
                                     .frame(width: proxy.size.width)
                                     .clipped()
                                     .tag(index)
+                                    .id(UUID())
+                                
                             case .unknown, .audio:
                                 EmptyView()
                                     .tag(index)
@@ -59,7 +62,7 @@ public struct QuickLookView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
-                .id(UUID())
+//                .id(UUID())
                 
                 ScrollViewReader { value in
                     

@@ -18,7 +18,16 @@ extension EditorViewController {
                 isCropTime = true
             }
         }
-
+        var isSelectMusic: Bool = false
+        if selectedMusicURL != nil {
+            isSelectMusic = true
+        }
+        if !isSelectedOriginalSound {
+            isSelectMusic = true
+        }
+        if videoVolume < 1 {
+            isSelectMusic = true
+        }
         var isCropSize: Bool = false
         if selectedAsset.contentType == .image {
             isCropSize = editorView.isCropedImage
@@ -35,7 +44,7 @@ extension EditorViewController {
         }else if selectedAsset.contentType == .video {
             isSelectFilter = videoFilter != nil
         }
-        return isCropTime || isCropSize || isFilterEdited || isSelectFilter
+        return isCropTime || isSelectMusic || isCropSize || isFilterEdited || isSelectFilter
     }
 }
 
@@ -182,17 +191,47 @@ extension EditorViewController {
     
     func videoProcessing() {
         let isCropTime: Bool = editorView.videoDuration.seconds != videoControlView.middleDuration
-
-        if editorView.isCropedVideo || videoFilter != nil || filterEditFator.isApply || isCropTime {
+        var isSelectMusic: Bool = false
+        if selectedMusicURL != nil {
+            isSelectMusic = true
+        }
+        if !isSelectedOriginalSound {
+            isSelectMusic = true
+        }
+        if videoVolume < 1 {
+            isSelectMusic = true
+        }
+        if editorView.isCropedVideo || videoFilter != nil || filterEditFator.isApply || isSelectMusic || isCropTime {
             let timeRange: CMTimeRange
             if isCropTime {
                 timeRange = .init(start: videoControlView.startTime, end: videoControlView.endTime)
             }else {
                 timeRange = .zero
             }
-
+            var audios: [EditorVideoFactor.Audio] = []
+            if let musicURL = selectedMusicURL {
+                let volume = musicPlayer?.volume ?? 1
+                let audioURL: URL?
+                switch musicURL {
+                case .network(let url):
+                    audioURL = PhotoTools.getAudioTmpURL(for: url.absoluteString)
+                default:
+                    audioURL = musicURL.url
+                }
+                if let audioURL = audioURL {
+                    audios.append(.init(url: audioURL, volume: volume))
+                }
+            }
+            let videoVolume: Float
+            if isSelectedOriginalSound {
+                videoVolume = self.videoVolume
+            }else {
+                videoVolume = 0
+            }
             let factor = EditorVideoFactor(
                 timeRang: timeRange,
+                volume: videoVolume,
+                audios: audios,
                 maskType: config.cropSize.maskType,
                 preset: config.video.preset,
                 quality: config.video.quality
@@ -230,7 +269,7 @@ extension EditorViewController {
                 }
             }else {
                 if config.isFixedCropSizeState && config.isIgnoreCropTimeWhenFixedCropSizeState {
-                    if (videoFilter != nil || filterEditFator.isApply) && !isCropTime {
+                    if (videoFilter != nil || filterEditFator.isApply || isSelectMusic) && !isCropTime {
                         videoFilterProcessing(factor)
                     }else {
                         editedResult = nil
@@ -367,8 +406,16 @@ extension EditorViewController {
                 controlInfo: videoControlView.controlInfo
             )
         }
- 
+        let music = musicPlayer?.music
         editedData = .init(
+            music: .init(
+                hasOriginalSound: isSelectedOriginalSound,
+                videoSoundVolume: videoVolume,
+                backgroundMusicURL: selectedMusicURL,
+                backgroundMusicVolume: musicVolume,
+                musicIdentifier: musicPlayer?.audio?.identifier,
+                music: music
+            ),
             cropTime: cropTime,
             filterEdit: filterEdit,
             filter: filter,
@@ -391,7 +438,12 @@ extension EditorViewController {
 extension EditorViewController {
     
     func backClick(_ isCancel: Bool = false) {
-
+        switch selectedAsset.type {
+        case .networkVideo(let url):
+            PhotoManager.shared.suspendTask(url)
+        default:
+            break
+        }
         PhotoManager.HUDView.dismiss(delay: 0, animated: true, for: view)
         removeVideo()
         if isCancel {
@@ -402,13 +454,13 @@ extension EditorViewController {
         if let assetRequestID = assetRequestID {
             PHImageManager.default().cancelImageRequest(assetRequestID)
         }
-//        if config.isAutoBack {
-//            if let navigationController = navigationController, navigationController.viewControllers.count > 1 {
-//                navigationController.popViewController(animated: true)
-//            }else {
-//                dismiss(animated: true, completion: nil)
-//            }
-//        }
+        if config.isAutoBack {
+            if let navigationController = navigationController, navigationController.viewControllers.count > 1 {
+                navigationController.popViewController(animated: true)
+            }else {
+                dismiss(animated: true, completion: nil)
+            }
+        }
     }
 }
 

@@ -183,7 +183,13 @@ public extension EditorView {
     func seekVideo(to time: TimeInterval, isPlay: Bool, comletion: ((Bool) -> Void)? = nil) {
         adjusterView.seekVideo(to: time, isPlay: isPlay, comletion: comletion)
     }
-
+    
+    /// 视频音量
+    var videoVolume: CGFloat {
+        get { adjusterView.videoVolume }
+        set { adjusterView.videoVolume = newValue }
+    }
+    
     /// 播放视频
     func playVideo() {
         adjusterView.playVideo()
@@ -241,6 +247,7 @@ public extension EditorView {
 }
 
 // MARK: 绘画
+@available(iOS 13.0, *)
 public extension EditorView {
     
     /// 画布内容是否为空
@@ -390,7 +397,14 @@ public extension EditorView {
         get { adjusterView.mosaicWidth }
         set { adjusterView.mosaicWidth = newValue }
     }
-
+    
+    /// Smudge width, default 30
+    /// 涂抹宽度， 默认 30
+    var smearWidth: CGFloat {
+        get { adjusterView.smearWidth }
+        set { adjusterView.smearWidth = newValue }
+    }
+    
     /// Mosaic smear type, default mosaic
     /// 马赛克涂抹类型，默认 马赛克
     var mosaicType: EditorMosaicType {
@@ -466,6 +480,16 @@ public extension EditorView {
         isSelected: Bool = false
     ) -> EditorStickersItemBaseView {
         adjusterView.addSticker(.init(.text(text)), isSelected: isSelected)
+    }
+    
+    /// Add audio stickers
+    /// 添加音频贴纸
+    @discardableResult
+    func addSticker(
+        _ audio: EditorStickerAudio,
+        isSelected: Bool = false
+    ) -> EditorStickersItemBaseView {
+        adjusterView.addSticker(.init(.audio(audio)), isSelected: isSelected)
     }
     
     /// 添加贴纸

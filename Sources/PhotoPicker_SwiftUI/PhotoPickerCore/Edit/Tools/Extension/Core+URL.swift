@@ -17,7 +17,7 @@ extension URL {
         }
         return fileSize
     }
-    
+
     var fileType: FileType {
         guard let fileData = try? Data(contentsOf: self) else {
             return .unknown

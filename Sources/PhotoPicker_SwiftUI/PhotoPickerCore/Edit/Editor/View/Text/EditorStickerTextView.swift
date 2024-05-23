@@ -32,7 +32,7 @@ class EditorStickerTextView: UIView {
     
     var customColor: PhotoEditorBrushCustomColor
     var isShowCustomColor: Bool {
-        if config.colors.count > 1 {
+        if #available(iOS 14.0, *), config.colors.count > 1 {
             return true
         }
         return false
@@ -56,7 +56,7 @@ class EditorStickerTextView: UIView {
         stickerText: EditorStickerText?
     ) {
         self.config = config
-        if config.colors.count > 1, let color = config.colors.last?.color {
+        if #available(iOS 14.0, *), config.colors.count > 1, let color = config.colors.last?.color {
             self.customColor = .init(color: color)
         }else {
             self.customColor = .init(color: .clear)
@@ -102,9 +102,9 @@ class EditorStickerTextView: UIView {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-
+        if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
-        
+        }
         collectionView.register(
             EditorStickerTextViewCell.self,
             forCellWithReuseIdentifier: "EditorStickerTextViewCellID"
@@ -271,7 +271,7 @@ class EditorStickerTextView: UIView {
                 }
                 let buttonRect = convert(
                     .init(x: 0, y: firstTextButtonY, width: 50, height: 50),
-                    to: UIApplication.keyWindow
+                    to: UIApplication._keyWindow
                 )
                 if buttonRect.maxY > keyboardFrame.minY {
                     textButton.y = height - (buttonRect.maxY - keyboardFrame.minY + 50)

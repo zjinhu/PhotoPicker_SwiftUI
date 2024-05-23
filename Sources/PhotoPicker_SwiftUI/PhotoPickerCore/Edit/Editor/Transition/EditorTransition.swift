@@ -67,9 +67,7 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
                 containerView.addSubview(fromVC.view)
             }
             containerView.addSubview(toVC.view)
- 
             fromVC.view.addSubview(contentView)
-
             contentView.backgroundColor = .clear
             editorVC = toVC
         case .pop, .dismiss:
@@ -77,14 +75,12 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
                 containerView.addSubview(toVC.view)
                 containerView.addSubview(fromVC.view)
             }
-           
-            toVC.view.addSubview(contentView)
             
+            toVC.view.addSubview(contentView)
             contentView.backgroundColor = .black
             editorVC = fromVC
         }
         contentView.addSubview(previewView)
-
         var fromRect: CGRect = .zero
         var toRect: CGRect = .zero
         let isSpring: Bool = true
@@ -106,7 +102,7 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
                 if let image = image {
                     editorVC.setTransitionImage(image)
                 }
-                
+
                 if let image = editorVC.editorView.image {
                     toRect = getTransitionFrame(
                         with: image.size,
@@ -122,7 +118,7 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
                         toRect = .zero
                     }
                 }
-                
+
                 if toRect.width < editorVC.view.width {
                     toRect.origin.x = (editorVC.view.width - toRect.width) * 0.5
                 }
@@ -176,13 +172,13 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
             switch self.mode {
             case .push, .present:
                 contentView.backgroundColor = .black
-
+               
                 if let editorVC = editorVC as? EditorViewController {
                     editorVC.transitionShow()
                 }
             case .pop, .dismiss:
                 contentView.backgroundColor = .clear
- 
+            
                 if let editorVC = editorVC as? EditorViewController {
                     editorVC.transitionHide()
                 }
@@ -226,7 +222,7 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
                     PHImageManager.default().cancelImageRequest(requestID)
                     self.requestID = nil
                 }
-
+                
                 if let editorVC = editorVC as? EditorViewController {
                     editorVC.view.backgroundColor = .black
                     editorVC.editorView.isHidden = false
@@ -237,7 +233,6 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
                 contentView.removeFromSuperview()
                 transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
             case .pop, .dismiss:
- 
                 UIView.animate(
                     withDuration: 0.25,
                     delay: 0,
@@ -279,7 +274,7 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
             )
         }
     }
-    
+
     func getTransitionFrame(with imageSize: CGSize, viewSize: CGSize) -> CGRect {
         let imageScale = imageSize.width / imageSize.height
         let imageWidth = viewSize.width

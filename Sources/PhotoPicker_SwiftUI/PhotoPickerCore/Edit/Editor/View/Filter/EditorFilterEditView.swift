@@ -151,9 +151,9 @@ class EditorFilterEditView: UIView {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-
+        if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
-
+        }
         collectionView.register(
             EditorFilterEditViewCell.self,
             forCellWithReuseIdentifier: "EditorFilterEditViewCellID"
@@ -264,7 +264,6 @@ class EditorFilterEditViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         imageView = UIImageView()
-        imageView.tintColor = .white
         let visualEffect = UIBlurEffect.init(style: .dark)
         bgView = UIVisualEffectView.init(effect: visualEffect)
         bgView.contentView.addSubview(imageView)

@@ -35,6 +35,10 @@ public protocol EditorViewDelegate: AnyObject {
     func editorView(_ editorView: EditorView, didRemoveStickerItem itemView: EditorStickersItemBaseView)
     /// 贴纸重新添加之后的回调（旋转、添加上一次）
     func editorView(_ editorView: EditorView, resetItemViews itemViews: [EditorStickersItemBaseView])
+    /// 添加上一次编辑的音频贴纸
+    /// true：允许添加
+    /// false：禁止添加
+    func editorView(_ editorView: EditorView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool
     
     // MARK: Video
     /// 视频开始播放
@@ -58,7 +62,8 @@ public protocol EditorViewDelegate: AnyObject {
     /// 视频添加滤镜
     func editorView(_ editorView: EditorView, videoApplyFilter sourceImage: CIImage, at time: CMTime) -> CIImage
     
-        func editorView(_ editorView: EditorView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker)
+    @available(iOS 13.0, *)
+    func editorView(_ editorView: EditorView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker)
 }
 
 public extension EditorViewDelegate {
@@ -74,6 +79,7 @@ public extension EditorViewDelegate {
     func editorView(_ editorView: EditorView, shouldRemoveStickerItem itemView: EditorStickersItemBaseView) { }
     func editorView(_ editorView: EditorView, didRemoveStickerItem itemView: EditorStickersItemBaseView) { }
     func editorView(_ editorView: EditorView, resetItemViews itemViews: [EditorStickersItemBaseView]) { }
+    func editorView(_ editorView: EditorView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool { true }
     func editorView(_ editorView: EditorView, videoDidPlayAt time: CMTime) { }
     func editorView(_ editorView: EditorView, videoDidPauseAt time: CMTime) { }
     func editorView(videoReadyForDisplay editorView: EditorView) { }
@@ -93,5 +99,7 @@ public extension EditorViewDelegate {
         at time: CMTime
     ) -> CIImage { sourceImage }
     
+    
+    @available(iOS 13.0, *)
     func editorView(_ editorView: EditorView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker) { }
 }

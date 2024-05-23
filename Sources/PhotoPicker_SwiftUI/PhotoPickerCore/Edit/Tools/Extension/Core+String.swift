@@ -12,7 +12,7 @@ import CoreServices
 import UniformTypeIdentifiers
 
 extension String: HXPickerCompatibleValue {
- 
+
     var color: UIColor {
         if isEmpty {
             return .clear
@@ -28,6 +28,15 @@ extension String: HXPickerCompatibleValue {
     
     static var textManager: HX.TextManager {
         .shared
+    }
+
+    var lrc: String? {
+        var lrcString: String?
+        if let bundle = PhotoManager.shared.bundle,
+           let path = bundle.path(forResource: "musics", ofType: nil) {
+            lrcString = try? String(contentsOfFile: path + "/" + self)
+        }
+        return lrcString
     }
     
     var md5: String {

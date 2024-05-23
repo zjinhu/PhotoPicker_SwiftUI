@@ -67,6 +67,9 @@ extension EditorViewController {
             editorView.loadVideo(isPlay: false)
             loadCompletion()
             loadLastEditedData()
+        case .networkVideo(let videoURL):
+            downloadNetworkVideo(videoURL)
+
         }
     }
     
@@ -80,7 +83,9 @@ extension EditorViewController {
             loadFilterEditData(editedData.filterEdit)
             editorView.setAdjustmentData(editedResult.data)
         case .video(let editedResult, let editedData):
-
+            if let music = editedData.music {
+                loadMusicData(music, audioInfos: editedResult.data?.audioInfos ?? [])
+            }
             loadFilterEditData(editedData.filterEdit)
             editorView.setAdjustmentData(editedResult.data)
             loadVideoCropTimeData(editedData.cropTime)
@@ -95,9 +100,82 @@ extension EditorViewController {
                 self.videoControlView.resetLineViewFrsme(at: self.videoControlView.startTime)
                 self.editorView.seekVideo(to: self.videoControlView.startTime)
                 self.editorView.playVideo()
-
+                if let musicURL = self.selectedMusicURL {
+                    switch musicURL {
+                    case .network(let url):
+                        let key = url.absoluteString
+                        let audioTmpURL = PhotoTools.getAudioTmpURL(for: key)
+                        if PhotoTools.isCached(forAudio: key) {
+                            self.musicPlayer?.play(audioTmpURL)
+                            self.musicPlayer?.volume = self.musicVolume
+                        }else {
+                            self.lastMusicDownloadTask = PhotoManager.shared.downloadTask(
+                                with: url,
+                                toFile: audioTmpURL
+                            ) { [weak self] audioURL, _, _ in
+                                guard let self = self, let audioURL = audioURL else { return }
+                                self.musicPlayer?.play(audioURL)
+                                self.musicPlayer?.volume = self.musicVolume
+                            }
+                        }
+                    default:
+                        if let url = musicURL.url {
+                            self.musicPlayer?.play(url)
+                            self.musicPlayer?.volume = self.musicVolume
+                        }
+                    }
+                }
+                if self.isSelectedOriginalSound {
+                    self.editorView.videoVolume = CGFloat(self.videoVolume)
+                }else {
+                    self.editorView.videoVolume = 0
+                }
             }
         }
+    }
+    
+    func loadMusicData(_ data: VideoEditedMusic, audioInfos: [EditorStickerAudio]) {
+        isSelectedOriginalSound = data.hasOriginalSound
+        videoVolume = data.videoSoundVolume
+        volumeView.originalVolume = videoVolume
+        musicView.originalSoundButton.isSelected = data.hasOriginalSound
+        guard let url = data.backgroundMusicURL else {
+            volumeView.hasMusic = false
+            return
+        }
+        selectedMusicURL = data.backgroundMusicURL
+        musicPlayer = .init()
+        data.music?.parseLrc()
+        musicPlayer?.music = data.music
+        for audioInfo in audioInfos {
+            var isSame: Bool = false
+            if let musicIdentifier = data.musicIdentifier,
+               audioInfo.identifier == musicIdentifier {
+                isSame = true
+            }
+            if audioInfo.url == url || isSame {
+                audioInfo.contentsHandler = { [weak self] in
+                    guard let self = self,
+                          let musicPlayer = self.musicPlayer,
+                          let music = musicPlayer.music,
+                          musicPlayer.audio == $0 else {
+                        return nil
+                    }
+                    var texts: [EditorStickerAudioText] = []
+                    for lyric in music.lyrics {
+                        texts.append(.init(text: lyric.lyric, startTime: lyric.startTime, endTime: lyric.endTime))
+                    }
+                    return .init(time: music.time ?? 0, texts: texts)
+                }
+                musicPlayer?.audio = audioInfo
+                musicView.showLyricButton.isSelected = true
+                break
+            }
+        }
+        volumeView.hasMusic = true
+        musicView.backgroundButton.isSelected = true
+        musicVolume = data.backgroundMusicVolume
+        volumeView.musicVolume = musicVolume
     }
     
     func loadFilterEditData(_ data: EditorFilterEditFator?) {
@@ -358,12 +436,79 @@ extension EditorViewController {
             videoControlView.loadData(.init(url: videoURL))
             updateVideoTimeRange()
             isLoadVideoControl = true
-
+        case .networkVideo:
+            if let avAsset = editorView.avAsset {
+                videoControlView.layoutSubviews()
+                videoControlView.loadData(avAsset)
+                updateVideoTimeRange()
+                isLoadVideoControl = true
+            }
         default:
             break
         }
     }
+    
+    func downloadNetworkVideo(_ videoURL: URL) {
+        let key = videoURL.absoluteString
+        if PhotoTools.isCached(forVideo: key) {
+            let localURL = PhotoTools.getVideoCacheURL(for: key)
+            if !isTransitionCompletion {
+                loadAssetStatus = .succeed(.video(localURL))
+                return
+            }
+            let avAsset = AVAsset(url: localURL)
+            let image = avAsset.getImage(at: 0.1)
+            editorView.setAVAsset(avAsset, coverImage: image)
+            editorView.loadVideo(isPlay: false)
+            loadCompletion()
+            loadLastEditedData()
+            return
+        }
+        if isTransitionCompletion {
+            assetLoadingView = PhotoManager.HUDView.show(with: .textManager.editor.videoLoadTitle.text, delay: 0, animated: true, addedTo: view)
+            bringViews()
+        }else {
+            loadAssetStatus = .loadding(true)
+        }
+        PhotoManager.shared.downloadTask(
+            with: videoURL
+        ) { [weak self] (progress, _) in
+            if progress > 0 {
+                self?.assetLoadingView?.setProgress(.init(progress))
+            }
+        } completionHandler: { [weak self] (url, error, _) in
+            guard let self = self else {
+                return
+            }
+            if let url = url {
+                if !self.isTransitionCompletion {
+                    self.loadAssetStatus = .succeed(.video(url))
+                    return
+                }
 
+                self.assetLoadingView = nil
+                PhotoManager.HUDView.dismiss(delay: 0, animated: false, for: self.view)
+                let avAsset = AVAsset(url: url)
+                let image = avAsset.getImage(at: 0.1)
+                self.editorView.setAVAsset(avAsset, coverImage: image)
+                self.editorView.loadVideo(isPlay: false)
+                self.loadCompletion()
+                self.loadLastEditedData()
+            }else {
+                if let error = error as NSError?, error.code == NSURLErrorCancelled {
+                    return
+                }
+                if !self.isTransitionCompletion {
+                    self.loadAssetStatus = .failure
+                    return
+                }
+                self.assetLoadingView = nil
+                PhotoManager.HUDView.dismiss(delay: 0, animated: false, for: self.view)
+                self.loadFailure()
+            }
+        }
+    }
+    
     func bringViews() {
         view.bringSubviewToFront(cancelButton)
         view.bringSubviewToFront(finishButton)

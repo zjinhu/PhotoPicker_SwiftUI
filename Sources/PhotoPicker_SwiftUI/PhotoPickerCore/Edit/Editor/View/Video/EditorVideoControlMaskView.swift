@@ -42,7 +42,11 @@ class EditorVideoControlMaskView: UIView {
                 height: 4
             )
             drawMaskLayer()
-
+            guard #available(iOS 11.0, *) else {
+                leftControl.cornersRound(radius: 4, corner: [.topLeft, .bottomLeft])
+                rightControl.cornersRound(radius: 4, corner: [.topRight, .bottomRight])
+                return
+            }
         }
     }
     var isShowFrame: Bool = false
@@ -51,8 +55,10 @@ class EditorVideoControlMaskView: UIView {
     var arrowNormalColor: UIColor = .white
     var arrowHighlightedColor: UIColor = .black
     var frameHighlightedColor: UIColor = "#FDCC00".color
+    
     ///xiugai add
     var isCanControlMove: Bool = true
+    
     init() {
         super.init(frame: .zero)
         initViews()
@@ -79,9 +85,9 @@ class EditorVideoControlMaskView: UIView {
         leftImageView.tintColor = arrowNormalColor
         leftControl = UIView()
         leftControl.tag = 0
-
+        if #available(iOS 11.0, *) {
             leftControl.cornersRound(radius: 4, corner: [.topLeft, .bottomLeft])
-        
+        }
         leftControl.addSubview(leftImageView)
         let leftControlPanGR = PhotoPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction(panGR:)))
         leftControl.addGestureRecognizer(leftControlPanGR)
@@ -93,9 +99,9 @@ class EditorVideoControlMaskView: UIView {
         rightControl = UIView()
         rightControl.tag = 1
         rightControl.addSubview(rightImageView)
-
+        if #available(iOS 11.0, *) {
             rightControl.cornersRound(radius: 4, corner: [.topRight, .bottomRight])
-
+        }
         let rightControlPanGR = PhotoPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction(panGR:)))
         rightControl.addGestureRecognizer(rightControlPanGR)
         addSubview(rightControl)

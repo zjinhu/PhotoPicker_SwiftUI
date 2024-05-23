@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+ 
 protocol EditorChartletViewControllerDelegate: AnyObject {
     func chartletViewController(
         _ chartletViewController: EditorChartletViewController,
@@ -65,7 +65,7 @@ public class EditorChartletViewController: HXBaseViewController, EditorChartletL
     }
     
     private func initViews() {
-        loadingView = UIActivityIndicatorView(style: .medium)
+        loadingView = UIActivityIndicatorView(style: .white)
         loadingView.hidesWhenStopped = true
         
         let effect = UIBlurEffect(style: .dark)
@@ -88,9 +88,9 @@ public class EditorChartletViewController: HXBaseViewController, EditorChartletL
         titleView.delegate = self
         titleView.showsVerticalScrollIndicator = false
         titleView.showsHorizontalScrollIndicator = false
- 
+        if #available(iOS 11.0, *) {
             titleView.contentInsetAdjustmentBehavior = .never
- 
+        }
         titleView.register(EditorChartletViewCell.self, forCellWithReuseIdentifier: "EditorChartletViewCellTitleID")
         
         listFlowLayout = UICollectionViewFlowLayout()
@@ -105,9 +105,9 @@ public class EditorChartletViewController: HXBaseViewController, EditorChartletL
         listView.showsVerticalScrollIndicator = false
         listView.showsHorizontalScrollIndicator = false
         listView.isPagingEnabled = true
-   
+        if #available(iOS 11.0, *) {
             listView.contentInsetAdjustmentBehavior = .never
- 
+        }
         listView.register(EditorChartletViewListCell.self, forCellWithReuseIdentifier: "EditorChartletViewListCell_ID")
         
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressClick(longPress:)))
@@ -129,16 +129,13 @@ public class EditorChartletViewController: HXBaseViewController, EditorChartletL
             if let image = title.image {
                 titleChartlet = EditorChartletTitle(image: image)
             }else {
-
                 titleChartlet = .init(image: .imageResource.editor.sticker.albumEmptyCover.image)
-
             }
             if index == 0 {
                 titleChartlet.isSelected = true
             }
             titles.append(titleChartlet)
         }
-
     }
     
     @objc func longPressClick(longPress: UILongPressGestureRecognizer) {
@@ -169,7 +166,7 @@ public class EditorChartletViewController: HXBaseViewController, EditorChartletL
                 previewView?.removeFromSuperview()
                 previewView = nil
                 previewIndex = indexPath.item
-                let keyWindow = UIApplication.keyWindow
+                let keyWindow = UIApplication.shared.keyWindow
                 let rect = cell.convert(cell.bounds, to: keyWindow)
                 let touchCenter = CGPoint(x: rect.midX, y: rect.midY)
 
@@ -181,7 +178,7 @@ public class EditorChartletViewController: HXBaseViewController, EditorChartletL
                     )
                     keyWindow?.addSubview(previewView!)
                 }
-    
+
                 cell.showSelectedBgView = true
             }
         case .cancelled, .ended, .failed:
@@ -205,7 +202,7 @@ public class EditorChartletViewController: HXBaseViewController, EditorChartletL
         }
     }
     var didDeviceOrientation = false
-    public override func deviceOrientationWillChanged() {
+    public override func deviceOrientationWillChanged(notify: Notification) {
         didDeviceOrientation = true
     }
     
@@ -332,7 +329,7 @@ extension EditorChartletViewController: UICollectionViewDataSource,
     ) {
         collectionView.deselectItem(at: indexPath, animated: false)
         if collectionView == titleView {
-
+            let chartlet = titles[indexPath.item]
             listView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
             requestData(index: indexPath.item)
         }

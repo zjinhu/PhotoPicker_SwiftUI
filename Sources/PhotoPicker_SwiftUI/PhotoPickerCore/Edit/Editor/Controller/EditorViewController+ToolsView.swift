@@ -16,7 +16,7 @@ extension EditorViewController: EditorToolsViewDelegate {
         editorView.deselectedSticker()
         switch model.type {
         case .graffiti:
-            if editorView.drawType == .canvas {
+            if #available(iOS 13.0, *), editorView.drawType == .canvas {
                 hideLastToolView()
                 hideToolsView(isCanvasGraffiti: true)
                 selectedTool = model
@@ -56,7 +56,9 @@ extension EditorViewController: EditorToolsViewDelegate {
             showMosaicToolView()
         case .filter:
             showFiltersView()
-
+        case .music:
+            showMusicView()
+            return
         case .cropSize:
             if let selectType = scaleSwitchSelectType {
                 scaleSwitchLeftBtn.isSelected = selectType == 0
@@ -265,6 +267,7 @@ extension EditorViewController: EditorToolsViewDelegate {
         }
     }
     
+    @available(iOS 13.0, *)
     func startCanvasDrawing(_ isRotate: Bool = false) {
         let toolPicker: PKToolPicker
         if isRotate {
@@ -471,7 +474,59 @@ extension EditorViewController: EditorToolsViewDelegate {
             }
         }
     }
-
+    
+    func showMusicView() {
+        if musicView.y == view.height - musicView.height - UIDevice.bottomMargin {
+            return
+        }
+        if let shouldClick = delegate?.editorViewController(shouldClickMusicTool: self),
+           !shouldClick {
+            return
+        }
+        editorView.isStickerEnabled = false
+        hideToolsView()
+        if musicView.musics.isEmpty {
+            if let loadHandler = config.video.music.handler {
+                let showLoading = loadHandler { [weak self] infos in
+                    self?.musicView.reloadData(infos: infos)
+                }
+                if showLoading {
+                    musicView.showLoading()
+                }
+            }else {
+                if let editorDelegate = delegate {
+                    if editorDelegate.editorViewController(
+                        self,
+                        loadMusic: { [weak self] infos in
+                            self?.musicView.reloadData(infos: infos)
+                    }) {
+                        musicView.showLoading()
+                    }
+                }else {
+                    let infos = PhotoTools.defaultMusicInfos()
+                    if infos.isEmpty {
+                        PhotoManager.HUDView.showInfo(with: .textManager.editor.music.emptyHudTitle.text, delay: 1.5, animated: true, addedTo: view)
+                        return
+                    }else {
+                        musicView.reloadData(infos: infos)
+                    }
+                }
+            }
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.updateMusicViewFrame()
+        }
+    }
+    
+    func hideMusicView() {
+        if musicView.y == view.height {
+            return
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.updateMusicViewFrame()
+        }
+    }
+    
     func showFilterEditView() {
         if !filterEditView.isHidden && filterEditView.alpha == 1 {
             return
@@ -518,7 +573,7 @@ extension EditorViewController: EditorToolsViewDelegate {
         }
     }
     
-    open func showCropSizeToolsView() {
+    func showCropSizeToolsView() {
         if !rotateScaleView.isHidden && rotateScaleView.alpha == 1 {
             return
         }
@@ -532,7 +587,7 @@ extension EditorViewController: EditorToolsViewDelegate {
         resetButton.isHidden = false
         leftRotateButton.isHidden = false
         rightRotateButton.isHidden = false
-
+        
         var isShowMaskList: Bool = true
         if let ratio = ratioToolView.selectedRatio?.ratio, (ratio.width < 0 || ratio.height < 0) {
             isShowMaskList = false

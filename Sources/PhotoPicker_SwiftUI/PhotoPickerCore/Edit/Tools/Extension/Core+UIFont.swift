@@ -13,7 +13,7 @@ extension UIFont: HXPickerCompatibleValue {
     static var textManager: HX.TextManager {
         HX.TextManager.shared
     }
-    
+
     static func regularPingFang(ofSize size: CGFloat) -> UIFont {
         if let font = UIFont.init(name: "PingFangSC-Regular", size: size) {
             return font

@@ -24,7 +24,16 @@ extension EditorViewController: EditorViewDelegate {
                 }
             case .cropSize:
                 return
-
+            case .music:
+                if isShowVolume {
+                    hideVolumeView()
+                    return
+                }
+                self.selectedTool = lastSelectedTool
+                checkSelectedTool()
+                hideMusicView()
+                showToolsView()
+                return
             default:
                 break
             }
@@ -135,9 +144,11 @@ extension EditorViewController: EditorViewDelegate {
         brushColorView.canUndo = editorView.isCanUndoDraw
         mosaicToolView.canUndo = editorView.isCanUndoMosaic
         checkFinishButtonState()
-
+        if isShowVolume {
+            return
+        }
         if let tool = selectedTool {
-            if tool.type == .cropSize {
+            if tool.type == .music || tool.type == .cropSize {
                 return
             }
         }
@@ -152,20 +163,35 @@ extension EditorViewController: EditorViewDelegate {
     }
     
     public func editorView(_ editorView: EditorView, shouldRemoveStickerItem itemView: EditorStickersItemBaseView) {
-
+        if let musicPlayer = musicPlayer, musicPlayer.itemView == itemView {
+            audioSticker = nil
+            musicView.showLyricButton.isSelected = false
+        }
     }
     /// 移除了贴纸
     public func editorView(_ editorView: EditorView, didRemoveStickerItem itemView: EditorStickersItemBaseView) {
         checkFinishButtonState()
     }
     public func editorView(_ editorView: EditorView, resetItemViews itemViews: [EditorStickersItemBaseView]) {
-
+        for itemView in itemViews {
+            if itemView.audio != nil, itemView.audio == musicPlayer?.audio {
+                musicPlayer?.itemView = itemView
+                audioSticker = itemView
+                break
+            }
+        }
         checkFinishButtonState()
     }
-
+    public func editorView(_ editorView: EditorView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool {
+        if let musicPlayer = musicPlayer, musicPlayer.audio == audio {
+            return true
+        }
+        return false
+    }
+    
     // MARK: Video
     public func editorView(videoReadyForDisplay editorView: EditorView) {
-        if selectedAsset.result == nil, config.video.isAutoPlay {
+        if selectedAsset.result == nil, config.video.isAutoPlay, !didEnterPlayGround { 
             editorView.playVideo()
         }
     }

@@ -10,13 +10,30 @@ import UIKit
 open class HXBaseViewController: UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
+        if #available(iOS 13.0, *) {
+            return
+        }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(deviceOrientationDidChanged(notify:)),
+            name: UIApplication.didChangeStatusBarOrientationNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(deviceOrientationWillChanged(notify:)),
+            name: UIApplication.willChangeStatusBarOrientationNotification,
+            object: nil
+        )
     }
     
-    open func deviceOrientationDidChanged() {
+    @objc
+    open func deviceOrientationDidChanged(notify: Notification) {
         
     }
     
-    open func deviceOrientationWillChanged() {
+    @objc
+    open func deviceOrientationWillChanged(notify: Notification) {
         
     }
     
@@ -25,10 +42,16 @@ open class HXBaseViewController: UIViewController {
         with coordinator: UIViewControllerTransitionCoordinator
     ) {
         super.viewWillTransition(to: size, with: coordinator)
-
-        deviceOrientationWillChanged()
+        guard #available(iOS 13.0, *) else {
+            return
+        }
+        deviceOrientationWillChanged(notify: .init(name: UIApplication.willChangeStatusBarOrientationNotification))
         coordinator.animate(alongsideTransition: nil) { [weak self] _ in
-            self?.deviceOrientationDidChanged()
+            self?.deviceOrientationDidChanged(
+                notify: .init(
+                    name: UIApplication.didChangeStatusBarOrientationNotification
+                )
+            )
         }
     }
     

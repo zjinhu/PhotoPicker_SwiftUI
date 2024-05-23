@@ -10,7 +10,7 @@ import UIKit
 
 extension UIDevice {
     class var isPortrait: Bool {
-        if ProcessInfo.processInfo.isiOSAppOnMac {
+        if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
             return true
         }
         if isPad {
@@ -24,13 +24,13 @@ extension UIDevice {
         return true
     }
     class var navigationBarHeight: CGFloat {
-        if isPad {
+        if #available(iOS 12, *), isPad {
             return statusBarHeight + 50
         }
         return statusBarHeight + 44
     }
     class var navBarHeight: CGFloat {
-        if isPad {
+        if #available(iOS 12, *), isPad {
             return  50
         }
         return 44
@@ -56,10 +56,13 @@ extension UIDevice {
         return isAllIPhoneX ? 44 : 20
     }
     class var statusBarHeight: CGFloat {
-        var statusBarHeight: CGFloat = 0
+        let statusBarHeight: CGFloat
         let window = UIApplication.shared.windows.first
-        if let height = window?.windowScene?.statusBarManager?.statusBarFrame.size.height {
+        if #available(iOS 13.0, *),
+           let height = window?.windowScene?.statusBarManager?.statusBarFrame.size.height {
             statusBarHeight = height
+        } else {
+            statusBarHeight = UIApplication.shared.statusBarFrame.size.height
         }
         return statusBarHeight
     }
@@ -73,21 +76,20 @@ extension UIDevice {
         safeAreaInsets.right
     }
     class var bottomMargin: CGFloat {
-
         return safeAreaInsets.bottom
     }
     class var isPad: Bool {
-        if ProcessInfo.processInfo.isiOSAppOnMac {
+        if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
             return true
         }
         return current.userInterfaceIdiom == .pad
     }
     class var screenSize: CGSize {
-        if ProcessInfo.processInfo.isiOSAppOnMac {
+        if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
             if !Thread.isMainThread {
                 return UIScreen._size
             }
-            if let size = UIApplication.keyWindow?.size {
+            if let size = UIApplication._keyWindow?.size {
                 return size
             }
         }
@@ -105,11 +107,11 @@ extension UIDevice {
     }
     
     class var safeAreaInsets: UIEdgeInsets {
-
-            if let safeAreaInsets = UIApplication.keyWindow?.safeAreaInsets {
+        if #available(iOS 11.0, *) {
+            if let safeAreaInsets = UIApplication._keyWindow?.safeAreaInsets {
                 return safeAreaInsets
             }
-
+        }
         return .zero
     }
     

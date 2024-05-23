@@ -10,11 +10,10 @@ import UIKit
 
 class HXPhotoPicker {}
 
-
 public enum Photo {
 
-    
-        @discardableResult
+    @available(iOS 13.0, *)
+    @discardableResult
     @MainActor
     public static func edit(
         _ asset: EditorAsset,
@@ -51,13 +50,12 @@ public enum Photo {
         )
         return vc
     }
-
-    
 }
 
 public enum HX {
-
-        @discardableResult
+   
+    @available(iOS 13.0, *)
+    @discardableResult
     @MainActor
     public static func edit(
         _ asset: EditorAsset,
@@ -67,7 +65,7 @@ public enum HX {
     ) async throws -> EditorAsset {
         try await Photo.edit(asset, config: config, delegate: delegate, fromVC: fromVC)
     }
-    
+
     public enum ImageTargetMode {
         /// 与原图宽高比一致，高度会根据`targetSize`计算
         case fill

@@ -8,7 +8,6 @@
 
 import UIKit
 import Photos
-
 import ImageIO
 
 public struct PhotoTools {
@@ -177,8 +176,7 @@ public struct PhotoTools {
         }
         return asset
     }
-    
-    
+
     static func transformImageSize(
         _ imageSize: CGSize,
         to view: UIView
@@ -485,7 +483,6 @@ public struct PhotoTools {
         return pixelBuffer
     }
 
-     
     private init() { }
 }
 

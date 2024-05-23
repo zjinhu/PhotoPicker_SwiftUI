@@ -48,6 +48,26 @@ class EditorVideoControlView: UIView {
     private var totalTimeView: UIVisualEffectView!
     private var totalTimeLb: UILabel!
     
+    var isPlaying: Bool {
+        get {
+            playButton.isSelected
+        }
+        set {
+            playButton.isSelected = newValue
+            if newValue {
+                startLineAnimation()
+            }else {
+                stopLineAnimation()
+            }
+        }
+    }
+    
+    init(config: EditorConfiguration.Video.CropTime) {
+        self.config = config
+        super.init(frame: .zero)
+        initViews()
+    }
+    
     //xiugai add
     private lazy var titleLb: UILabel = {
         let lb = UILabel()
@@ -70,26 +90,6 @@ class EditorVideoControlView: UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
-    var isPlaying: Bool {
-        get {
-            playButton.isSelected
-        }
-        set {
-            playButton.isSelected = newValue
-            if newValue {
-                startLineAnimation()
-            }else {
-                stopLineAnimation()
-            }
-        }
-    }
-    
-    init(config: EditorConfiguration.Video.CropTime) {
-        self.config = config
-        super.init(frame: .zero)
-        initViews()
-    }
     
     private func initViews() {
         ///xiugai add
@@ -117,9 +117,9 @@ class EditorVideoControlView: UIView {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-
+        if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
-
+        }
         collectionView.register(
             EditorVideoControlViewCell.self,
             forCellWithReuseIdentifier: "EditorVideoControlViewCellID"
@@ -128,6 +128,7 @@ class EditorVideoControlView: UIView {
         frameMaskView = EditorVideoControlMaskView()
         ///xiugai add
         frameMaskView.isCanControlMove = config.isCanControlMove
+        
         frameMaskView.frameHighlightedColor = config.frameHighlightedColor
         frameMaskView.arrowNormalColor = config.arrowNormalColor
         frameMaskView.arrowHighlightedColor = config.arrowHighlightedColor
@@ -141,11 +142,11 @@ class EditorVideoControlView: UIView {
         addSubview(bgView)
         
         playButton = UIButton(type: .custom)
+        ///xiugai add
+        playButton.tintColor = .white
         playButton.setImage(.imageResource.editor.video.play.image, for: .normal)
         playButton.setImage(.imageResource.editor.video.pause.image, for: .selected)
-        playButton.tintColor = .white
         playButton.addTarget(self, action: #selector(didPlayButtonClick), for: .touchUpInside)
-        
         playView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         playView.contentView.addSubview(playButton)
         playView.layer.cornerRadius = 4
@@ -154,7 +155,9 @@ class EditorVideoControlView: UIView {
         
         progressLineView = UIView()
         progressLineView.backgroundColor = .white
-        progressLineView.cornersRound(radius: 2, corner: .allCorners)
+        if #available(iOS 11.0, *) {
+            progressLineView.cornersRound(radius: 2, corner: .allCorners)
+        }
         progressLineView.layer.borderColor = UIColor.black.cgColor
         progressLineView.layer.borderWidth = 0.25
         progressLineView.alpha = 0
@@ -482,7 +485,10 @@ class EditorVideoControlView: UIView {
             resetValidRect()
             isFirstLoad = false
         }
-
+        guard #available(iOS 11.0, *) else {
+            progressLineView.cornersRound(radius: 2, corner: .allCorners)
+            return
+        }
     }
     deinit {
         imageGenerator?.cancelAllCGImageGeneration()
@@ -536,7 +542,6 @@ extension EditorVideoControlView {
         currentLineView.y = -currentLineView.height - 5
         currentLineView.centerX = progressLineView.centerX
         currentTimeView.y = currentLineView.y - currentTimeView.height - 2
-        
         currentTimeView.centerX = currentLineView.centerX
         if currentTimeView.frame.maxX + margin + UIDevice.rightMargin > width {
             currentTimeView.x = width - margin - UIDevice.rightMargin - currentTimeView.width
@@ -781,11 +786,13 @@ extension EditorVideoControlView {
         endTimeLb.size = endTimeLb.textSize
         endTimeView.size = .init(width: endTimeLb.width + 10, height: endTimeLb.size.height + 5)
         endTimeLb.center = .init(x: endTimeView.width / 2, y: endTimeView.height / 2)
+        
         startLineView.y = -startLineView.height - 5
         startLineView.centerX = bgView.x + frameMaskView.validRect.minX
         
         var startTimeX = startLineView.centerX - startTimeView.width / 2
         startTimeView.y = startLineView.y - startTimeView.height - 2
+        
         endLineView.y = -endLineView.height - 5
         endLineView.centerX = bgView.x + frameMaskView.validRect.maxX
         

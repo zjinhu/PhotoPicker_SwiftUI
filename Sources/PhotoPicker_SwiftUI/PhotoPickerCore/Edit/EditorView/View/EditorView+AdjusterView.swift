@@ -10,7 +10,13 @@ import AVFoundation
 import PencilKit
 
 extension EditorView: EditorAdjusterViewDelegate {
-
+    func editorAdjusterView(_ adjusterView: EditorAdjusterView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool {
+        if let shouldAddAudioItem = editDelegate?.editorView(self, shouldAddAudioItem: audio) {
+            return shouldAddAudioItem
+        }
+        return true
+    }
+    
     func editorAdjusterView(willBeginEditing adjusterView: EditorAdjusterView) {
         editDelegate?.editorView(willBeginEditing: self)
     }
@@ -106,7 +112,8 @@ extension EditorView: EditorAdjusterViewDelegate {
         return sourceImage
     }
     
-        func editorAdjusterView(_ editorAdjusterView: EditorAdjusterView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker) {
+    @available(iOS 13.0, *)
+    func editorAdjusterView(_ editorAdjusterView: EditorAdjusterView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker) {
         editDelegate?.editorView(self, toolPickerFramesObscuredDidChange: toolPicker)
     }
 }

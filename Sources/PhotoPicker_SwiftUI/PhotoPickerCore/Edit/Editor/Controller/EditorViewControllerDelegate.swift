@@ -67,6 +67,50 @@ public protocol EditorViewControllerDelegate: AnyObject {
         loadChartletList response: @escaping EditorChartletListResponse
     )
     
+    /// 将要点击工具栏音乐按钮
+    /// - Parameter editorViewController: 对应的`EditorViewController`
+    func editorViewController(
+        shouldClickMusicTool editorViewController: EditorViewController
+    ) -> Bool
+    
+    /// 加载配乐信息，当music.infos为空时触发
+    /// 返回 true 内部会显示加载状态，调用 completionHandler 后恢复
+    /// - Parameters:
+    ///   - editorViewController: 对应的`EditorViewController`
+    ///   - completionHandler: 传入配乐信息
+    func editorViewController(
+        _ editorViewController: EditorViewController,
+        loadMusic completionHandler: @escaping ([VideoEditorMusicInfo]) -> Void
+    ) -> Bool
+    
+    /// 重置了配乐搜索（SearchText 为 nil 时 Return）
+    /// - Parameter editorViewController: 对应的`EditorViewController`
+    func editorViewController(
+        didClearSearch editorViewController: EditorViewController
+    )
+    
+    /// 搜索配乐信息
+    /// - Parameters:
+    ///   - editorViewController: 对应的`EditorViewController`
+    ///   - text: 搜索的文字内容，为 nil 时则为列表加载
+    ///   - completion: 传入配乐信息，是否需要加载更多
+    func editorViewController(
+        _ editorViewController: EditorViewController,
+        didSearchMusic text: String?,
+        completionHandler: @escaping ([VideoEditorMusicInfo], Bool) -> Void
+    )
+    
+    /// 加载更多配乐信息
+    /// - Parameters:
+    ///   - editorViewController: 对应的`EditorViewController` 
+    ///   - text: 搜索的文字内容
+    ///   - completion: 传入配乐信息，是否还有更多数据
+    func editorViewController(
+        _ editorViewController: EditorViewController,
+        loadMoreMusic text: String?,
+        completionHandler: @escaping ([VideoEditorMusicInfo], Bool) -> Void
+    )
+    
     /*
     /// 完成编辑
     /// - Parameters:
@@ -156,9 +200,7 @@ public extension EditorViewControllerDelegate {
         _ editorViewController: EditorViewController,
         loadTitleChartlet response: @escaping EditorTitleChartletResponse
     ) {
-
         response([])
-
     }
     
     func editorViewController(
@@ -168,9 +210,41 @@ public extension EditorViewControllerDelegate {
         loadChartletList response: @escaping EditorChartletListResponse
     ) {
         /// 默认加载这些贴图
-
         response(titleIndex, [])
-
+    }
+    
+    func editorViewController(
+        shouldClickMusicTool editorViewController: EditorViewController
+    ) -> Bool {
+        true
+    }
+    
+    func editorViewController(
+        _ editorViewController: EditorViewController,
+        loadMusic completionHandler: @escaping ([VideoEditorMusicInfo]) -> Void
+    ) -> Bool {
+        completionHandler(PhotoTools.defaultMusicInfos())
+        return false
+    }
+    
+    func editorViewController(
+        didClearSearch editorViewController: EditorViewController
+    ) { }
+    
+    func editorViewController(
+        _ editorViewController: EditorViewController,
+        didSearchMusic text: String?,
+        completionHandler: @escaping ([VideoEditorMusicInfo], Bool) -> Void
+    ) {
+        completionHandler([], false)
+    }
+    
+    func editorViewController(
+        _ editorViewController: EditorViewController,
+        loadMoreMusic text: String?,
+        completionHandler: @escaping ([VideoEditorMusicInfo], Bool) -> Void
+    ) {
+        completionHandler([], false)
     }
     
     func editorViewController(

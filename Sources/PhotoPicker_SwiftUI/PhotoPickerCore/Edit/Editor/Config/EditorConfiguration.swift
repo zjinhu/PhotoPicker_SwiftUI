@@ -16,7 +16,19 @@ public struct EditorConfiguration: IndicatorTypeConfig, PhotoHUDConfig {
     public var textManager: HX.TextManager { HX.TextManager.shared }
     
     public var modalPresentationStyle: UIModalPresentationStyle
-
+    ///xiugai
+//    /// If the built-in language is not enough, you can add a custom language text
+//    /// customLanguages - custom language array
+//    /// 如果自带的语言不够，可以添加自定义的语言文字
+//    /// customLanguages - 自定义语言数组
+//    public var languageType: LanguageType = .system
+//    
+//    /// 自定义语言
+//    public var customLanguages: [CustomLanguage] {
+//        get { PhotoManager.shared.customLanguages }
+//        set { PhotoManager.shared.customLanguages = newValue }
+//    }
+    
     /// hide status bar
     /// 隐藏状态栏
     public var prefersStatusBarHidden: Bool = true
@@ -68,7 +80,7 @@ public struct EditorConfiguration: IndicatorTypeConfig, PhotoHUDConfig {
     /// video configuration
     /// 视频配置
     public var video: Video = .init()
-    
+     
     /// brush configuration
     /// 画笔
     /// iOS 13.0 以上此属性无效，绘制功能更换为 PKCanvasView
@@ -103,9 +115,11 @@ public struct EditorConfiguration: IndicatorTypeConfig, PhotoHUDConfig {
     public var toolsView: ToolsView = .default
     
     public init() {
-        
-        modalPresentationStyle = .automatic
-        
+        if #available(iOS 13.0, *) {
+            modalPresentationStyle = .automatic
+        } else {
+            modalPresentationStyle = .fullScreen
+        }
         if UIDevice.isPad {
             buttonType = .top
         }else {
@@ -155,6 +169,10 @@ public extension EditorConfiguration {
         /// 默认选中指定工具
         public var defaultSelectedToolOption: ToolsView.Options.`Type`? = .time
         
+        /// music configuration
+        /// 音乐配置
+        public var music: Music = .init()
+        
         /// Clipping duration configuration
         /// 裁剪时长配置
         public var cropTime: CropTime = .init()
@@ -190,8 +208,7 @@ public extension EditorConfiguration {
             
             /// The color of the highlighted border
             /// 边框高亮状态下的颜色
-            /// xiugai
-            public var frameHighlightedColor: UIColor = .white
+            public var frameHighlightedColor: UIColor = "#FDCC00".hx.color
             
             public init() { }
         }
@@ -318,6 +335,7 @@ public extension EditorConfiguration {
         public var isResetToOriginal: Bool = false
         
         public var maskListProtcol: EditorMaskListProtocol.Type = EditorMaskListViewController.self
+        
         /// Mask material list
         /// 蒙版素材列表
         public var maskList: [MaskType] = []
@@ -340,7 +358,7 @@ public extension EditorConfiguration {
     }
     
     struct Text {
-        
+
         /// array of text colors
         /// 文本颜色数组
         public var colors: [String] = PhotoTools.defaultColors()
@@ -370,7 +388,11 @@ public extension EditorConfiguration {
         public var modalPresentationStyle: UIModalPresentationStyle
         
         public init() {
-            self.modalPresentationStyle = .automatic
+            if #available(iOS 13.0, *) {
+                self.modalPresentationStyle = .automatic
+            }else {
+                self.modalPresentationStyle = .fullScreen
+            }
         }
     }
     
@@ -383,6 +405,10 @@ public extension EditorConfiguration {
         /// The line width of the mosaic when graffiti
         /// 涂鸦时马赛克的线宽
         public var mosaiclineWidth: CGFloat = 25
+        
+        /// width of smear
+        /// 涂抹的宽度
+        public var smearWidth: CGFloat = 30
         
         /// 当滤镜发生改变时更改马赛克背景
         public var isFilterApply: Bool = true
@@ -427,6 +453,41 @@ public extension EditorConfiguration {
         }
     }
     
+    struct Music {
+        /// 显示搜索
+        public var showSearch: Bool = true
+        /// 搜索框光标颜色
+        public var tintColor: UIColor = "#FDCC00".hx.color
+        /// 完成按钮文字颜色
+        public var finishButtonTitleColor: UIColor = "#FDCC00".hx.color
+        /// 完成按钮背景颜色
+        public var finishButtonBackgroundColor: UIColor = .clear
+        /// 搜索框的 placeholder
+        public var placeholder: String {
+            get { .textManager.editor.music.searchPlaceholder.text }
+            set { HX.TextManager.shared.editor.music.searchPlaceholder = .custom(newValue) }
+        }
+        /// 滚动停止时自动播放音乐
+        public var autoPlayWhenScrollingStops: Bool = false
+        /// 配乐信息 / 搜索列表默认的第一页
+        /// 也可通过代理回调设置
+        /// func videoEditorViewController(
+        /// _ videoEditorViewController: VideoEditorViewController,
+        ///  loadMusic completionHandler: @escaping ([VideoEditorMusicInfo]) -> Void) -> Bool
+        public var infos: [VideoEditorMusicInfo] = []
+        
+        /// 获取音乐列表, infos 为空时才会触发
+        /// handler = { response -> Bool in
+        ///     // 传入音乐数据
+        ///     response(self.getMusics())
+        ///     // 是否显示loading
+        ///     return false
+        /// }
+        public var handler: ((@escaping ([VideoEditorMusicInfo]) -> Void) -> Bool)?
+        
+        public init() { }
+    }
+    
     struct Chartlet {
         public enum LoadScene {
             /// cell显示时
@@ -445,7 +506,7 @@ public extension EditorConfiguration {
         public var loadScene: LoadScene = .cellDisplay
         /// 贴图标题
         public var titles: [EditorChartlet] = []
-        
+
         /// 加载标题, titles 为空时才会触发
         /// titleHandler = { response in
         ///     // 传入标题数据
@@ -461,16 +522,25 @@ public extension EditorConfiguration {
         public var listHandler: ((Int, @escaping EditorChartletListResponse) -> Void)?
         
         public init() {
-            modalPresentationStyle = .automatic
+            if #available(iOS 13.0, *) {
+                modalPresentationStyle = .automatic
+            } else {
+                modalPresentationStyle = .fullScreen
+            }
         }
     }
-    
+
     struct ToolsView {
         /// 工具栏item选项
         public var toolOptions: [Options]
         
         /// 工具栏选项选中颜色
         public var toolSelectedColor: UIColor = "#FDCC00".hx.color
+        
+        /// 配乐选中之后勾 颜色
+        public var musicTickColor: UIColor = "#222222".hx.color
+        /// 配乐选中时框框背景颜色
+        public var musicTickBackgroundColor: UIColor = "#FDCC00".hx.color
         
         public init(toolOptions: [Options] = []) {
             self.toolOptions = toolOptions
@@ -514,6 +584,9 @@ public extension EditorConfiguration {
                 /// 滤镜
                 case filter
                 
+                /// video - 配乐
+                case music
+                
                 /// 尺寸裁剪
                 case cropSize
             }
@@ -540,7 +613,10 @@ public extension EditorConfiguration {
                 imageType: .imageResource.editor.tools.cropSize,
                 type: .cropSize
             )
-            
+            let music = Options(
+                imageType:.imageResource.editor.tools.music,
+                type: .music
+            )
             let mosaic = Options(
                 imageType: .imageResource.editor.tools.mosaic,
                 type: .mosaic
@@ -553,7 +629,7 @@ public extension EditorConfiguration {
                 imageType: .imageResource.editor.tools.filter,
                 type: .filter
             )
-            return .init(toolOptions: [time, graffiti, chartlet, text, cropSize, mosaic, filterEdit, filter])
+            return .init(toolOptions: [time, graffiti, chartlet, text, music, cropSize, mosaic, filterEdit, filter])
         }
     }
     

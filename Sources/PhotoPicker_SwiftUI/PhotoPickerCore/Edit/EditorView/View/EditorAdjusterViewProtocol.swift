@@ -32,7 +32,8 @@ protocol EditorAdjusterViewDelegate: AnyObject {
     func editorAdjusterView(_ adjusterView: EditorAdjusterView, didRemoveItem itemView: EditorStickersItemView)
     func editorAdjusterView(_ adjusterView: EditorAdjusterView, shouldRemoveItem itemView: EditorStickersItemView)
     func editorAdjusterView(_ adjusterView: EditorAdjusterView, resetItemViews itemViews: [EditorStickersItemBaseView])
-
+    func editorAdjusterView(_ adjusterView: EditorAdjusterView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool
+      
     func editorAdjusterView(_ editorAdjusterView: EditorAdjusterView, videoDidPlayAt time: CMTime)
     func editorAdjusterView(_ editorAdjusterView: EditorAdjusterView, videoDidPauseAt time: CMTime)
     func editorAdjusterView(videoReadyForDisplay editorAdjusterView: EditorAdjusterView)
@@ -53,6 +54,7 @@ protocol EditorAdjusterViewDelegate: AnyObject {
         at time: CMTime
     ) -> CIImage
     
-
+    
+    @available(iOS 13.0, *)
     func editorAdjusterView(_ editorAdjusterView: EditorAdjusterView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker)
 }

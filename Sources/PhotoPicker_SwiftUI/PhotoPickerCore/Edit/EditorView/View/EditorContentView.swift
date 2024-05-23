@@ -25,6 +25,7 @@ protocol EditorContentViewDelegate: AnyObject {
     func contentView(_ contentView: EditorContentView, shouldRemoveSticker itemView: EditorStickersItemView)
     func contentView(_ contentView: EditorContentView, didRemovedSticker itemView: EditorStickersItemView)
     func contentView(_ contentView: EditorContentView, resetItemViews itemViews: [EditorStickersItemBaseView])
+    func contentView(_ contentView: EditorContentView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool
     
     func contentView(
         _ contentView: EditorContentView,
@@ -42,7 +43,8 @@ protocol EditorContentViewDelegate: AnyObject {
         at time: CMTime
     ) -> CIImage
     
-        func contentView(_ contentView: EditorContentView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker)
+    @available(iOS 13.0, *)
+    func contentView(_ contentView: EditorContentView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker)
     
 }
 
@@ -161,7 +163,7 @@ class EditorContentView: UIView {
     /// 缩放比例
     var zoomScale: CGFloat = 1 {
         didSet {
-            if let canvasView = canvasView as? EditorCanvasView {
+            if #available(iOS 13.0, *), let canvasView = canvasView as? EditorCanvasView {
                 canvasView.scale = zoomScale
             }
             drawView.scale = zoomScale
@@ -175,13 +177,14 @@ class EditorContentView: UIView {
             switch drawType {
             case .normal:
                 drawView.isHidden = false
-        
+                if #available(iOS 13.0, *) {
                     canvasView.isHidden = true
-                
+                }
             case .canvas:
+                if #available(iOS 13.0, *) {
                     drawView.isHidden = true
                     canvasView.isHidden = false
-            
+                }
             }
         }
     }
@@ -234,7 +237,10 @@ class EditorContentView: UIView {
         get { mosaicView.mosaicLineWidth }
         set { mosaicView.mosaicLineWidth = newValue }
     }
-
+    var smearWidth: CGFloat {
+        get { mosaicView.imageWidth }
+        set { mosaicView.imageWidth = newValue }
+    }
     var mosaicType: EditorMosaicType {
         get { mosaicView.type }
         set { mosaicView.type = newValue }
@@ -348,8 +354,9 @@ class EditorContentView: UIView {
                 videoView.frame = bounds
             }
         }
+        if #available(iOS 13.0, *) {
             canvasView.frame = bounds
-        
+        }
         drawView.frame = bounds
         stickerView.frame = bounds
     }
@@ -380,12 +387,13 @@ class EditorContentView: UIView {
         videoView.isHidden = true
         addSubview(videoView)
         
+        if #available(iOS 13.0, *) {
             let canvasView = EditorCanvasView()
             canvasView.delegate = self
             canvasView.isHidden = true
             addSubview(canvasView)
             self.canvasView = canvasView
-        
+        }
         
         drawView = EditorDrawView()
         drawView.delegate = self
@@ -454,7 +462,15 @@ extension EditorContentView: EditorVideoPlayerViewDelegate {
             }
         }
     }
-
+    var volume: CGFloat {
+        get {
+            videoView.volume
+        }
+        set {
+            videoView.volume = newValue
+        }
+    }
+    
     func loadAsset(isPlay: Bool, _ completion: ((Bool) -> Void)? = nil) {
         videoView.configAsset(isPlay: isPlay, completion)
     }
@@ -505,6 +521,7 @@ extension EditorContentView: EditorVideoPlayerViewDelegate {
     }
 }
 
+@available(iOS 13.0, *)
 extension EditorContentView: EditorCanvasViewDelegate {
     
     var canvasImage: UIImage {
@@ -642,6 +659,13 @@ extension EditorContentView: EditorStickersViewDelegate {
     }
     func stickerView(resetVideoRotate stickerView: EditorStickersView) {
         delegate?.contentView(resetVideoRotate: self)
+    }
+    
+    func stickerView(_ stickerView: EditorStickersView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool {
+        if let shouldAddAudioItem = delegate?.contentView(self, shouldAddAudioItem: audio) {
+            return shouldAddAudioItem
+        }
+        return true
     }
     
     func stickerView(touchBegan stickerView: EditorStickersView) {

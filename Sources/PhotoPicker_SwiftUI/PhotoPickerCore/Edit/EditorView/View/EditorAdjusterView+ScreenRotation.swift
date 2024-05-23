@@ -24,7 +24,7 @@ extension EditorAdjusterView {
         beforeDrawBrushInfos = contentView.drawView.getBrushData()
         beforeMosaicDatas = contentView.mosaicView.getMosaicData()
         beforeStickerItem = contentView.stickerView.getStickerItem()
-        if let canvasView = contentView.canvasView as? EditorCanvasView {
+        if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
             beforeCanvasCurrentData = canvasView.currentData
             beforeCanvasHistoryData = canvasView.historyData
             canvasView.isClear = true
@@ -59,7 +59,7 @@ extension EditorAdjusterView {
         contentView.drawView.setBrushData(beforeDrawBrushInfos, viewSize: contentView.bounds.size)
         contentView.mosaicView.setMosaicData(mosaicDatas: beforeMosaicDatas, viewSize: contentView.bounds.size)
         contentView.stickerView.setStickerItem(beforeStickerItem, viewSize: contentView.bounds.size)
-        if let canvasView = contentView.canvasView as? EditorCanvasView {
+        if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
             canvasView.setCurrentData(beforeCanvasCurrentData, viewSize: contentView.bounds.size)
             canvasView.setHistoryData(beforeCanvasHistoryData, viewSize: contentView.bounds.size)
         }

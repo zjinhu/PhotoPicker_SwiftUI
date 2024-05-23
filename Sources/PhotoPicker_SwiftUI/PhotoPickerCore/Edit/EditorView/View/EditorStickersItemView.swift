@@ -43,7 +43,7 @@ class EditorStickersItemView: EditorStickersItemBaseView {
     
     override var isSelected: Bool {
         willSet {
-
+            if !item.isAudio {
                 let borderWidth: CGFloat = newValue ? 1 / scale : 0
                 let borderRadius: CGFloat = newValue ? 1 / scale : 0
                 CATransaction.begin()
@@ -57,7 +57,7 @@ class EditorStickersItemView: EditorStickersItemBaseView {
                 CATransaction.commit()
                 deleteBtn.isHidden = !newValue
                 scaleBtn.isHidden = !newValue
-            
+            }
             if isSelected == newValue {
                 return
             }
@@ -116,11 +116,11 @@ class EditorStickersItemView: EditorStickersItemBaseView {
         layer.addSublayer(externalBorder)
         contentView.scale = scale
         mirrorView.addSubview(contentView)
-  
+        if !item.isAudio {
             externalBorder.borderColor = UIColor.white.cgColor
             addSubview(deleteBtn)
             addSubview(scaleBtn)
-        
+        }
         deleteBtn.center = .init(x: externalBorder.frame.minX, y: externalBorder.frame.minY)
         scaleBtn.center = .init(x: externalBorder.frame.width, y: externalBorder.frame.height)
         initGestures()
@@ -129,9 +129,11 @@ class EditorStickersItemView: EditorStickersItemBaseView {
     private func initViews() {
         mirrorView = UIView()
         
-
+        if item.isAudio {
+            contentView = EditorStickersContentAudioView(item: item)
+        }else {
             contentView = EditorStickersContentImageView(item: item)
-        
+        }
         contentView.center = center
         
         externalBorder = CALayer()
@@ -141,17 +143,17 @@ class EditorStickersItemView: EditorStickersItemBaseView {
         externalBorder.contentsScale = UIScreen._scale
         
         deleteBtn = UIButton(type: .custom)
-        deleteBtn.tintColor = .white
         deleteBtn.setBackgroundImage(.imageResource.editor.sticker.delete.image, for: .normal)
         deleteBtn.addTarget(self, action: #selector(didDeleteButtonClick), for: .touchUpInside)
         deleteBtn.isHidden = true
         
         let image: UIImage?
- 
+        if !item.isAudio {
             image = .imageResource.editor.sticker.scale.image
-  
+        }else {
+            image = .imageResource.editor.sticker.rotate.image
+        }
         scaleBtn = UIImageView(image: image)
-        scaleBtn.tintColor = .white
         scaleBtn.isUserInteractionEnabled = true
         scaleBtn.addGestureRecognizer(
             PhotoPanGestureRecognizer(
@@ -168,10 +170,10 @@ class EditorStickersItemView: EditorStickersItemBaseView {
         contentView.addGestureRecognizer(tapGR)
         let panGR = UIPanGestureRecognizer(target: self, action: #selector(contentViewPanClick(panGR:)))
         contentView.addGestureRecognizer(panGR)
-    
+        if !item.isAudio {
             let pinchGR = UIPinchGestureRecognizer(target: self, action: #selector(contentViewPinchClick(pinchGR:)))
             contentView.addGestureRecognizer(pinchGR)
-        
+        }
         let rotationGR = UIRotationGestureRecognizer(
             target: self,
             action: #selector(contentViewRotationClick(rotationGR:))
@@ -217,14 +219,21 @@ class EditorStickersItemView: EditorStickersItemBaseView {
             let p = CGPoint(x: initialScalePoint.x + point.x - centerX, y: initialScalePoint.y + point.y - centerY)
             let r = sqrt(p.x * p.x + p.y * p.y)
             let arg = atan2(p.y, p.x)
-     
+            if !item.isAudio {
                 update(
                     pinchScale: initialScale * r / scaleR,
                     rotation: initialRadian + arg - scaleA,
                     isPinch: true,
                     isWindow: true
                 )
-   
+            }else {
+                update(
+                    pinchScale: initialScale,
+                    rotation: initialRadian + arg - scaleA,
+                    isPinch: true,
+                    isWindow: true
+                )
+            }
         case .ended, .cancelled, .failed:
             if !touching {
                 return
@@ -325,12 +334,12 @@ class EditorStickersItemView: EditorStickersItemBaseView {
         }
         switch pinchGR.state {
         case .began:
-       
+            if !item.isAudio {
                 CATransaction.begin()
                 CATransaction.setDisableActions(true)
                 externalBorder.borderWidth = 0
                 CATransaction.commit()
-            
+            }
             touching = true
             firstTouch = true
             delegate?.stickerItemView(didTouchBegan: self)
@@ -343,12 +352,12 @@ class EditorStickersItemView: EditorStickersItemBaseView {
             update(pinchScale: initialScale * pinchGR.scale, isPinch: true, isWindow: true)
         case .ended, .cancelled, .failed:
             touching = false
-            
+            if !item.isAudio {
                 CATransaction.begin()
                 CATransaction.setDisableActions(true)
                 externalBorder.borderWidth = 1 / scale
                 CATransaction.commit()
-            
+            }
             delegate?.stickerItemView(touchEnded: self)
             if isSelected {
                 deleteBtn.isHidden = false
@@ -486,7 +495,7 @@ class EditorStickersItemView: EditorStickersItemBaseView {
             mirrorView.transform = mirrorView.transform.scaledBy(x: mirrorScale.x, y: mirrorScale.y)
         }
         
-        if isSelected {
+        if isSelected && !item.isAudio {
             let borderWidth: CGFloat = touching ? 1 : 1 / scale
             let borderRadius: CGFloat = touching ? 1 : 1 / scale
             CATransaction.begin()
@@ -500,14 +509,14 @@ class EditorStickersItemView: EditorStickersItemBaseView {
             CATransaction.commit()
         }
         if isWindow {
-            deleteBtn.size = .init(width: 26, height: 26)
-            scaleBtn.size = .init(width: 26, height: 26)
+            deleteBtn.size = .init(width: 40, height: 40)
+            scaleBtn.size = .init(width: 40, height: 40)
             deleteBtn.center = .init(x: -margin * 0.5, y: -margin * 0.5)
             scaleBtn.center = .init(x: bounds.width + margin * 0.5, y: bounds.height + margin * 0.5)
             scaleBtn.transform = .identity
         }else {
-            deleteBtn.size = .init(width: 26 / scale, height: 26 / scale)
-            scaleBtn.size = .init(width: 26 / scale, height: 26 / scale)
+            deleteBtn.size = .init(width: 40 / scale, height: 40 / scale)
+            scaleBtn.size = .init(width: 40 / scale, height: 40 / scale)
             let mirrorScale = CGPoint(
                 x: self.mirrorScale.x * editMirrorScale.x,
                 y: self.mirrorScale.y * editMirrorScale.y

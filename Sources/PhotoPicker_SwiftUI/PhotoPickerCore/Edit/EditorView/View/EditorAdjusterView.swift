@@ -22,7 +22,7 @@ class EditorAdjusterView: UIView {
     var maximumZoomScale: CGFloat = 20
     var exportScale: CGFloat = UIScreen._scale {
         didSet {
-            if let canvasView = contentView.canvasView as? EditorCanvasView {
+            if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
                 canvasView.exportScale = exportScale
             }
         }
@@ -150,9 +150,9 @@ class EditorAdjusterView: UIView {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.clipsToBounds = false
         scrollView.scrollsToTop = false
-
+        if #available(iOS 11.0, *) {
             scrollView.contentInsetAdjustmentBehavior = .never
- 
+        }
         scrollView.addSubview(contentView)
         
         mirrorView = UIView()
@@ -332,7 +332,15 @@ extension EditorAdjusterView {
             frameView.hideVideoSilder(true)
         }
     }
-
+    
+    var videoVolume: CGFloat {
+        get {
+            contentView.volume
+        }
+        set {
+            contentView.volume = newValue
+        }
+    }
     func loadVideoAsset(isPlay: Bool, _ completion: ((Bool) -> Void)? = nil) {
         contentView.loadAsset(isPlay: isPlay, completion)
     }
@@ -918,7 +926,7 @@ extension EditorAdjusterView {
             maskImage = oldMaskImage
         }
         var canvasData: EditorCanvasData?
-        if let canvasView = contentView.canvasView as? EditorCanvasView {
+        if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
             canvasData = canvasView.data
         }
         return .init(
@@ -1026,7 +1034,7 @@ extension EditorAdjusterView {
         }
         contentView.zoomScale = zoomScale * scrollView.zoomScale
         contentView.drawView.setBrushData(factor.drawView, viewSize: contentView.bounds.size)
-        if let canvasView = contentView.canvasView as? EditorCanvasView {
+        if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
             canvasView.setData(data: factor.canvasData, viewSize: contentView.bounds.size)
         }
         contentView.mosaicView.setMosaicData(mosaicDatas: factor.mosaicView, viewSize: contentView.bounds.size)

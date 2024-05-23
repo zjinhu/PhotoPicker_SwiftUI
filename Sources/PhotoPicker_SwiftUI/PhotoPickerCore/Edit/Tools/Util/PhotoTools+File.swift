@@ -68,6 +68,20 @@ public extension PhotoTools {
         return cachePath
     }
     
+    static func getAudioCacheFolderPath() -> String {
+        var cachePath = cacheFolderPath
+        cachePath.append(contentsOf: "/audioCache")
+        folderExists(atPath: cachePath)
+        return cachePath
+    }
+    
+    static func getAudioTmpFolderPath() -> String {
+        var tmpPath = NSTemporaryDirectory()
+        tmpPath.append(contentsOf: "com.silence.HXPhotoPicker/audioCache")
+        folderExists(atPath: tmpPath)
+        return tmpPath
+    }
+    
     static func getLivePhotoImageCacheFolderPath() -> String {
         var cachePath = getImageCacheFolderPath()
         cachePath.append(contentsOf: "/LivePhoto")
@@ -86,6 +100,8 @@ public extension PhotoTools {
     static func removeCache() {
         removeVideoCache()
         removeImageCache()
+        removeAudioCache()
+        removeAudioTmpCache()
     }
     
     /// 删除视频缓存
@@ -99,7 +115,18 @@ public extension PhotoTools {
     static func removeImageCache() -> Error? {
         return removeFile(filePath: getImageCacheFolderPath())
     }
-
+    
+    /// 删除音频临时缓存
+    @discardableResult
+    static func removeAudioTmpCache() -> Error? {
+        return removeFile(filePath: getAudioTmpFolderPath())
+    }
+    
+    @discardableResult
+    static func removeAudioCache() -> Error? {
+        return removeFile(filePath: getAudioCacheFolderPath())
+    }
+    
     /// 获取视频缓存文件大小
     @discardableResult
     static func getVideoCacheFileSize() -> Int {
@@ -122,6 +149,20 @@ public extension PhotoTools {
         return URL.init(fileURLWithPath: cachePath)
     }
     
+    @discardableResult
+    static func getAudioCacheURL(for key: String) -> URL {
+        var cachePath = getAudioCacheFolderPath()
+        cachePath.append(contentsOf: "/" + key.md5 + ".mp3")
+        return URL.init(fileURLWithPath: cachePath)
+    }
+    
+    @discardableResult
+    static func getAudioTmpURL(for key: String) -> URL {
+        var cachePath = getAudioTmpFolderPath()
+        cachePath.append(contentsOf: "/" + key.md5 + ".mp3")
+        return URL.init(fileURLWithPath: cachePath)
+    }
+    
     /// 视频是否有缓存
     /// - Parameter key: 对应视频的key
     @discardableResult
@@ -130,7 +171,14 @@ public extension PhotoTools {
         let filePath = getVideoCacheURL(for: key).path
         return fileManager.fileExists(atPath: filePath)
     }
-
+    
+    @discardableResult
+    static func isCached(forAudio key: String) -> Bool {
+        let fileManager = FileManager.default
+        let filePath = getAudioTmpURL(for: key).path
+        return fileManager.fileExists(atPath: filePath)
+    }
+    
     /// 获取对应后缀的临时路径
     @discardableResult
     static func getTmpURL(for suffix: String) -> URL {

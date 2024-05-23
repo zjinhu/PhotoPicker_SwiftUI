@@ -22,7 +22,13 @@ class EditorToolsView: UIView {
     private var shadeMaskLayer: CAGradientLayer!
     private var flowLayout: UICollectionViewFlowLayout!
     private var collectionView: EditorCollectionView!
-
+    
+    var musicCellShowBox: Bool = false {
+        didSet {
+            collectionView.reloadData()
+        }
+    }
+    
     var options: [EditorConfiguration.ToolsView.Options] = []
     let config: EditorConfiguration.ToolsView
     init(config: EditorConfiguration.ToolsView, contentType: EditorContentViewType) {
@@ -36,16 +42,14 @@ class EditorToolsView: UIView {
         for option in config.toolOptions {
             if contentType == .image {
                 switch option.type {
-                    //MARK: xiugai
-                case .cropSize:
+                case .graffiti, .chartlet, .text, .cropSize, .filter, .filterEdit, .mosaic:
                     options.append(option)
                 default:
                     break
                 }
             }else if contentType == .video {
                 switch option.type {
-                    //MARK: xiugai
-                case .time, .cropSize:
+                case .time, .music, .graffiti, .chartlet, .text, .cropSize, .filter, .filterEdit:
                     options.append(option)
                 default:
                     break
@@ -65,9 +69,9 @@ class EditorToolsView: UIView {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-  
+        if #available(iOS 11.0, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
-
+        }
         collectionView.register(EditorToolViewCell.self, forCellWithReuseIdentifier: "EditorToolViewCellID")
         shadeView.addSubview(collectionView)
         
@@ -176,9 +180,13 @@ extension EditorToolsView: UICollectionViewDataSource {
         ) as! EditorToolViewCell
         let model = options[indexPath.item]
         cell.delegate = self
-
-        cell.showBox = false
-        
+        if model.type == .music {
+            cell.musicTickColor = config.musicTickColor
+            cell.musicTickBackgroundColor = config.musicTickBackgroundColor
+            cell.showBox = musicCellShowBox
+        }else {
+            cell.showBox = false
+        }
         cell.selectedColor = config.toolSelectedColor
         cell.model = model
         switch model.type {
@@ -216,10 +224,10 @@ extension EditorToolsView: EditorToolViewCellDelegate {
     func didClick(at indexPath: IndexPath) {
         let option = options[indexPath.item]
         switch option.type {
-        case .cropSize, .text, .chartlet:
+        case .cropSize, .text, .music, .chartlet:
             break
         default:
-            if option.type == .graffiti {
+            if #available(iOS 13.0, *), option.type == .graffiti {
                 break
             }
             if let selectedIndexPath = selectedIndexPath,
@@ -277,7 +285,21 @@ class EditorToolViewCell: UICollectionViewCell {
             boxView.config.tickDarkColor = boxColor
         }
     }
-
+    
+    var musicTickColor: UIColor = "#222222".color {
+        didSet {
+            boxView.config.tickColor = musicTickColor
+            boxView.config.tickDarkColor = musicTickColor
+        }
+    }
+    
+    var musicTickBackgroundColor: UIColor = "#FDCC00".color {
+        didSet {
+            boxView.config.selectedBackgroundColor = musicTickBackgroundColor
+            boxView.config.selectedBackgroudDarkColor = musicTickBackgroundColor
+        }
+    }
+    
     var model: EditorConfiguration.ToolsView.Options! {
         didSet {
             let image = model.imageType.image?.withRenderingMode(.alwaysTemplate)
@@ -307,7 +329,10 @@ class EditorToolViewCell: UICollectionViewCell {
         var config = SelectBoxConfiguration()
         config.style = .tick
         config.tickWidth = 1
-
+        config.tickColor = musicTickColor
+        config.tickDarkColor = musicTickColor
+        config.selectedBackgroundColor = musicTickBackgroundColor
+        config.selectedBackgroudDarkColor = musicTickBackgroundColor
         boxView = SelectBoxView(config, frame: CGRect(x: 0, y: 0, width: 12, height: 12))
         boxView.isHidden = true
         boxView.isUserInteractionEnabled = false
@@ -315,9 +340,9 @@ class EditorToolViewCell: UICollectionViewCell {
         
         pointView = UIView()
         pointView.size = .init(width: 4, height: 4)
-
+        if #available(iOS 11.0, *) {
             pointView.cornersRound(radius: 2, corner: .allCorners)
-
+        }
         contentView.addSubview(pointView)
     }
     
@@ -339,6 +364,9 @@ class EditorToolViewCell: UICollectionViewCell {
         }
         pointView.y = button.frame.maxY - 10
         pointView.centerX = width * 0.5
- 
+        guard #available(iOS 11.0, *) else {
+            pointView.cornersRound(radius: 2, corner: .allCorners)
+            return
+        }
     }
 }

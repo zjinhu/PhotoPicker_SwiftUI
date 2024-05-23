@@ -19,7 +19,6 @@ class EditorChartletViewCell: UICollectionViewCell {
             selectedBgView.isHidden = !titleChartlet.isSelected
 
             setupImage(image: titleChartlet.image)
-            
         }
     }
     
@@ -39,20 +38,17 @@ class EditorChartletViewCell: UICollectionViewCell {
     var chartlet: EditorChartlet! {
         didSet {
             selectedBgView.isHidden = true
-
             setupImage(image: chartlet.image)
-            
         }
     }
     
     func setupImage(image: UIImage?, url: URL? = nil) {
         downloadCompletion = false
         imageView.image = nil
-        
+       
         if let image = image {
             imageView.image = image
         }
-        
     }
     
     override init(frame: CGRect) {

@@ -74,7 +74,7 @@ extension EditedResult: Codable {
 
 extension VideoEditedData: Codable {
     enum CodingKeys: CodingKey {
-
+        case music
         case cropTime
         case filterEdit
         case filter
@@ -83,6 +83,7 @@ extension VideoEditedData: Codable {
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        music = try? container.decode(VideoEditedMusic.self, forKey: .music)
         cropTime = try? container.decode(EditorVideoCropTime.self, forKey: .cropTime)
         filterEdit = try? container.decode(EditorFilterEditFator.self, forKey: .filterEdit)
         filter = try? container.decode(VideoEditorFilter.self, forKey: .filter)
@@ -90,6 +91,7 @@ extension VideoEditedData: Codable {
     }
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(music, forKey: .music)
         try container.encode(cropTime, forKey: .cropTime)
         try container.encode(filterEdit, forKey: .filterEdit)
         try container.encode(filter, forKey: .filter)

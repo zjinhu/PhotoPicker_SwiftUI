@@ -61,7 +61,11 @@ public struct ImageEditedData: Codable {
 }
 
 public struct VideoEditedData {
-
+    
+    /// audio parameters
+    /// 音频参数
+    public let music: VideoEditedMusic?
+    
     /// Clipping Duration Parameters
     /// 裁剪时长参数
     public let cropTime: EditorVideoCropTime?
@@ -81,10 +85,12 @@ public struct VideoEditedData {
     let cropSize: EditorCropSizeFator?
     
     public init(
+        music: VideoEditedMusic? = nil,
         filterEdit: EditorFilterEditFator? = nil,
         filter: VideoEditorFilter? = nil,
         cropSize: EditorCropSizeFator? = nil
     ) {
+        self.music = music
         self.filterEdit = filterEdit
         self.filter = filter
         self.cropSize = cropSize
@@ -92,15 +98,57 @@ public struct VideoEditedData {
     }
     
     init(
+        music: VideoEditedMusic?,
         cropTime: EditorVideoCropTime?,
         filterEdit: EditorFilterEditFator?,
         filter: VideoEditorFilter?,
         cropSize: EditorCropSizeFator?
     ) {
+        self.music = music
         self.cropTime = cropTime
         self.filterEdit = filterEdit
         self.filter = filter
         self.cropSize = cropSize
+    }
+}
+
+public struct VideoEditedMusic: Codable {
+    
+    /// Whether to include the original video audio
+    /// 是否包含原视频音频
+    public let hasOriginalSound: Bool
+    
+    /// Original video volume
+    /// 原视频音量
+    public let videoSoundVolume: Float
+    
+    /// background music url
+    /// 背景音乐地址
+    public let backgroundMusicURL: VideoEditorMusicURL?
+    
+    /// 背景音乐音量
+    public let backgroundMusicVolume: Float
+    
+    let musicIdentifier: String?
+    
+    /// Soundtrack parameters
+    /// 配乐参数
+    let music: VideoEditorMusic?
+    
+    public init(
+        hasOriginalSound: Bool,
+        videoSoundVolume: Float,
+        backgroundMusicURL: VideoEditorMusicURL?,
+        backgroundMusicVolume: Float,
+        musicIdentifier: String?,
+        music: VideoEditorMusic?
+    ) {
+        self.hasOriginalSound = hasOriginalSound
+        self.videoSoundVolume = videoSoundVolume
+        self.backgroundMusicURL = backgroundMusicURL
+        self.backgroundMusicVolume = backgroundMusicVolume
+        self.musicIdentifier = musicIdentifier
+        self.music = music
     }
 }
 

@@ -6,11 +6,9 @@
 //
 
 import UIKit
+ 
+final class ImageView: GIFImageView {
 
-typealias HXImageView = GIFImageView
-
-final class ImageView: HXImageView {
-    
     override init() {
         super.init(frame: .zero)
         contentMode = .scaleAspectFill
@@ -31,27 +29,21 @@ final class ImageView: HXImageView {
     }
     
     func setImageData(_ imageData: Data?) {
-
         guard let imageData = imageData else {
             gifImage = nil
             return
         }
         let image: GIFImage? = .init(data: imageData)
         gifImage = image
-
     }
     
     func startAnimatedImage() {
-
         setupDisplayLink()
-
     }
     
     func stopAnimatedImage() {
-
         displayLink?.invalidate()
         gifImage = nil
-
     }
     
     required init?(coder: NSCoder) {

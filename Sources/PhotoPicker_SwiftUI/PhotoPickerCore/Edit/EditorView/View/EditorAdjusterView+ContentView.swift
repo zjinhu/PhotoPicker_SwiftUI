@@ -62,7 +62,10 @@ extension EditorAdjusterView {
         get { contentView.mosaicWidth }
         set { contentView.mosaicWidth = newValue }
     }
-
+    var smearWidth: CGFloat {
+        get { contentView.smearWidth }
+        set { contentView.smearWidth = newValue }
+    }
     var mosaicType: EditorMosaicType {
         get { contentView.mosaicType }
         set { contentView.mosaicType = newValue }
@@ -141,6 +144,12 @@ extension EditorAdjusterView: EditorContentViewDelegate {
     }
     func contentView(resetVideoRotate contentView: EditorContentView) {
         resetVideoRotate(false)
+    }
+    func contentView(_ contentView: EditorContentView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool {
+        if let shouldAddAudioItem = delegate?.editorAdjusterView(self, shouldAddAudioItem: audio) {
+            return shouldAddAudioItem
+        }
+        return true
     }
     
     func contentView(_ contentView: EditorContentView, videoDidPlayAt time: CMTime) {
@@ -260,7 +269,7 @@ extension EditorAdjusterView: EditorContentViewDelegate {
     }
     
     func contentView(_ contentView: EditorContentView, stickerItemCenter stickersView: EditorStickersView) -> CGPoint? {
-//        if let window = UIApplication.keyWindow {
+//        if let window = UIApplication._keyWindow {
 //            let windowRect = window.convert(contentView.frame, from: self)
 //            let centerHeight: CGFloat
 //            if windowRect.height < window.height {
@@ -285,12 +294,14 @@ extension EditorAdjusterView: EditorContentViewDelegate {
         }
         return sourceImage
     }
-
+    
+    @available(iOS 13.0, *)
     func contentView(_ contentView: EditorContentView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker) {
         delegate?.editorAdjusterView(self, toolPickerFramesObscuredDidChange: toolPicker)
     }
 }
 
+@available(iOS 13.0, *)
 extension EditorAdjusterView {
     
     var canvasImage: UIImage {

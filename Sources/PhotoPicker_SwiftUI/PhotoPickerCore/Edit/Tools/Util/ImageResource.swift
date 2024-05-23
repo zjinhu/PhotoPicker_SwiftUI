@@ -14,11 +14,8 @@ public extension HX {
     
     class ImageResource {
         public static let shared = ImageResource()
-        
-
         /// 编辑器
         public var editor: Editor = .init()
- 
     }
 }
 
@@ -34,7 +31,11 @@ public extension HX.ImageResource {
             case .local(let name):
                 return name.image
             case .system(let name):
-                return .init(systemName: name)
+                if #available(iOS 13.0, *) {
+                    return .init(systemName: name)
+                } else {
+                    return name.image
+                }
             }
         }
         
@@ -65,6 +66,8 @@ public extension HX.ImageResource {
         public var text: Text = .init()
         /// 贴纸
         public var sticker: Sticker = .init()
+        /// 配乐
+        public var music: Music = .init()
         /// 马赛克/涂抹
         public var mosaic: Mosaic = .init()
         /// 画面调整
@@ -89,7 +92,8 @@ public extension HX.ImageResource {
             public var adjustment: ImageType = .system("dial.low.fill")
             /// 滤镜
             public var filter: ImageType = .system("camera.filters")
-
+            /// 配乐
+            public var music: ImageType = .system("music.quarternote.3")
         }
         
         public struct Brush {
@@ -101,7 +105,6 @@ public extension HX.ImageResource {
             public var canvasUndo: ImageType = .system("arrow.uturn.backward.circle")
             /// 画布-反撤销
             public var canvasRedo: ImageType = .system("arrow.uturn.forward.circle")
-            /// 画布-清空
             public var canvasUndoAll: ImageType = .system("x.circle")
         }
         
@@ -114,10 +117,10 @@ public extension HX.ImageResource {
             public var ratioHorizontalNormal: ImageType = .system("rectangle")
             /// 选中原始比例时， 横向比例-选中状态
             public var ratioHorizontalSelected: ImageType = .system("checkmark.rectangle")
-            /// 垂直镜像
-            public var mirrorVertically: ImageType = .system("arrow.left.and.right.righttriangle.left.righttriangle.right")
             /// 水平镜像
             public var mirrorHorizontally: ImageType = .system("arrow.up.and.down.righttriangle.up.righttriangle.down")
+            /// 垂直镜像
+            public var mirrorVertically: ImageType = .system("arrow.left.and.right.righttriangle.left.righttriangle.right")
             /// 向左旋转
             public var rotateLeft: ImageType = .system("rotate.left")
             /// 向右旋转
@@ -186,7 +189,25 @@ public extension HX.ImageResource {
         public struct Mosaic {
             /// 撤销
             public var undo: ImageType = .system("arrow.uturn.backward")
-
+            /// 马赛克
+            public var mosaic: ImageType = .system("mosaic")
+            /// 涂抹
+            public var smear: ImageType = .system("eraser.fill")
+            /// 每次涂抹的图片
+            public var smearMask: ImageType = .system("paintbrush")
+        }
+        
+        public struct Music {
+            /// 搜索图标
+            public var search: ImageType = .system("magnifyingglass")
+            /// cell 上的音乐图标
+            public var music: ImageType = .system("music.quarternote.3")
+            /// 音量图标
+            public var volum: ImageType = .system("speaker.wave.1")
+            /// 选择框-未选中
+            public var selectionBoxNormal: ImageType = .system("circle")
+            /// 选择框-选中
+            public var selectionBoxSelected: ImageType = .system("checkmark.circle.fill")
         }
         
         public struct Video {
@@ -200,5 +221,4 @@ public extension HX.ImageResource {
             public var rightArrow: ImageType = .system("chevron.compact.right")
         }
     }
-
 }
