@@ -71,7 +71,7 @@ class EditorVideoControlView: UIView {
     //xiugai add
     private lazy var titleLb: UILabel = {
         let lb = UILabel()
-        lb.text = "选择范围"
+        lb.text = "选择范围".localString
         lb.textColor = .white
         lb.font = .systemFont(ofSize: 14, weight: .medium)
         lb.translatesAutoresizingMaskIntoConstraints = false
@@ -79,7 +79,7 @@ class EditorVideoControlView: UIView {
     }()
     private lazy var subTitlelb: UILabel = {
         let lb = UILabel()
-        lb.text = "由于系统限制，较长的动画时间可能会出现卡顿"
+        lb.text = "由于系统限制，较长的动画时间可能会出现卡顿".localString
         lb.textColor = .gray
         lb.font = .systemFont(ofSize: 12)
         lb.translatesAutoresizingMaskIntoConstraints = false

@@ -71,3 +71,6 @@
 "处理失败" = "Processing failed";
 "取消" = "Cancel";
 "确定" = "Done";
+
+"选择范围" = "Range of options";
+"由于系统限制，较长的动画时间可能会出现卡顿" = "Longer animation times may lag due to system limitations";
