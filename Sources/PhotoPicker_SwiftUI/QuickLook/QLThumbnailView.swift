@@ -11,12 +11,15 @@ import BrickKit
 public struct QLThumbnailView: View {
     let asset: SelectedAsset
     let isStatic: Bool
+    let index: Int
     @StateObject var photoModel: PhotoViewModel
+    @EnvironmentObject var viewModel: GalleryModel
     
-    public init(asset: SelectedAsset, isStatic: Bool = false) {
+    public init(asset: SelectedAsset, isStatic: Bool = false, index: Int) {
         self.asset = asset
         self.isStatic = isStatic
-        _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset.asset))
+        self.index = index
+        _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset))
     }
     
     public var body: some View {
@@ -84,6 +87,8 @@ public struct QLThumbnailView: View {
                 .ss.task {
                     await photoModel.onStart()
                 }
+                .ss.border(viewModel.previewSelectIndex == index ? .mainBlue : .clear, cornerRadius: 5, lineWidth: 2)
+
         }
     }
 }

@@ -19,7 +19,10 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
     public var videoUrl: URL?
     /// 获取修改后的图片
     public var image: UIImage?
-
+    ///gif
+    public var imageData: Data?
+    public var gifVideoUrl: URL?
+    
     public init(asset: PHAsset) {
         self.asset = asset
     }

@@ -80,6 +80,14 @@ public struct EditView: UIViewControllerRepresentable {
             return vc
         }
         
+        
+        if let url = selectedAsset.gifVideoUrl,
+           selectedAsset.assetType == .gif{
+            let vc = EditorViewController(.init(type: .video(url)), config: config)
+            vc.delegate = context.coordinator
+            return vc
+        }
+        
         return UIViewController()
     }
     
@@ -134,7 +142,20 @@ public struct EditView: UIViewControllerRepresentable {
                 default:
                     break
                 }
-
+                
+            case .gif:
+                switch asset.result{
+                case .video(let result, _):
+                    GifTool.createGifData(from: result.url) { date in
+                        self.parent.selectedAsset.imageData = date
+                        self.parent.selectedAsset.gifVideoUrl = result.url
+                        self.parent.editDone(self.parent.selectedAsset)
+                        self.parent.dismiss()
+                    }
+                default:
+                    break
+                }
+                
             default:
                 break
             }

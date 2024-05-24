@@ -21,7 +21,7 @@ struct ThumbnailView: View {
     
     init(asset: PHAsset) {
         self.asset = asset
-        _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset))
+        _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: SelectedAsset(asset: asset)))
     }
     
     var body: some View {

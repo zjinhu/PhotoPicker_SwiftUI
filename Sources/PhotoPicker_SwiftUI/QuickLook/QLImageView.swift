@@ -14,7 +14,7 @@ public struct QLImageView: View {
     
     public init(asset: SelectedAsset) {
         self.asset = asset
-        _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset.asset))
+        _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset))
     }
     
     public var body: some View {
@@ -25,6 +25,9 @@ public struct QLImageView: View {
                 if let _ = photoModel.image{}else{
                     loadAsset()
                 }
+            }
+            .onDisappear{
+                photoModel.onStop()
             }
     }
     

@@ -13,10 +13,12 @@ public struct QLVideoView: View {
     var asset: SelectedAsset
     @State private var player = AVPlayer()
     @State var isPlaying: Bool = false
-    @State var playerItem: AVPlayerItem?
-    
+ 
+    @StateObject var videoModel: VideoViewModel
+ 
     public init(asset: SelectedAsset) {
         self.asset = asset
+        _videoModel = StateObject(wrappedValue: VideoViewModel(asset: asset))
     }
     
     public var body: some View {
@@ -40,28 +42,26 @@ public struct QLVideoView: View {
                 isPlaying = false
                 player.seek(to: .zero)
             }
-            Task{@MainActor in
-                if let _ = playerItem{}else{
-                    await loadAsset()
-                }
-            }
+        }
+        .ss.task {
+            await loadAsset()
         }
         .onDisappear{
             isPlaying = false
             player.pause()
             player.seek(to: .zero)
         }
+        .onChange(of: videoModel.playerItem) { new in
+            player.replaceCurrentItem(with: new)
+        }
     }
     
     private func loadAsset() async {
         if let url = asset.videoUrl{
-            playerItem = AVPlayerItem(url: url)
-            player.replaceCurrentItem(with: playerItem)
+            videoModel.playerItem = AVPlayerItem(url: url)
             return
         }
-        
-        playerItem = await asset.asset.getPlayerItem()
-        player = AVPlayer(playerItem: playerItem)
+        await videoModel.loadAsset()
     }
 }
 

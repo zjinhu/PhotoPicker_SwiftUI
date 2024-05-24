@@ -38,7 +38,9 @@ public class GalleryModel: ObservableObject {
     public var cropRatio: CGSize = .zero
     @Published
     public var selectedAsset: SelectedAsset?
-     
+    @Published
+    public var previewSelectIndex: Int = 0
+    
     private var subscribers: [AnyCancellable] = []
     
     public init() {
@@ -111,15 +113,15 @@ public class PhotoViewModel: ObservableObject {
     private var requestID: PHImageRequestID?
     private var currentTask: Task<Void, Never>?
     
-    let asset: PHAsset
+    let asset: SelectedAsset
     let isStatic: Bool
-    public init(asset: PHAsset, isStatic: Bool = false) {
+    public init(asset: SelectedAsset, isStatic: Bool = false) {
         self.asset = asset
         self.isStatic = isStatic
     }
     
     public func loadImage(size: CGSize = .zero) {
-        requestID = asset.getImage(size: size) { [weak self] ima in
+        requestID = asset.asset.getImage(size: size) { [weak self] ima in
             self?.image = ima
         }
     }
@@ -133,11 +135,11 @@ public class PhotoViewModel: ObservableObject {
     
     public func onStart() async {
         if isStatic{ return }
-        guard asset.mediaType == .video else { return }
+        guard asset.asset.mediaType == .video else { return }
 
         currentTask?.cancel()
         currentTask = Task {
-            time = await asset.getVideoTime()
+            time = await asset.asset.getVideoTime()
         }
     }
 }
@@ -148,14 +150,14 @@ public class LivePhotoViewModel: ObservableObject {
  
     private var requestID: PHImageRequestID?
  
-    let asset: PHAsset
+    let asset: SelectedAsset
  
-    public init(asset: PHAsset) {
+    public init(asset: SelectedAsset) {
         self.asset = asset
     }
     
     public func loadAsset() {
-        requestID =  asset.loadLivePhoto(resultClosure: { [weak self] photo in
+        requestID =  asset.asset.loadLivePhoto(resultClosure: { [weak self] photo in
             self?.livePhoto = photo
         })
     }
@@ -174,14 +176,14 @@ public class GifViewModel: ObservableObject {
     public var imageData: Data?
  
     private var requestID: PHImageRequestID?
-    let asset: PHAsset
+    let asset: SelectedAsset
  
-    public init(asset: PHAsset) {
+    public init(asset: SelectedAsset) {
         self.asset = asset
     }
     
     public func loadImageData() {
-        requestID = asset.getImageData({ [weak self] data in
+        requestID = asset.asset.getImageData({ [weak self] data in
             self?.imageData = data
         })
     }
@@ -192,6 +194,22 @@ public class GifViewModel: ObservableObject {
         }
     }
 
+}
+
+@MainActor
+public class VideoViewModel: ObservableObject {
+    @Published
+    public var playerItem: AVPlayerItem?
+
+    let asset: SelectedAsset
+ 
+    public init(asset: SelectedAsset) {
+        self.asset = asset
+    }
+    
+    public func loadAsset() async {
+        playerItem = await asset.asset.getPlayerItem()
+    }
 }
 
 //相簿列表项

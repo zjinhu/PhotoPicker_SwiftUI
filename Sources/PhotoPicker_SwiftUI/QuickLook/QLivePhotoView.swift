@@ -15,7 +15,7 @@ public struct QLivePhotoView: View {
     
     public init(asset: SelectedAsset) {
         self.asset = asset
-        _photoModel = StateObject(wrappedValue: LivePhotoViewModel(asset: asset.asset))
+        _photoModel = StateObject(wrappedValue: LivePhotoViewModel(asset: asset))
     }
     
     public var body: some View {

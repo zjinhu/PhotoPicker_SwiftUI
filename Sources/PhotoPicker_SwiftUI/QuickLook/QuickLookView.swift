@@ -12,18 +12,15 @@ public struct QuickLookView: View {
     @State private var isPresentedEdit = false
     @EnvironmentObject var viewModel: GalleryModel
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedTab = 0
-
-    public init() {
-
-    }
+ 
+    public init() { }
     
     public var body: some View {
         GeometryReader { proxy in
             
             VStack{
                 
-                TabView(selection: $selectedTab) {
+                TabView(selection: $viewModel.previewSelectIndex) {
                     ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, asset in
                         
                         if viewModel.isStatic{
@@ -71,34 +68,33 @@ public struct QuickLookView: View {
                     HScrollStack(spacing: 10) {
                         ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, picture in
                             
-                            QLThumbnailView(asset: picture, isStatic: viewModel.isStatic)
+                            QLThumbnailView(asset: picture, isStatic: viewModel.isStatic, index: index)
                                 .frame(width: 90, height: 90)
                                 .environmentObject(viewModel)
-                                .ss.border(selectedTab == index ? .mainBlue : .clear, cornerRadius: 5, lineWidth: 2)
                                 .id(index)
                                 .onTapGesture {
-                                    selectedTab = index
+                                    viewModel.previewSelectIndex = index
                                 }
+                            
                         }
                     }
                     .padding(.horizontal, 10)
                     .maxHeight(110)
                     .background(.backColor)
                     .shadow(color: .gray.opacity(0.2), radius: 0.5, y: -0.8)
-                    .onChange(of: selectedTab) { new in
+                    .onChange(of: viewModel.previewSelectIndex) { new in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             withAnimation {
                                 value.scrollTo(new, anchor: .center)
                             }
                         }
                     }
-                    //                    .id(UUID())
                 }
                 
                 HStack{
                     
                     Button {
-                        let sset = viewModel.selectedAssets[selectedTab]
+                        let sset = viewModel.selectedAssets[viewModel.previewSelectIndex]
                         switch sset.fetchPHAssetType(){
                         case .image:
                             if let image = sset.asset.toImage(){
@@ -123,6 +119,19 @@ public struct QuickLookView: View {
                                     DispatchQueue.main.async {
                                         viewModel.selectedAsset = sset
                                         viewModel.selectedAsset?.videoUrl = url
+                                        isPresentedEdit.toggle()
+                                    }
+                                }
+                            }
+                            
+                        case .gif:
+                            
+                            if let imageData = sset.asset.toImageData(){
+                                GifTool.createVideoFromGif(gifData: imageData) { url in
+                                    DispatchQueue.main.async {
+                                        viewModel.selectedAsset = sset
+                                        viewModel.selectedAsset?.imageData = imageData
+                                        viewModel.selectedAsset?.gifVideoUrl = url
                                         isPresentedEdit.toggle()
                                     }
                                 }
@@ -158,11 +167,14 @@ public struct QuickLookView: View {
             }
             
         }
+        .onDisappear{
+            viewModel.previewSelectIndex = 0
+        }
         .navigationBarBackButtonHidden()
         .toolbar {
             
             ToolbarItem(placement: .principal) {
-                Text("\(selectedTab + 1)/\(viewModel.selectedAssets.count)")
+                Text("\(viewModel.previewSelectIndex + 1)/\(viewModel.selectedAssets.count)")
                     .font(.system(size: 18)) // 自定义字体和大小
                     .foregroundColor(.textColor) // 修改字体颜色
             }
@@ -180,7 +192,7 @@ public struct QuickLookView: View {
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
-                Text("\(selectedTab + 1)")
+                Text("\(viewModel.previewSelectIndex + 1)")
                     .font(Font.f15)
                     .foregroundColor(.white)
                     .frame(width: 28, height: 28)
@@ -195,9 +207,8 @@ public struct QuickLookView: View {
             if let asset = viewModel.selectedAsset{
                 EditView(asset: asset,
                          cropRatio: viewModel.cropRatio){ replace in
-                    viewModel.selectedAssets.replaceSubrange(selectedTab...selectedTab, with: [replace])
-                }
-                         .ignoresSafeArea()
+                    viewModel.selectedAssets.replaceSubrange(viewModel.previewSelectIndex...viewModel.previewSelectIndex, with: [replace])
+                }.ignoresSafeArea()
             }
             
         }

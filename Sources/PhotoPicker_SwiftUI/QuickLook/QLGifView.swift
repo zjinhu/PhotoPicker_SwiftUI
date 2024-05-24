@@ -11,11 +11,10 @@ import Photos
 struct QLGifView: View {
     let asset: SelectedAsset
     @StateObject var gifModel: GifViewModel
-    
-    
+ 
     public init(asset: SelectedAsset) {
         self.asset = asset
-        _gifModel = StateObject(wrappedValue: GifViewModel(asset: asset.asset))
+        _gifModel = StateObject(wrappedValue: GifViewModel(asset: asset))
     }
     
     var body: some View {
@@ -35,8 +34,11 @@ struct QLGifView: View {
     }
     
     private func loadAsset() {
-        
-        gifModel.loadImageData()
+        if let data = asset.imageData{
+            gifModel.imageData = data
+        }else{
+            gifModel.loadImageData()
+        }
     }
 }
 
