@@ -51,7 +51,7 @@ struct ThumbnailView: View {
                 }
             }
             .ss.overlay(alignment: .bottomTrailing) {
-                if asset.isGIF(){
+                if asset.isGIF(), !viewModel.isStatic{
                     Text("GIF")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.white)
@@ -63,7 +63,7 @@ struct ThumbnailView: View {
                 }
             }
             .ss.overlay(alignment: .bottomLeading) {
-                if let time = photoModel.time{
+                if let time = photoModel.time, !viewModel.isStatic{
                     HStack{
                         Image(systemName: "video")
                             .resizable()

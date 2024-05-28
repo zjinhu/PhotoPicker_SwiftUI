@@ -8,7 +8,7 @@
 import SwiftUI
 import Photos
 
-struct QLGifView: View {
+public struct QLGifView: View {
     let asset: SelectedAsset
     @StateObject var gifModel: GifViewModel
  
@@ -17,7 +17,7 @@ struct QLGifView: View {
         _gifModel = StateObject(wrappedValue: GifViewModel(asset: asset))
     }
     
-    var body: some View {
+    public var body: some View {
         VStack{
             if let data = gifModel.imageData{
                 GIFView(data: data)

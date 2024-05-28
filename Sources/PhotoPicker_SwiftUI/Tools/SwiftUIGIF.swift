@@ -211,8 +211,8 @@ extension UIImage {
     
 }
 
-class GifTool{
-    static func createVideoFromGif(gifData: Data, completion: @escaping (URL?) -> Void) {
+public class GifTool{
+    public static func createVideoFromGif(gifData: Data, completion: @escaping (URL?) -> Void) {
         guard let images = UIImage.animatedImage(withData: gifData)?.images else {
             completion(nil)
             return
@@ -290,7 +290,7 @@ class GifTool{
     }
     
     
-    static func createGifData(from videoURL: URL, completion: @escaping (Data?) -> Void) {
+    public static func createGifData(from videoURL: URL, completion: @escaping (Data?) -> Void) {
         let asset = AVAsset(url: videoURL)
         let assetReader = try! AVAssetReader(asset: asset)
         let videoTrack = asset.tracks(withMediaType: .video).first!

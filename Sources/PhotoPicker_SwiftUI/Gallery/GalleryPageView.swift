@@ -112,16 +112,6 @@ struct GalleryPageView: View {
                         .disabled(viewModel.selectedAssets.count == 0)
                         
                         Spacer()
-                        if !onlyImage{
-                            RadioButton(label: "动态效果".localString) { bool in
-                                if bool{
-                                    self.viewModel.isStatic = false
-                                }else{
-                                    self.viewModel.isStatic = true
-                                }
-                            }
-                        }
-                        Spacer()
                         
                         Button {
                             selected = viewModel.selectedAssets
@@ -182,11 +172,6 @@ struct GalleryPageView: View {
         .onChange(of: viewModel.onSelectedDone) { value in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 selected = viewModel.selectedAssets
-                dismiss()
-            }
-        }
-        .onChange(of: viewModel.onSelectedDone) { value in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 dismiss()
             }
         }

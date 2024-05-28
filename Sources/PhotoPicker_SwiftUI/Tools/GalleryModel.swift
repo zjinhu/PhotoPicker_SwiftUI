@@ -21,7 +21,7 @@ public class GalleryModel: ObservableObject {
     public var onSelectedDone: Bool = false
     @Published
     public var autoCrop: Bool = false
-    @Published
+    
     public var isStatic: Bool = false
     @Published 
     public var showQuicklook: Bool = false

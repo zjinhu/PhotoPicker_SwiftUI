@@ -22,19 +22,8 @@ public struct QuickLookView: View {
                 
                 TabView(selection: $viewModel.previewSelectIndex) {
                     ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, asset in
-                        
-                        if viewModel.isStatic{
-                            QLImageView(asset: asset)
-                                .frame(width: proxy.size.width)
-                                .clipped()
-                                .tag(index)
-                        }else{
+                    
                             switch asset.fetchPHAssetType(){
-                            case .image:
-                                QLImageView(asset: asset)
-                                    .frame(width: proxy.size.width)
-                                    .clipped()
-                                    .tag(index)
                             case .livePhoto:
                                 QLivePhotoView(asset: asset)
                                     .frame(width: proxy.size.width)
@@ -51,17 +40,18 @@ public struct QuickLookView: View {
                                     .clipped()
                                     .tag(index) 
                             default:
-                                EmptyView()
+                                QLImageView(asset: asset)
+                                    .frame(width: proxy.size.width)
+                                    .clipped()
                                     .tag(index)
                             }
                             
                         }
-                        
-                    }
+
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
-//                .id(UUID())
+                .id(UUID())
                 
                 ScrollViewReader { value in
                     
