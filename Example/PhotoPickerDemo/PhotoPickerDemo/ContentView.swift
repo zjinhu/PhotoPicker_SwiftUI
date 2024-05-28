@@ -27,6 +27,8 @@ struct ContentView: View {
     
     @StateObject var selectItem = SelectItem()
     
+    @State private var showTest: Bool = false
+    
     var body: some View {
         NavigationView{
             
@@ -51,6 +53,7 @@ struct ContentView: View {
                     showPicker.toggle()
                 } label: {
                     Text("打开系统相册")
+                        .frame(height: 50)
                 }
                 .photoPicker(isPresented: $showPicker,
                              selected: $selectedItems,
@@ -68,6 +71,17 @@ struct ContentView: View {
                             selectedImages = images
                         }
                     }
+                }
+                
+                Button {
+                    showTest.toggle()
+                } label: {
+                    Text("打开")
+                        .frame(height: 50)
+                }
+                .fullScreenCover(isPresented: $showTest) {
+                    SwiftUIView()
+                        .ignoresSafeArea()
                 }
                 
                 List {

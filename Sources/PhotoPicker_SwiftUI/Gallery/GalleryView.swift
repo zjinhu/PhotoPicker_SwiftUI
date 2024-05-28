@@ -33,7 +33,6 @@ struct GalleryView: View {
                             .frame(height: gridSize)
                             .id(array[index].localIdentifier)
                             .environmentObject(viewModel)
-                        
                     }
                 }
                 

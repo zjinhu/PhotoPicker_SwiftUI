@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8C7411D82C00980B009F7127 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7411D72C00980B009F7127 /* SwiftUIView.swift */; };
 		8C977C562BECB8A700EAD700 /* PhotoPickerDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */; };
 		8C977C582BECB8A700EAD700 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C977C572BECB8A700EAD700 /* ContentView.swift */; };
 		8C977C5A2BECB8A800EAD700 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C977C592BECB8A800EAD700 /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8C7411D72C00980B009F7127 /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 		8C977C522BECB8A700EAD700 /* PhotoPickerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoPickerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerDemoApp.swift; sourceTree = "<group>"; };
 		8C977C572BECB8A700EAD700 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,6 +60,7 @@
 				8CBE8E9E2BF72D3B00AD8F96 /* Info.plist */,
 				8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */,
 				8C977C572BECB8A700EAD700 /* ContentView.swift */,
+				8C7411D72C00980B009F7127 /* SwiftUIView.swift */,
 				8C977C592BECB8A800EAD700 /* Assets.xcassets */,
 				8C977C5B2BECB8A800EAD700 /* Preview Content */,
 			);
@@ -157,6 +160,7 @@
 			files = (
 				8C977C582BECB8A700EAD700 /* ContentView.swift in Sources */,
 				8C977C562BECB8A700EAD700 /* PhotoPickerDemoApp.swift in Sources */,
+				8C7411D82C00980B009F7127 /* SwiftUIView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

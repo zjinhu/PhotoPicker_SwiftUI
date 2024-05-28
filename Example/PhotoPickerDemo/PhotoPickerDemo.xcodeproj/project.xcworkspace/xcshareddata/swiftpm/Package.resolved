@@ -11,15 +11,6 @@
       }
     },
     {
-      "identity" : "jxsegmentedview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pujiaxin33/JXSegmentedView.git",
-      "state" : {
-        "revision" : "0e2f4407f3072f69c9d0157f08ba6f98713bd764",
-        "version" : "1.3.3"
-      }
-    },
-    {
       "identity" : "pagertabstripview",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/zjinhu/PagerTabStripView.git",
