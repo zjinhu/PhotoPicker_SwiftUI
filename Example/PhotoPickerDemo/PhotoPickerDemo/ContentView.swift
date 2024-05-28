@@ -84,7 +84,6 @@ struct ContentView: View {
                     
                     ForEach(Array(selectItem.pictures.enumerated()), id: \.element) { index, picture in
                         
-                        
                         Button {
                             
                             selectItem.selectedIndex = index
