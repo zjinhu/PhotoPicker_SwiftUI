@@ -15,7 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		8C977C522BECB8A700EAD700 /* PhotoPickerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoPickerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8C977C522BECB8A700EAD700 /* PhotoPickerSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoPickerSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerDemoApp.swift; sourceTree = "<group>"; };
 		8C977C572BECB8A700EAD700 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8C977C592BECB8A800EAD700 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -47,7 +47,7 @@
 		8C977C532BECB8A700EAD700 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8C977C522BECB8A700EAD700 /* PhotoPickerDemo.app */,
+				8C977C522BECB8A700EAD700 /* PhotoPickerSwiftUI.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -82,9 +82,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8C977C512BECB8A700EAD700 /* PhotoPickerDemo */ = {
+		8C977C512BECB8A700EAD700 /* PhotoPickerSwiftUI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8C977C602BECB8A800EAD700 /* Build configuration list for PBXNativeTarget "PhotoPickerDemo" */;
+			buildConfigurationList = 8C977C602BECB8A800EAD700 /* Build configuration list for PBXNativeTarget "PhotoPickerSwiftUI" */;
 			buildPhases = (
 				8C977C4E2BECB8A700EAD700 /* Sources */,
 				8C977C4F2BECB8A700EAD700 /* Frameworks */,
@@ -94,12 +94,12 @@
 			);
 			dependencies = (
 			);
-			name = PhotoPickerDemo;
+			name = PhotoPickerSwiftUI;
 			packageProductDependencies = (
 				8CBE8EA72BF7427300AD8F96 /* PhotoPicker_SwiftUI */,
 			);
 			productName = PhotoPickerDemo;
-			productReference = 8C977C522BECB8A700EAD700 /* PhotoPickerDemo.app */;
+			productReference = 8C977C522BECB8A700EAD700 /* PhotoPickerSwiftUI.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -117,7 +117,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 8C977C4D2BECB8A700EAD700 /* Build configuration list for PBXProject "PhotoPickerDemo" */;
+			buildConfigurationList = 8C977C4D2BECB8A700EAD700 /* Build configuration list for PBXProject "PhotoPickerSwiftUI" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -133,7 +133,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8C977C512BECB8A700EAD700 /* PhotoPickerDemo */,
+				8C977C512BECB8A700EAD700 /* PhotoPickerSwiftUI */,
 			);
 		};
 /* End PBXProject section */
@@ -347,7 +347,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8C977C4D2BECB8A700EAD700 /* Build configuration list for PBXProject "PhotoPickerDemo" */ = {
+		8C977C4D2BECB8A700EAD700 /* Build configuration list for PBXProject "PhotoPickerSwiftUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8C977C5E2BECB8A800EAD700 /* Debug */,
@@ -356,7 +356,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8C977C602BECB8A800EAD700 /* Build configuration list for PBXNativeTarget "PhotoPickerDemo" */ = {
+		8C977C602BECB8A800EAD700 /* Build configuration list for PBXNativeTarget "PhotoPickerSwiftUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8C977C612BECB8A800EAD700 /* Debug */,

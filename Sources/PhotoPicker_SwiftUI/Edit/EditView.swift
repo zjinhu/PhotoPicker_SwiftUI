@@ -51,6 +51,7 @@ struct EditView: UIViewControllerRepresentable {
         config.video.cropTime.minimumTime = 1
         config.video.cropTime.maximumTime = cropVideoTime
         config.video.cropTime.isCanControlMove = !cropVideoFixTime
+        config.cropSize.maskType = .customColor(color: .black.withAlphaComponent(0.6))
         if cropRatio != .zero{
             config.cropSize.isFixedRatio = true
             config.cropSize.aspectRatio = cropRatio
