@@ -12,7 +12,7 @@ struct QuickLookView: View {
     @State private var isPresentedEdit = false
     @EnvironmentObject var viewModel: GalleryModel
     @Environment(\.dismiss) private var dismiss
-
+    
     var body: some View {
         GeometryReader { proxy in
             
@@ -20,32 +20,32 @@ struct QuickLookView: View {
                 
                 TabView(selection: $viewModel.previewSelectIndex) {
                     ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, asset in
-                    
-                            switch asset.fetchPHAssetType(){
-                            case .livePhoto:
-                                QLivePhotoView(asset: asset)
-                                    .frame(width: proxy.size.width)
-                                    .clipped()
-                                    .tag(index) 
-                            case .video:
-                                QLVideoView(asset: asset)
-                                    .frame(width: proxy.size.width)
-                                    .clipped()
-                                    .tag(index)
-                            case.gif:
-                                QLGifView(asset: asset)
-                                    .frame(width: proxy.size.width)
-                                    .clipped()
-                                    .tag(index) 
-                            default:
-                                QLImageView(asset: asset)
-                                    .frame(width: proxy.size.width)
-                                    .clipped()
-                                    .tag(index)
-                            }
-                            
+                        
+                        switch asset.fetchPHAssetType(){
+                        case .livePhoto:
+                            QLivePhotoView(asset: asset)
+                                .frame(width: proxy.size.width)
+                                .clipped()
+                                .tag(index) 
+                        case .video:
+                            QLVideoView(asset: asset)
+                                .frame(width: proxy.size.width)
+                                .clipped()
+                                .tag(index)
+                        case.gif:
+                            QLGifView(asset: asset)
+                                .frame(width: proxy.size.width)
+                                .clipped()
+                                .tag(index) 
+                        default:
+                            QLImageView(asset: asset)
+                                .frame(width: proxy.size.width)
+                                .clipped()
+                                .tag(index)
                         }
-
+                        
+                    }
+                    
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .maxHeight(.infinity)
@@ -101,7 +101,7 @@ struct QuickLookView: View {
                                 }
                             }
                         case .livePhoto:
-
+                            
                             sset.asset.getLivePhotoVideoUrl { url in
                                 if let url {
                                     DispatchQueue.main.async {
@@ -196,10 +196,11 @@ struct QuickLookView: View {
                 EditView(asset: asset,
                          cropRatio: viewModel.cropRatio){ replace in
                     viewModel.selectedAssets.replaceSubrange(viewModel.previewSelectIndex...viewModel.previewSelectIndex, with: [replace])
-                }                
-                 .background(
-                    Color.black.ignoresSafeArea()
-                 )
+                }
+                         .statusBar(hidden: true)
+                         .background(
+                            Color.black.ignoresSafeArea()
+                         )
             }
             
         }

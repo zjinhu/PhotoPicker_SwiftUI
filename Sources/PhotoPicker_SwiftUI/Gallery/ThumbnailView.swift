@@ -112,6 +112,7 @@ struct ThumbnailView: View {
                                 viewModel.selectedAssets.append(replace)
                                 viewModel.onSelectedDone.toggle()
                             }
+                                     .statusBar(hidden: true)
                                      .background(
                                         Color.black.ignoresSafeArea()
                                      )
