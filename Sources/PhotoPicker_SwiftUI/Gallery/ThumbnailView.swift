@@ -112,7 +112,9 @@ struct ThumbnailView: View {
                                 viewModel.selectedAssets.append(replace)
                                 viewModel.onSelectedDone.toggle()
                             }
-                                     .ignoresSafeArea()
+                                     .background(
+                                        Color.black.ignoresSafeArea()
+                                     )
                         }
                     } label: {
                         EmptyView()

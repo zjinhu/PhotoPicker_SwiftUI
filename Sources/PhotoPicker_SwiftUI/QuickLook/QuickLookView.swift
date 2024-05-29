@@ -196,7 +196,10 @@ struct QuickLookView: View {
                 EditView(asset: asset,
                          cropRatio: viewModel.cropRatio){ replace in
                     viewModel.selectedAssets.replaceSubrange(viewModel.previewSelectIndex...viewModel.previewSelectIndex, with: [replace])
-                }.ignoresSafeArea()
+                }                
+                 .background(
+                    Color.black.ignoresSafeArea()
+                 )
             }
             
         }
