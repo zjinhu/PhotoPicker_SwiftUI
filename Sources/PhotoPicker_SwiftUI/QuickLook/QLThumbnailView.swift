@@ -10,14 +10,12 @@ import Photos
 import BrickKit
 public struct QLThumbnailView: View {
     let asset: SelectedAsset
-    let isStatic: Bool
     let index: Int
     @StateObject var photoModel: PhotoViewModel
     @EnvironmentObject var viewModel: GalleryModel
     
-    public init(asset: SelectedAsset, isStatic: Bool = false, index: Int) {
+    public init(asset: SelectedAsset, index: Int) {
         self.asset = asset
-        self.isStatic = isStatic
         self.index = index
         _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset))
     }
@@ -37,7 +35,7 @@ public struct QLThumbnailView: View {
                     }
                 }
                 .ss.overlay(alignment: .bottomLeading) {
-                    if asset.asset.mediaSubtypes.contains(.photoLive), !isStatic{
+                    if asset.asset.mediaSubtypes.contains(.photoLive), !asset.isStatic{
                         
                         Image(systemName: "livephoto")
                             .resizable()
@@ -49,7 +47,7 @@ public struct QLThumbnailView: View {
                     }
                 }
                 .ss.overlay(alignment: .bottomTrailing) {
-                    if asset.asset.isGIF(), !viewModel.isStatic{
+                    if asset.asset.isGIF(), !asset.isStatic{
                         Text("GIF")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white)
@@ -61,7 +59,7 @@ public struct QLThumbnailView: View {
                     }
                 }
                 .ss.overlay(alignment: .bottomLeading) {
-                    if let time = photoModel.time, !viewModel.isStatic{
+                    if let time = photoModel.time, !asset.isStatic{
                         HStack{
                             Image(systemName: "video")
                                 .resizable()

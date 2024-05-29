@@ -56,7 +56,7 @@ struct QuickLookView: View {
                     HScrollStack(spacing: 10) {
                         ForEach(Array(viewModel.selectedAssets.enumerated()), id: \.element) {index, picture in
                             
-                            QLThumbnailView(asset: picture, isStatic: viewModel.isStatic, index: index)
+                            QLThumbnailView(asset: picture, index: index)
                                 .frame(width: 90, height: 90)
                                 .environmentObject(viewModel)
                                 .id(index)
