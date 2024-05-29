@@ -12,6 +12,7 @@ import BrickKit
 
 struct GalleryPageView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var isNavigationQuickLook = false
     @State var selection = 0
     let maxSelectionCount: Int
     @StateObject var viewModel = GalleryModel()
@@ -99,9 +100,27 @@ struct GalleryPageView: View {
                 if maxSelectionCount != 1{
                     HStack{
                         
-                        NavigationLink {
+                        NavigationLink(isActive: $isNavigationQuickLook) {
                             QuickLookView()
                                 .environmentObject(viewModel)
+                        } label: {
+                            EmptyView()
+                        }
+                        
+                        Button{
+                            if viewModel.selectedAssets.isEmpty{}else{
+                                for item in viewModel.selectedAssets{
+                                    var isImage = false
+                                    if viewModel.isStatic{
+                                        isImage = true
+                                    }
+                                    if viewModel.tempStatic{
+                                        isImage = true
+                                    }
+                                    item.isStatic = isImage
+                                }
+                                isNavigationQuickLook.toggle()
+                            }
                         } label: {
                             Text("预览".localString)
                                 .font(.f16)
@@ -112,8 +131,28 @@ struct GalleryPageView: View {
                         .disabled(viewModel.selectedAssets.count == 0)
                         
                         Spacer()
+                        if !onlyImage{
+                            RadioButton(label: "动态效果".localString) { bool in
+                                if bool{
+                                    self.viewModel.tempStatic = false
+                                }else{
+                                    self.viewModel.tempStatic = true
+                                }
+                            }
+                        }
+                        Spacer()
                         
                         Button {
+                            for item in viewModel.selectedAssets{
+                                var isImage = false
+                                if viewModel.isStatic{
+                                    isImage = true
+                                }
+                                if viewModel.tempStatic{
+                                    isImage = true
+                                }
+                                item.isStatic = isImage
+                            }
                             selected = viewModel.selectedAssets
                             dismiss()
                         } label: {

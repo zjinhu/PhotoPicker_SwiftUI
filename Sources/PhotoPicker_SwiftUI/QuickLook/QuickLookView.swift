@@ -8,14 +8,12 @@
 import SwiftUI
 import BrickKit
 
-public struct QuickLookView: View {
+struct QuickLookView: View {
     @State private var isPresentedEdit = false
     @EnvironmentObject var viewModel: GalleryModel
     @Environment(\.dismiss) private var dismiss
- 
-    public init() { }
-    
-    public var body: some View {
+
+    var body: some View {
         GeometryReader { proxy in
             
             VStack{

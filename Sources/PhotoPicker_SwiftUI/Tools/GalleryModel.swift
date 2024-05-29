@@ -10,40 +10,41 @@ import SwiftUI
 import Combine
 
 @MainActor
-public class GalleryModel: ObservableObject {
-    public let photoLibrary = PhotoLibraryService.shared
+class GalleryModel: ObservableObject {
+    let photoLibrary = PhotoLibraryService.shared
     @Published
-    public var albums: [AlbumItem] = []
-    public var maxSelectionCount: Int = 0
+    var albums: [AlbumItem] = []
+    var maxSelectionCount: Int = 0
+    var tempStatic: Bool = false
     @Published
-    public var defaultSelectIndex: Int = 0
+    var defaultSelectIndex: Int = 0
     @Published
-    public var onSelectedDone: Bool = false
+    var onSelectedDone: Bool = false
     @Published
-    public var autoCrop: Bool = false
+    var autoCrop: Bool = false
     
-    public var isStatic: Bool = false
+    var isStatic: Bool = false
     @Published 
-    public var showQuicklook: Bool = false
+    var showQuicklook: Bool = false
     @Published
-    public var showCrop: Bool = false
+    var showCrop: Bool = false
     
     @Published 
-    public var permission: PhotoLibraryPermission = .denied
+    var permission: PhotoLibraryPermission = .denied
     @Published
-    public var selectedAssets: [SelectedAsset] = []
+    var selectedAssets: [SelectedAsset] = []
     @Published
-    public var showToast: Bool = false
+    var showToast: Bool = false
     @Published
-    public var cropRatio: CGSize = .zero
+    var cropRatio: CGSize = .zero
     @Published
-    public var selectedAsset: SelectedAsset?
+    var selectedAsset: SelectedAsset?
     @Published
-    public var previewSelectIndex: Int = 0
+    var previewSelectIndex: Int = 0
     
     private var subscribers: [AnyCancellable] = []
     
-    public init() {
+    init() {
         
         switch photoLibrary.photoLibraryPermissionStatus {
         case .restricted, .limited:
@@ -67,7 +68,7 @@ public class GalleryModel: ObservableObject {
         
     }
     
-    public enum PhotoLibraryPermission {
+    enum PhotoLibraryPermission {
         case denied
         case limited
         case authorized
@@ -89,7 +90,7 @@ extension GalleryModel {
 
 extension GalleryModel {
 
-    public func loadAllAlbums() async {
+    func loadAllAlbums() async {
         let options = PHFetchOptions()
 //        options.includeAssetSourceTypes = [.typeUserLibrary, .typeiTunesSynced, .typeCloudShared]
 //        options.sortDescriptors = [NSSortDescriptor(key: "localizedTitle", ascending: true)]
@@ -105,35 +106,35 @@ extension GalleryModel {
 }
 
 @MainActor
-public class PhotoViewModel: ObservableObject {
+class PhotoViewModel: ObservableObject {
     @Published
-    public var image: UIImage?
+    var image: UIImage?
     @Published
-    public var time: Double?
+    var time: Double?
     private var requestID: PHImageRequestID?
     private var currentTask: Task<Void, Never>?
     
     let asset: SelectedAsset
     let isStatic: Bool
-    public init(asset: SelectedAsset, isStatic: Bool = false) {
+    init(asset: SelectedAsset, isStatic: Bool = false) {
         self.asset = asset
         self.isStatic = isStatic
     }
     
-    public func loadImage(size: CGSize = .zero) {
+    func loadImage(size: CGSize = .zero) {
         requestID = asset.asset.getImage(size: size) { [weak self] ima in
             self?.image = ima
         }
     }
     
-    public func onStop() {
+    func onStop() {
         currentTask = nil
         if let requestID = requestID {
             PHCachingImageManager.default().cancelImageRequest(requestID)
         }
     }
     
-    public func onStart() async {
+    func onStart() async {
         if isStatic{ return }
         guard asset.asset.mediaType == .video else { return }
 
@@ -145,24 +146,24 @@ public class PhotoViewModel: ObservableObject {
 }
 
 @MainActor
-public class LivePhotoViewModel: ObservableObject {
+class LivePhotoViewModel: ObservableObject {
     @Published var livePhoto: PHLivePhoto?
  
     private var requestID: PHImageRequestID?
  
     let asset: SelectedAsset
  
-    public init(asset: SelectedAsset) {
+    init(asset: SelectedAsset) {
         self.asset = asset
     }
     
-    public func loadAsset() {
+    func loadAsset() {
         requestID =  asset.asset.loadLivePhoto(resultClosure: { [weak self] photo in
             self?.livePhoto = photo
         })
     }
     
-    public func onStop() {
+    func onStop() {
         if let requestID = requestID {
             PHCachingImageManager.default().cancelImageRequest(requestID)
         }
@@ -171,24 +172,24 @@ public class LivePhotoViewModel: ObservableObject {
 }
 
 @MainActor
-public class GifViewModel: ObservableObject {
+class GifViewModel: ObservableObject {
     @Published
-    public var imageData: Data?
+    var imageData: Data?
  
     private var requestID: PHImageRequestID?
     let asset: SelectedAsset
  
-    public init(asset: SelectedAsset) {
+    init(asset: SelectedAsset) {
         self.asset = asset
     }
     
-    public func loadImageData() {
+    func loadImageData() {
         requestID = asset.asset.getImageData({ [weak self] data in
             self?.imageData = data
         })
     }
     
-    public func onStop() {
+    func onStop() {
         if let requestID = requestID {
             PHCachingImageManager.default().cancelImageRequest(requestID)
         }
@@ -197,41 +198,41 @@ public class GifViewModel: ObservableObject {
 }
 
 @MainActor
-public class VideoViewModel: ObservableObject {
+class VideoViewModel: ObservableObject {
     @Published
-    public var playerItem: AVPlayerItem?
+    var playerItem: AVPlayerItem?
 
     let asset: SelectedAsset
  
-    public init(asset: SelectedAsset) {
+    init(asset: SelectedAsset) {
         self.asset = asset
     }
     
-    public func loadAsset() async {
+    func loadAsset() async {
         playerItem = await asset.asset.getPlayerItem()
     }
 }
 
 //相簿列表项
-public class AlbumItem: Identifiable{
-    public let id = UUID()
+class AlbumItem: Identifiable{
+    let id = UUID()
     //相簿名称
-    public var title: String?
+    var title: String?
     /// 相册里的资源数量
-    public var count: Int = 0
+    var count: Int = 0
     //相簿内的资源
     @Published
-    public var result: PHFetchResult<PHAsset>?
+    var result: PHFetchResult<PHAsset>?
     /// 相册对象
-    public var collection: PHAssetCollection?
+    var collection: PHAssetCollection?
  
-    public init(title: String?,
+    init(title: String?,
          collection: PHAssetCollection?) {
         self.collection = collection
         self.title = title
     }
    
-    public func fetchResult(options: PHFetchOptions?) {
+    func fetchResult(options: PHFetchOptions?) {
         guard let collection = collection  else {
             return
         }
