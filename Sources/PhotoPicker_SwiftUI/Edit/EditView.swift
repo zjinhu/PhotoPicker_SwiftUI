@@ -58,6 +58,7 @@ struct EditView: UIViewControllerRepresentable {
             config.cropSize.aspectRatios = []
         }else{
             config.cropSize.isFixedRatio = false
+            config.cropSize.aspectRatios = []
         }
         
         switch selectedAsset.assetType {
