@@ -42,97 +42,78 @@ struct EditView: UIViewControllerRepresentable {
     func makeCropper(context: Context) -> UIViewController {
         
         var config = EditorConfiguration()
-        config.isFixedCropSizeState = true
         config.isAutoBack = false
         config.isIgnoreCropTimeWhenFixedCropSizeState = false
         config.cropSize.isShowScaleSize = false
-        config.photo.defaultSelectedToolOption = .cropSize
-        config.video.defaultSelectedToolOption = .cropSize
-        config.video.cropTime.minimumTime = 1
-        config.video.cropTime.maximumTime = cropVideoTime
         config.video.cropTime.isCanControlMove = !cropVideoFixTime
-        config.cropSize.maskType = .customColor(color: .black.withAlphaComponent(0.6))
         if cropRatio != .zero{
             config.cropSize.isFixedRatio = true
             config.cropSize.aspectRatio = cropRatio
-            config.cropSize.aspectRatios = []
         }else{
             config.cropSize.isFixedRatio = false
-            config.cropSize.aspectRatios = []
         }
-        
+
         switch selectedAsset.assetType {
         case .livePhoto:
             if let videoUrl = selectedAsset.videoUrl{
                 config.video.cropTime.minimumTime = 1.5
                 config.video.cropTime.maximumTime = max(1.5, cropVideoTime)
-                let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
+                let vc = EditViewController(.init(type: .video(videoUrl)), config: config)
                 vc.delegate = context.coordinator
                 return vc
             }
-        case .video:
-            if let videoUrl = selectedAsset.videoUrl{
+        case .video, .gif:
+            if let url = selectedAsset.videoUrl{
                 config.video.cropTime.minimumTime = 1
                 config.video.cropTime.maximumTime = cropVideoTime
-                let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
-                vc.delegate = context.coordinator
-                return vc
-            }
-        case .gif:
-            if let url = selectedAsset.gifVideoUrl{
-                config.video.cropTime.minimumTime = 1
-                config.video.cropTime.maximumTime = cropVideoTime
-                let vc = EditorViewController(.init(type: .video(url)), config: config)
+                let vc = EditViewController(.init(type: .video(url)), config: config)
                 vc.delegate = context.coordinator
                 return vc
             }
         default:
             if let image = selectedAsset.image{
-                let vc = EditorViewController(.init(type: .image(image)), config: config)
+                let vc = EditViewController(.init(type: .image(image)), config: config)
                 vc.delegate = context.coordinator
                 return vc
             }
         }
-        
+
         return UIViewController()
     }
     
-    class Coordinator: EditorViewControllerDelegate {
+    class Coordinator: EditViewControllerDelegate {
         var parent: EditView
         
         init(_ parent: EditView) {
             self.parent = parent
         }
-        
+        // MARK: - 编辑完成后制造数据
         /// 完成编辑
         /// - Parameters:
         ///   - editorViewController: 对应的 EditorViewController
         ///   - result: 编辑后的数据
-        func editorViewController(_ editorViewController: EditorViewController, didFinish asset: EditorAsset) {
+        func editorViewController(_ editorViewController: EditViewController, didFinish asset: EditorAsset) {
+
             switch parent.selectedAsset.assetType {
-                
+
             case .livePhoto:
-                
-                let temporaryDirectoryURL = FileManager.default.temporaryDirectory
-                let imageFileURL = temporaryDirectoryURL.appendingPathComponent("livephoto.png")
-                try? FileManager.default.removeItem(at: imageFileURL)
-                
-                let imageData = asset.result?.image?.pngData()
-                try? imageData?.write(to: imageFileURL)
-                        
-                if let videoUrl = asset.result?.url{
-                    LivePhoto.generate(from: imageFileURL, videoURL: videoUrl) { progress in
+
+                switch asset.result{
+                case .video(let result, _):
+                    LivePhoto.generate(videoURL: result.url) { progress in
                         print("LivePhoto--\(progress)")
                     } completion: { live, res in
                         self.parent.selectedAsset.livePhoto = live
-                        self.parent.selectedAsset.videoUrl = videoUrl
                         self.parent.editDone(self.parent.selectedAsset)
                         self.parent.dismiss()
                     }
+                default:
+                    break
                 }
+
             case.video:
                 switch asset.result{
-                case .video(let result, _): 
+                case .video(let result, _):
                     parent.selectedAsset.videoUrl = result.url
                     parent.editDone(parent.selectedAsset)
                     parent.dismiss()
@@ -141,11 +122,11 @@ struct EditView: UIViewControllerRepresentable {
                 }
                 
             case .gif:
+
                 switch asset.result{
                 case .video(let result, _):
                     GifTool.createGifData(from: result.url) { date in
                         self.parent.selectedAsset.imageData = date
-                        self.parent.selectedAsset.gifVideoUrl = result.url
                         self.parent.editDone(self.parent.selectedAsset)
                         self.parent.dismiss()
                     }
@@ -159,16 +140,17 @@ struct EditView: UIViewControllerRepresentable {
                    let imageData = try? Data(contentsOf: imageURL),
                    let image = UIImage(data: imageData){
                     parent.selectedAsset.image = image
+                    parent.selectedAsset.imageData = imageData
                 }else{
                     parent.selectedAsset.image = asset.result?.image
                 }
                 parent.editDone(parent.selectedAsset)
                 parent.dismiss()
             }
-
+            
         }
         
-        func editorViewController(didCancel editorViewController: EditorViewController) {
+        func editorViewController(didCancel editorViewController: EditViewController) {
             parent.dismiss()
         }
         

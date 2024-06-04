@@ -44,7 +44,7 @@ struct ContentView: View {
                                selectTitle: "Videos",
                                autoCrop: false,
                                cropRatio: .init(width: 1, height: 1),
-                               onlyImage: true,
+                               onlyImage: false,
                                selected: $selectItem.pictures)
                 
                 Button {
@@ -86,57 +86,11 @@ struct ContentView: View {
                         
                         Button {
                             
-                            selectItem.selectedIndex = index
-                            
-                            switch picture.fetchPHAssetType(){
-                                
-                            case .gif:
-                                
-                                if let imageData = picture.asset.toImageData(){
-                                    GifTool.createVideoFromGif(gifData: imageData) { url in
-                                        DispatchQueue.main.async {
-                                            picture.gifVideoUrl = url
-                                            picture.imageData = imageData
-                                            selectItem.selectedAsset = picture
-                                            isPresentedCrop.toggle()
-                                        }
-                                    }
-                                }
-                                
-                            case .video:
-                                
-                                
-                                Task{
-                                    if let url = await picture.asset.getVideoUrl(){
-                                        await MainActor.run{
-                                            picture.videoUrl = url
-                                            selectItem.selectedAsset = picture
-                                            isPresentedCrop.toggle()
-                                        }
-                                    }
-                                }
-                                
-                                
-                            case .livePhoto:
-                                
-                                picture.asset.getLivePhotoVideoUrl { url in
-                                    if let url {
-                                        DispatchQueue.main.async {
-                                            picture.videoUrl = url
-                                            selectItem.selectedAsset = picture
-                                            isPresentedCrop.toggle()
-                                        }
-                                    }
-                                }
-                                
-                                
-                            default:
-                                
-                                if let image = picture.asset.toImage(){
-                                    picture.image = image
-                                    selectItem.selectedAsset = picture
-                                    isPresentedCrop.toggle()
-                                }
+                            ///在进入编辑页面之前需要准备好相关类型的资源，保证每次进入编辑都是最原始的状态
+                            Task{
+                                selectItem.selectedAsset = await picture.getOriginalSource()
+                                selectItem.selectedIndex = index
+                                isPresentedCrop.toggle()
                             }
                             
                         } label: {
@@ -161,7 +115,7 @@ struct ContentView: View {
             }
         }
         .editPicker(isPresented: $isPresentedCrop,
-                    cropRatio: .init(width: 10, height: 1),
+                    cropRatio: .zero,
                     asset: selectItem.selectedAsset) { asset in
             selectItem.pictures.replaceSubrange(selectItem.selectedIndex...selectItem.selectedIndex, with: [asset])
         }

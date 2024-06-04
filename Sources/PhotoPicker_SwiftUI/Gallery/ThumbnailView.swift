@@ -113,9 +113,8 @@ struct ThumbnailView: View {
                                 viewModel.onSelectedDone.toggle()
                             }
                                      .statusBar(hidden: true)
-                                     .background(
-                                        Color.black.ignoresSafeArea()
-                                     )
+                                     .ignoresSafeArea()
+                                     
                         }
                     } label: {
                         EmptyView()

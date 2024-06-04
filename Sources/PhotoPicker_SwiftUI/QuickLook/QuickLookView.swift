@@ -82,50 +82,11 @@ struct QuickLookView: View {
                 HStack{
                     
                     Button {
-                        let sset = viewModel.selectedAssets[viewModel.previewSelectIndex]
-                        switch sset.fetchPHAssetType(){
-                        case .image:
-                            if let image = sset.asset.toImage(){
-                                viewModel.selectedAsset = sset
-                                viewModel.selectedAsset?.image = image
-                                isPresentedEdit.toggle()
-                            }
-                        case .video:
-                            Task{
-                                if let url = await sset.asset.getVideoUrl(){
-                                    await MainActor.run{
-                                        viewModel.selectedAsset = sset
-                                        viewModel.selectedAsset?.videoUrl = url
-                                        isPresentedEdit.toggle()
-                                    }
-                                }
-                            }
-                        case .livePhoto:
-                            
-                            sset.asset.getLivePhotoVideoUrl { url in
-                                if let url {
-                                    DispatchQueue.main.async {
-                                        viewModel.selectedAsset = sset
-                                        viewModel.selectedAsset?.videoUrl = url
-                                        isPresentedEdit.toggle()
-                                    }
-                                }
-                            }
-                            
-                        case .gif:
-                            
-                            if let imageData = sset.asset.toImageData(){
-                                GifTool.createVideoFromGif(gifData: imageData) { url in
-                                    DispatchQueue.main.async {
-                                        viewModel.selectedAsset = sset
-                                        viewModel.selectedAsset?.imageData = imageData
-                                        viewModel.selectedAsset?.gifVideoUrl = url
-                                        isPresentedEdit.toggle()
-                                    }
-                                }
-                            }
-                            
-                        default: break
+                        
+                        Task{
+                            let sset = viewModel.selectedAssets[viewModel.previewSelectIndex]
+                            viewModel.selectedAsset = await sset.getOriginalSource()
+                            isPresentedEdit.toggle()
                         }
                         
                     } label: {
@@ -198,9 +159,8 @@ struct QuickLookView: View {
                     viewModel.selectedAssets.replaceSubrange(viewModel.previewSelectIndex...viewModel.previewSelectIndex, with: [replace])
                 }
                          .statusBar(hidden: true)
-                         .background(
-                            Color.black.ignoresSafeArea()
-                         )
+                         .ignoresSafeArea()
+                         
             }
             
         }

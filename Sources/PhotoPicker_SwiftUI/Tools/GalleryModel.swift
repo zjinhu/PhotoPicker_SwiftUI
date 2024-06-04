@@ -12,35 +12,23 @@ import Combine
 @MainActor
 class GalleryModel: ObservableObject {
     let photoLibrary = PhotoLibraryService.shared
-    @Published
-    var albums: [AlbumItem] = []
+    @Published var albums: [AlbumItem] = []
     var maxSelectionCount: Int = 0
     var tempStatic: Bool = false
-    @Published
-    var defaultSelectIndex: Int = 0
-    @Published
-    var onSelectedDone: Bool = false
-    @Published
-    var autoCrop: Bool = false
+    @Published var defaultSelectIndex: Int = 0
+    @Published var onSelectedDone: Bool = false
+    @Published var autoCrop: Bool = false
     
     var isStatic: Bool = false
-    @Published 
-    var showQuicklook: Bool = false
-    @Published
-    var showCrop: Bool = false
+    @Published var showQuicklook: Bool = false
+    @Published var showCrop: Bool = false
     
-    @Published 
-    var permission: PhotoLibraryPermission = .denied
-    @Published
-    var selectedAssets: [SelectedAsset] = []
-    @Published
-    var showToast: Bool = false
-    @Published
-    var cropRatio: CGSize = .zero
-    @Published
-    var selectedAsset: SelectedAsset?
-    @Published
-    var previewSelectIndex: Int = 0
+    @Published var permission: PhotoLibraryPermission = .denied
+    @Published var selectedAssets: [SelectedAsset] = []
+    @Published var showToast: Bool = false
+    @Published var cropRatio: CGSize = .zero
+    @Published var selectedAsset: SelectedAsset?
+    @Published var previewSelectIndex: Int = 0
     
     private var subscribers: [AnyCancellable] = []
     
@@ -107,10 +95,8 @@ extension GalleryModel {
 
 @MainActor
 class PhotoViewModel: ObservableObject {
-    @Published
-    var image: UIImage?
-    @Published
-    var time: Double?
+    @Published var image: UIImage?
+    @Published var time: Double?
     private var requestID: PHImageRequestID?
     private var currentTask: Task<Void, Never>?
     
@@ -173,8 +159,7 @@ class LivePhotoViewModel: ObservableObject {
 
 @MainActor
 class GifViewModel: ObservableObject {
-    @Published
-    var imageData: Data?
+    @Published var imageData: Data?
  
     private var requestID: PHImageRequestID?
     let asset: SelectedAsset
@@ -199,8 +184,7 @@ class GifViewModel: ObservableObject {
 
 @MainActor
 class VideoViewModel: ObservableObject {
-    @Published
-    var playerItem: AVPlayerItem?
+    @Published var playerItem: AVPlayerItem?
 
     let asset: SelectedAsset
  
@@ -221,8 +205,7 @@ class AlbumItem: Identifiable{
     /// 相册里的资源数量
     var count: Int = 0
     //相簿内的资源
-    @Published
-    var result: PHFetchResult<PHAsset>?
+    @Published var result: PHFetchResult<PHAsset>?
     /// 相册对象
     var collection: PHAssetCollection?
  
