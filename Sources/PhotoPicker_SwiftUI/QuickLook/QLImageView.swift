@@ -33,7 +33,7 @@ public struct QLImageView: View {
     
     private func loadAsset() {
         
-        if let ima = asset.image{
+        if let ima = asset.editResult?.image{
             photoModel.image = ima
             return
         }

@@ -47,7 +47,7 @@ public struct QLivePhotoView: View {
     
     private func loadAsset() {
         
-        if let ima = asset.livePhoto{
+        if let ima = asset.editResult?.livePhoto{
             photoModel.livePhoto = ima
             return
         }

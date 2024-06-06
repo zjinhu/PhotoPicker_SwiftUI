@@ -122,23 +122,10 @@ struct ThumbnailView: View {
                     
                     Button {
                         let selectItem = SelectedAsset(asset: asset)
-                        
-                        if selectItem.fetchPHAssetType() == .image, let image = asset.toImage(){
+                        Task{
+                            await selectItem.getOriginalSource()
                             selected.selectedAsset = selectItem
-                            selected.selectedAsset?.image = image
-                            isNavigationActive = true
-                        }
-                        
-                        if selectItem.fetchPHAssetType() == .livePhoto || selectItem.fetchPHAssetType() == .video{
-                            Task{
-                                if let url = await asset.getVideoUrl(){
-                                    await MainActor.run{
-                                        selected.selectedAsset = selectItem
-                                        selected.selectedAsset?.videoUrl = url
-                                        isNavigationActive = true
-                                    }
-                                }
-                            }
+                            isNavigationActive.toggle()
                         }
                         
                     } label: {

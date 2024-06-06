@@ -40,9 +40,9 @@ struct ContentView: View {
                         .frame(height: 50)
                 }
                 .galleryPicker(isPresented: $isPresentedGallery,
-                               maxSelectionCount: 6,
+                               maxSelectionCount: 1,
                                selectTitle: "Videos",
-                               autoCrop: false,
+                               autoCrop: true,
                                cropRatio: .init(width: 1, height: 1),
                                onlyImage: false,
                                selected: $selectItem.pictures)

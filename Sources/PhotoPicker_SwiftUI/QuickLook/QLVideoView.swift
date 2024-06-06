@@ -57,7 +57,7 @@ public struct QLVideoView: View {
     }
     
     private func loadAsset() async {
-        if let url = asset.videoUrl{
+        if let url = asset.editResult?.videoURL{
             videoModel.playerItem = AVPlayerItem(url: url)
             return
         }

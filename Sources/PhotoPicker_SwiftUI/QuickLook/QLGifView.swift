@@ -34,7 +34,7 @@ public struct QLGifView: View {
     }
     
     private func loadAsset() {
-        if let data = asset.imageData{
+        if let data = asset.editResult?.gifData{
             gifModel.imageData = data
         }else{
             gifModel.loadImageData()
