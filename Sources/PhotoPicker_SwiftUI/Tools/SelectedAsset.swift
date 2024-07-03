@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Photos
-
+import BrickKit
 public class SelectedAsset : Identifiable, Equatable, Hashable{
 
     public let asset: PHAsset

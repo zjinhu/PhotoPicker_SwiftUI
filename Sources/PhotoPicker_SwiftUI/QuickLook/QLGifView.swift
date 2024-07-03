@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Photos
-
+import BrickKit
 public struct QLGifView: View {
     let asset: SelectedAsset
     @StateObject var gifModel: GifViewModel
@@ -20,7 +20,7 @@ public struct QLGifView: View {
     public var body: some View {
         VStack{
             if let data = gifModel.imageData{
-                GIFView(data: data)
+                GifImage(data: data)
             }
         }
         .onAppear{
