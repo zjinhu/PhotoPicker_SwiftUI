@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		810A98322C915B7D00BD2C22 /* PhotoPicker_SwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 810A98312C915B7D00BD2C22 /* PhotoPicker_SwiftUI */; };
 		8C977C562BECB8A700EAD700 /* PhotoPickerDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */; };
 		8C977C582BECB8A700EAD700 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C977C572BECB8A700EAD700 /* ContentView.swift */; };
 		8C977C5A2BECB8A800EAD700 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C977C592BECB8A800EAD700 /* Assets.xcassets */; };
@@ -29,6 +30,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8CBE8EA82BF7427300AD8F96 /* PhotoPicker_SwiftUI in Frameworks */,
+				810A98322C915B7D00BD2C22 /* PhotoPicker_SwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +99,7 @@
 			name = PhotoPickerSwiftUI;
 			packageProductDependencies = (
 				8CBE8EA72BF7427300AD8F96 /* PhotoPicker_SwiftUI */,
+				810A98312C915B7D00BD2C22 /* PhotoPicker_SwiftUI */,
 			);
 			productName = PhotoPickerDemo;
 			productReference = 8C977C522BECB8A700EAD700 /* PhotoPickerSwiftUI.app */;
@@ -127,7 +130,7 @@
 			);
 			mainGroup = 8C977C492BECB8A700EAD700;
 			packageReferences = (
-				8CBE8EA62BF7427300AD8F96 /* XCLocalSwiftPackageReference "../../../PhotoPicker" */,
+				810A98302C915B7D00BD2C22 /* XCLocalSwiftPackageReference "../../../PhotoPicker_SwiftUI" */,
 			);
 			productRefGroup = 8C977C532BECB8A700EAD700 /* Products */;
 			projectDirPath = "";
@@ -368,13 +371,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		8CBE8EA62BF7427300AD8F96 /* XCLocalSwiftPackageReference "../../../PhotoPicker" */ = {
+		810A98302C915B7D00BD2C22 /* XCLocalSwiftPackageReference "../../../PhotoPicker_SwiftUI" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../../PhotoPicker;
+			relativePath = ../../../PhotoPicker_SwiftUI;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		810A98312C915B7D00BD2C22 /* PhotoPicker_SwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PhotoPicker_SwiftUI;
+		};
 		8CBE8EA72BF7427300AD8F96 /* PhotoPicker_SwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PhotoPicker_SwiftUI;
