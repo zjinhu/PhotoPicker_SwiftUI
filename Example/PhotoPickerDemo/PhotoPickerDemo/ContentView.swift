@@ -41,7 +41,6 @@ struct ContentView: View {
                 
 
                 List {
- 
                     ForEach(Array(selectItem.pictures.enumerated()), id: \.element) { index, picture in
  
                             switch picture.fetchPHAssetType(){
