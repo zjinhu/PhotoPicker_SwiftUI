@@ -11,7 +11,6 @@
 
 SwiftUI封装完相册后当用户手机内相册存储的照片视频达到一定的数量及（例如150G以上，两万张照片视频左右），LazyVGrid就会陷入一个运算艰难的境地，CPU占用居高不下，暂时没找到很好的优化办法，所以就用UIKit又封装了一遍，看实际需求酌情使用,UIKit封装地址[Demo](https://github.com/zjinhu/PhotoPickerKit).
 
-可选相册，可预览编辑Gif Video Image Live Photo，透明图片可调整背景色方便编辑
 
 | <img src="Image/1.png" style="zoom:25%;" /> | <img src="Image/2.png" style="zoom:25%;" /> | <img src="Image/3.png" style="zoom:25%;" /> |
 | ------------------------------------------- | ------------------------------------------- | ------------------------------------------- |
@@ -36,45 +35,6 @@ SwiftUI封装完相册后当用户手机内相册存储的照片视频达到一�
                                onlyImage: false,
                                selected: $selectItem.pictures)
 ```
-
-打开系统相册
-
-```swift
-                Button {
-                    showPicker.toggle()
-                } label: {
-                    Text("打开系统相册")
-                }
-                .photoPicker(isPresented: $showPicker,
-                             selected: $selectedItems,
-                             maxSelectionCount: 5,
-                             matching: .any(of: [.images, .livePhotos, .videos]))
-                .onChange(of: selectedItems) { newItems in
-                    var images = [UIImage]()
-                    Task{
-                        for item in newItems{
-                            if let image = try await item.loadTransfer(type: UIImage.self){
-                                images.append(image)
-                            }
-                        }
-                        await MainActor.run {
-                            selectedImages = images
-                        }
-                    }
-                }
-```
-
-进入照片视频编辑工具
-
-```swift
-        .editPicker(isPresented: $isPresentedCrop,
-                    cropRatio: .init(width: 10, height: 1),
-                    asset: selectItem.selectedAsset) { asset in
-            selectItem.pictures.replaceSubrange(selectItem.selectedIndex...selectItem.selectedIndex, with: [asset])
-        }
-```
-
-
 
 ## 用法
 
