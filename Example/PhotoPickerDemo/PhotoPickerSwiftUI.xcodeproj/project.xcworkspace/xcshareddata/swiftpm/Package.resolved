@@ -1,22 +1,13 @@
 {
-  "originHash" : "d93e5511a2e986a8362ae4dba13315ba58836d4a529a3120e0a3fd53c6737363",
+  "originHash" : "7253486d6c2abc5b982099ada55ffe88c44182dec8271ee616e01e66b6e43627",
   "pins" : [
     {
       "identity" : "brick_swiftui",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/zjinhu/Brick_SwiftUI.git",
       "state" : {
-        "revision" : "e234dac4bd4548b0aee53e3486a1418b234ce751",
-        "version" : "0.4.4"
-      }
-    },
-    {
-      "identity" : "pagertabstripview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/zjinhu/PagerTabStripView.git",
-      "state" : {
-        "revision" : "d328c2e08fdf49d4f690e5629b47d41e220a8031",
-        "version" : "0.0.2"
+        "revision" : "0ac760661616dd74f75053b9adf007119370ad09",
+        "version" : "0.7.3"
       }
     }
   ],

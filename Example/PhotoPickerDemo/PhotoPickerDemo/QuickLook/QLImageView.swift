@@ -8,6 +8,7 @@
 import SwiftUI
 import Photos
 import BrickKit
+import PhotoPicker_SwiftUI
 public struct QLImageView: View {
     let asset: SelectedAsset
     @StateObject var photoModel: PhotoViewModel

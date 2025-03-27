@@ -8,7 +8,6 @@
 import Photos
 import SwiftUI
 import BrickKit
-
 let photoColumns: Int = 4
 let gridSpace: CGFloat = 5
 let gridSize = (Screen.width - gridSpace * CGFloat(photoColumns)) / CGFloat(photoColumns)
@@ -19,7 +18,7 @@ struct GalleryView: View {
     
     let columns: [GridItem] = [GridItem](repeating: GridItem(.fixed(gridSize), spacing: gridSpace, alignment: .center), count: photoColumns)
     
-    var album: AlbumItem
+    @ObservedObject var album: AlbumItem
     
     var body: some View {
         

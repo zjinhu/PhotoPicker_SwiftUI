@@ -1,39 +1,30 @@
 //
 //  SwiftUIView.swift
-//  
+//
 //
 //  Created by HU on 2024/4/25.
 //
 
 import SwiftUI
-import PagerTabStripView
 import Photos
 import BrickKit
-
 struct GalleryPageView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var isNavigationQuickLook = false
     @State var selection = 0
     let maxSelectionCount: Int
     @StateObject var viewModel = GalleryModel()
     @Binding var selected: [SelectedAsset]
-
+ 
     let onlyImage: Bool
-    let autoCrop: Bool
-    let cropRatio: CGSize
     let selectTitle: String?
     
     init(maxSelectionCount: Int = 0,
          selectTitle: String? = nil,
-         autoCrop: Bool = false,
-         cropRatio: CGSize = .zero,
          onlyImage: Bool = false,
          selected: Binding<[SelectedAsset]>) {
         _selected = selected
         self.maxSelectionCount = maxSelectionCount
-        self.autoCrop = autoCrop
         self.onlyImage = onlyImage
-        self.cropRatio = cropRatio
         self.selectTitle = selectTitle
     }
     
@@ -72,74 +63,25 @@ struct GalleryPageView: View {
                     .cornerRadius(10)
                     .padding(.horizontal, 16)
                 }
-
+                
                 if viewModel.albums.isEmpty{
                     ProgressView()
-                }
-                
-                PagerTabStripView(selection: $selection) {
-                    
-                    ForEach(viewModel.albums) { album in
-                        GalleryView(album: album)
-                            .pagerTabItem {
-                                PageTitleView(title: album.title ?? "")
-                            }
-                            .environmentObject(viewModel)
+                        .maxHeight(.infinity)
+                }else{
+                    TabView(selection: $selection) {
+                        ForEach(viewModel.albums) { index, album in
+                            GalleryView(album: album)
+                                .environmentObject(viewModel)
+                                .tag(index)
+                        }
                     }
-                    
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+                    .maxHeight(.infinity) 
                 }
-                .frame(alignment: .center)
-                .pagerTabStripViewStyle(.liner(indicatorBarHeight: 2,
-                                               indicatorPadding: 5,
-                                               indicatorBarColor: Color.textColor,
-                                               padding: EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0),
-                                               tabItemSpacing: 30,
-                                               tabItemHeight: 30,
-                                               placedInToolbar: true))
                 
                 if maxSelectionCount != 1{
                     HStack{
                         
-                        NavigationLink(isActive: $isNavigationQuickLook) {
-                            QuickLookView()
-                                .environmentObject(viewModel)
-                        } label: {
-                            EmptyView()
-                        }
-                        
-                        Button{
-                            if viewModel.selectedAssets.isEmpty{}else{
-                                for item in viewModel.selectedAssets{
-                                    var isImage = false
-                                    if viewModel.isStatic{
-                                        isImage = true
-                                    }
-                                    if viewModel.tempStatic{
-                                        isImage = true
-                                    }
-                                    item.isStatic = isImage
-                                }
-                                isNavigationQuickLook.toggle()
-                            }
-                        } label: {
-                            Text("预览".localString)
-                                .font(.f16)
-                                .foregroundColor(.textColor)
-                                .padding(.horizontal , 10)
-                                .padding(.vertical, 10)
-                        }
-                        .disabled(viewModel.selectedAssets.count == 0)
-                        
-                        Spacer()
-                        if !onlyImage{
-                            RadioButton(label: "动态效果".localString) { bool in
-                                if bool{
-                                    self.viewModel.tempStatic = false
-                                }else{
-                                    self.viewModel.tempStatic = true
-                                }
-                            }
-                        }
                         Spacer()
                         
                         Button {
@@ -171,7 +113,7 @@ struct GalleryPageView: View {
                     .background(Color.backColor)
                     .shadow(color: .gray.opacity(0.2), radius: 0.5, y: -0.8)
                 }
-
+                
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
@@ -187,16 +129,34 @@ struct GalleryPageView: View {
                             .foregroundColor(Color.textColor)
                     }
                 }
+                
+                ToolbarItem(placement: .principal) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(viewModel.albums) { index, albumItem in
+                                Button{
+                                    withAnimation{
+                                        selection = index
+                                    }
+                                }label:{
+                                    let title = albumItem.title ?? ""
+                                    Text(title.localString)
+                                        .foregroundStyle(selection == index ? Color.textColor : Color.secondGray)
+                                        .font(selection == index ? .system(size: 16, weight: .bold) : .system(size: 14))
+     
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         .navigationViewStyle(.stack)
         .onAppear {
             viewModel.maxSelectionCount = maxSelectionCount
             viewModel.isStatic = onlyImage
-            viewModel.autoCrop = autoCrop
-            viewModel.cropRatio = cropRatio
         }
-        .ss.task {
+        .task {
             await viewModel.loadAllAlbums()
             await MainActor.run {
                 if let selectTitle{
@@ -215,13 +175,13 @@ struct GalleryPageView: View {
             }
         }
         .toast(isPresenting: $viewModel.showToast){
-    
+            
             AlertToast(displayMode: .hud,
                        type: .systemImage("exclamationmark.circle.fill", .alertOrange),
                        title: "最多可选\(viewModel.maxSelectionCount)张照片".localString,
                        style: .style(backgroundColor: .backColor, titleColor: .textColor, titleFont: .f14))
         }
-
+        
     }
     
     func doneButtonTitle() -> String{

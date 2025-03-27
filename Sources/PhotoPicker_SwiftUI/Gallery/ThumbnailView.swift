@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import BrickKit
 import Photos
 
 struct ThumbnailView: View {
@@ -16,7 +15,6 @@ struct ThumbnailView: View {
     @StateObject var photoModel: PhotoViewModel
     @EnvironmentObject var viewModel: GalleryModel
     @StateObject var selected = NowAsset()
-    @State private var isNavigationActive = false
     let asset: PHAsset
     
     init(asset: PHAsset) {
@@ -28,7 +26,7 @@ struct ThumbnailView: View {
         
         Rectangle()
             .foregroundColor(Color.gray.opacity(0.3))
-            .ss.overlay{
+            .overlay{
                 if let image = photoModel.image {
                     Image(uiImage: image)
                         .resizable()
@@ -38,7 +36,7 @@ struct ThumbnailView: View {
                         .allowsHitTesting(false)
                 }
             }
-            .ss.overlay(alignment: .topLeading) {
+            .overlay(alignment: .topLeading) {
                 if asset.mediaSubtypes.contains(.photoLive), !viewModel.isStatic{
                     
                     Image(systemName: "livephoto")
@@ -50,7 +48,7 @@ struct ThumbnailView: View {
                     
                 }
             }
-            .ss.overlay(alignment: .bottomTrailing) {
+            .overlay(alignment: .bottomTrailing) {
                 if asset.isGIF(), !viewModel.isStatic{
                     Text("GIF")
                         .font(.system(size: 14, weight: .medium))
@@ -62,7 +60,7 @@ struct ThumbnailView: View {
                         .padding(.vertical, 5)
                 }
             }
-            .ss.overlay(alignment: .bottomLeading) {
+            .overlay(alignment: .bottomLeading) {
                 if let time = photoModel.time, !viewModel.isStatic{
                     HStack{
                         Image(systemName: "video")
@@ -78,13 +76,13 @@ struct ThumbnailView: View {
                     .padding(.vertical, 5)
                 }
             }
-            .ss.overlay{
+            .overlay{
                 if number > 0{
                     Color.black
                         .opacity(0.5)
                 }
             }
-            .ss.overlay(alignment: .topTrailing) {
+            .overlay(alignment: .topTrailing) {
                 if viewModel.maxSelectionCount != 1{
                     
                     Text(number > 0 ? "\(number)" : "")
@@ -103,52 +101,21 @@ struct ThumbnailView: View {
                         .padding(5)
                 }
             }
-            .ss.overlay{
-                if viewModel.autoCrop, viewModel.maxSelectionCount == 1{
-                    NavigationLink(isActive: $isNavigationActive) {
-                        if let selectedAsset = selected.selectedAsset{
-                            EditView(asset: selectedAsset,
-                                     cropRatio: viewModel.cropRatio){ replace in
-                                viewModel.selectedAssets.append(replace)
-                                viewModel.onSelectedDone.toggle()
-                            }
-                                     .statusBar(hidden: true)
-                                     .ignoresSafeArea()
-                                     
-                        }
-                    } label: {
-                        EmptyView()
-                    }
-                    
-                    Button {
-                        let selectItem = SelectedAsset(asset: asset)
-                        Task{
-                            await selectItem.getOriginalSource()
-                            selected.selectedAsset = selectItem
-                            isNavigationActive.toggle()
-                        }
-                        
-                    } label: {
-                        Color.clear
-                            .frame(width: gridSize, height: gridSize)
-                    }
-                    
-                }else{
-                    Rectangle()
-                        .foregroundColor(Color.white.opacity(buttonDisable ? 0.5 : 0.00001))
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                if self.buttonDisable{
-                                    self.viewModel.showToast.toggle()
-                                }else{
-                                    self.onTap()
-                                }
+            .overlay{
+                Rectangle()
+                    .foregroundColor(Color.white.opacity(buttonDisable ? 0.5 : 0.00001))
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if self.buttonDisable{
+                                self.viewModel.showToast.toggle()
+                            }else{
+                                self.onTap()
                             }
                         }
-                }
+                    }
             }
-            .ss.task {
+            .task {
                 await photoModel.onStart()
             }
             .onAppear{

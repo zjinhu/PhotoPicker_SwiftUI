@@ -9,6 +9,7 @@ import SwiftUI
 import AVKit
 import Photos
 import BrickKit
+import PhotoPicker_SwiftUI
 public struct QLVideoView: View {
     var asset: SelectedAsset
     @State private var player = AVPlayer()
@@ -43,7 +44,7 @@ public struct QLVideoView: View {
                 player.seek(to: .zero)
             }
         }
-        .ss.task {
+        .task {
             await loadAsset()
         }
         .onDisappear{

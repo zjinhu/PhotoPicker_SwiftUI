@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		60BEA8FA2D95069C0011FDC2 /* QLivePhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BEA8F52D95069C0011FDC2 /* QLivePhotoView.swift */; };
+		60BEA8FB2D95069C0011FDC2 /* QLThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BEA8F62D95069C0011FDC2 /* QLThumbnailView.swift */; };
+		60BEA8FC2D95069C0011FDC2 /* QLGifView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BEA8F32D95069C0011FDC2 /* QLGifView.swift */; };
+		60BEA8FD2D95069C0011FDC2 /* QLImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BEA8F42D95069C0011FDC2 /* QLImageView.swift */; };
+		60BEA8FE2D95069C0011FDC2 /* QLVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BEA8F72D95069C0011FDC2 /* QLVideoView.swift */; };
 		810A98322C915B7D00BD2C22 /* PhotoPicker_SwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 810A98312C915B7D00BD2C22 /* PhotoPicker_SwiftUI */; };
 		8C977C562BECB8A700EAD700 /* PhotoPickerDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */; };
 		8C977C582BECB8A700EAD700 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C977C572BECB8A700EAD700 /* ContentView.swift */; };
@@ -16,6 +21,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		60BEA8F32D95069C0011FDC2 /* QLGifView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLGifView.swift; sourceTree = "<group>"; };
+		60BEA8F42D95069C0011FDC2 /* QLImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLImageView.swift; sourceTree = "<group>"; };
+		60BEA8F52D95069C0011FDC2 /* QLivePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLivePhotoView.swift; sourceTree = "<group>"; };
+		60BEA8F62D95069C0011FDC2 /* QLThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLThumbnailView.swift; sourceTree = "<group>"; };
+		60BEA8F72D95069C0011FDC2 /* QLVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLVideoView.swift; sourceTree = "<group>"; };
 		8C977C522BECB8A700EAD700 /* PhotoPickerSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoPickerSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerDemoApp.swift; sourceTree = "<group>"; };
 		8C977C572BECB8A700EAD700 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -37,6 +47,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		60BEA8F92D95069C0011FDC2 /* QuickLook */ = {
+			isa = PBXGroup;
+			children = (
+				60BEA8F32D95069C0011FDC2 /* QLGifView.swift */,
+				60BEA8F42D95069C0011FDC2 /* QLImageView.swift */,
+				60BEA8F52D95069C0011FDC2 /* QLivePhotoView.swift */,
+				60BEA8F62D95069C0011FDC2 /* QLThumbnailView.swift */,
+				60BEA8F72D95069C0011FDC2 /* QLVideoView.swift */,
+			);
+			path = QuickLook;
+			sourceTree = "<group>";
+		};
 		8C977C492BECB8A700EAD700 = {
 			isa = PBXGroup;
 			children = (
@@ -58,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				8CBE8E9E2BF72D3B00AD8F96 /* Info.plist */,
+				60BEA8F92D95069C0011FDC2 /* QuickLook */,
 				8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */,
 				8C977C572BECB8A700EAD700 /* ContentView.swift */,
 				8C977C592BECB8A800EAD700 /* Assets.xcassets */,
@@ -160,6 +183,11 @@
 			files = (
 				8C977C582BECB8A700EAD700 /* ContentView.swift in Sources */,
 				8C977C562BECB8A700EAD700 /* PhotoPickerDemoApp.swift in Sources */,
+				60BEA8FA2D95069C0011FDC2 /* QLivePhotoView.swift in Sources */,
+				60BEA8FB2D95069C0011FDC2 /* QLThumbnailView.swift in Sources */,
+				60BEA8FC2D95069C0011FDC2 /* QLGifView.swift in Sources */,
+				60BEA8FD2D95069C0011FDC2 /* QLImageView.swift in Sources */,
+				60BEA8FE2D95069C0011FDC2 /* QLVideoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +331,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -334,6 +363,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

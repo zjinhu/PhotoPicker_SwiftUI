@@ -7,7 +7,7 @@
 
 import Foundation
 extension Double{
-    func formatDuration() -> String {
+    public func formatDuration() -> String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.minute, .second]
         formatter.unitsStyle = .positional

@@ -13,22 +13,20 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/zjinhu/Brick_SwiftUI.git", .upToNextMajor(from: "0.3.0")),
-        .package(url: "https://github.com/zjinhu/PagerTabStripView.git", .upToNextMajor(from: "0.0.1"))
+        .package(url: "https://github.com/zjinhu/Brick_SwiftUI.git", .upToNextMajor(from: "0.7.2")),
     ],
     targets: [
         .target(name: "PhotoPicker_SwiftUI",
                 dependencies:
                     [
                         .product(name: "BrickKit", package: "Brick_SwiftUI"),
-                        .product(name: "PagerTabStripView", package: "PagerTabStripView")
                     ],
                 resources: [.process("Resources")]
                ),
     ]
 )
 package.platforms = [
-    .iOS(.v14),
+    .iOS(.v15),
 ]
 package.swiftLanguageVersions = [.v5]
 

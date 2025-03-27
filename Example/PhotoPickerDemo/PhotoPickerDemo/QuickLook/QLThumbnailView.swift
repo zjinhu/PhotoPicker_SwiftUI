@@ -8,6 +8,7 @@
 import SwiftUI
 import Photos
 import BrickKit
+import PhotoPicker_SwiftUI
 public struct QLThumbnailView: View {
     let asset: SelectedAsset
     let index: Int
@@ -82,7 +83,7 @@ public struct QLThumbnailView: View {
                 .onDisappear {
                     photoModel.onStop()
                 }
-                .ss.task {
+                .task {
                     await photoModel.onStart()
                 }
                 .ss.border(viewModel.previewSelectIndex == index ? .mainBlue : .clear, cornerRadius: 5, lineWidth: 2)
